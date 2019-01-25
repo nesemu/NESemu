@@ -1,0 +1,12 @@
+cmake_minimum_required(VERSION 3.12)
+project(NESemu)
+
+set(CMAKE_CXX_STANDARD 17)
+
+FIND_PACKAGE(sdl2 REQUIRED)
+
+INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS})
+
+add_executable(NESemu main.cpp nes_lib/cpu.cpp)
+
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${SDL2_LIBRARIES})
