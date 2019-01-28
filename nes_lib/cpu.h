@@ -31,6 +31,9 @@
 #define RESET_INTERRUPT_VECTOR 0xFFFC
 #define IRQ_INTERRUPT_VECTOR 0xFFFE
 
+// Define Stack Offset
+#define STACK_OFFSET 0x100
+
 struct CpuRegisters {
     uint8_t A; // Accumlator
     uint8_t X; // X Register
@@ -66,6 +69,7 @@ struct Instruction {
      AddressingMode addrMode;
 };
 
+// Function Prototypes for all of the Specific OPCODES
 void brk(uint16_t address);
 void ora(uint16_t address);
 void slo(uint16_t address);
@@ -148,6 +152,7 @@ private:
     CpuRegisters registers;
     //TODO: Need some kind of time keeping thing to keep track of cycles
     //TODO: Need Some Kind of Memory (READ RAM) Access Here
+
     const Instruction instructions[256] = {
         /* 0x00 */ {"BRK", brk, 1, 7, 0, ADDR_MODE_IMPLICIT},
         /* 0x01 */ {"ORA", ora, 2, 6, 0, ADDR_MODE_INDIRECTX},
