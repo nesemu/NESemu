@@ -9,7 +9,7 @@ void NesMemory::write_byte(uint16_t address, uint8_t value) {
 }
 
 uint16_t NesMemory::read_word(uint16_t address) {
-    return (read_byte(address) + (uint16_t(read_byte(address+1)) << 8));
+    return (read_byte(address) + (uint16_t(read_byte(address+uint16_t(1))) << 8));
 }
 
 void NesMemory::write_word(uint16_t address, uint16_t value) {
