@@ -8,6 +8,7 @@
 
 #include <cstdint>
 #include <string>
+#include "memory.h"
 
 // Set Some Mask Definitons
 #define CARRY_MASK 0x1
@@ -152,7 +153,7 @@ private:
     CpuRegisters registers;
     //TODO: Need some kind of time keeping thing to keep track of cycles
     //TODO: Need Some Kind of Memory (READ RAM) Access Here
-
+    NesMemory *RAM;
     const Instruction instructions[256] = {
         /* 0x00 */ {"BRK", brk, 1, 7, 0, ADDR_MODE_IMPLICIT},
         /* 0x01 */ {"ORA", ora, 2, 6, 0, ADDR_MODE_INDIRECTX},
@@ -411,8 +412,9 @@ private:
         /* 0xFE */ {"INC", inc, 3, 7, 0, ADDR_MODE_ABSOLUTEX},
         /* 0xFF */ {"ISC", isc, 3, 7, 0, ADDR_MODE_ABSOLUTEX},
     };
+    uint16_t getAddrBasedOnMode(AddressingMode);
 public:
-    NesCpu();
+    NesCpu(NesMemory *);
     ~NesCpu();
     void power_up();
     void step();
