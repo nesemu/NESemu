@@ -404,7 +404,7 @@ private:
         /* 0xFC */ {"TOP", top, 3, 4, 1, ADDR_MODE_ABSOLUTEX},
         /* 0xFD */ {"SBC", sbc, 3, 4, 1, ADDR_MODE_ABSOLUTEX},
         /* 0xFE */ {"INC", inc, 3, 7, 0, ADDR_MODE_ABSOLUTEX},
-      
+        /* 0xFF */ {"ISC", isc, 3, 7, 0, ADDR_MODE_ABSOLUTEX},
     };
 public:
     NesCpu();
