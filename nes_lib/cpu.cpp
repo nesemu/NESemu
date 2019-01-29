@@ -58,6 +58,40 @@ uint16_t NesCpu::getAddrBasedOnMode(AddressingMode mode) {
             this->registers.PC += 2;
             break;
         }
+        case ADDR_MODE_ABSOLUTEX: {
+            finaladdr = this->RAM->read_word(this->registers.PC);
+            this->registers.PC += 2;
+            finaladdr += this->registers.X;
+            break;
+        }
+        case ADDR_MODE_ABSOLUTEY: {
+            finaladdr = this->RAM->read_word(this->registers.PC);
+            this->registers.PC += 2;
+            finaladdr += this->registers.Y;
+            break;
+        }
+        case ADDR_MODE_INDIRECT: {
+            uint16_t tempaddress = this->RAM->read_word(this->registers.PC);
+            this->registers.PC += 2;
+            finaladdr = this->RAM->read_word(tempaddress);
+            break;
+        }
+        case ADDR_MODE_INDIRECTX: {
+            uint8_t tempaddress = this->RAM->read_byte(this->registers.PC++);
+            tempaddress += this->registers.X;
+            finaladdr = this->RAM->read_word(tempaddress);
+            break;
+        }
+        case ADDR_MODE_INDIRECTY: {
+            uint8_t tempaddress = this->RAM->read_byte(this->registers.PC++);
+            finaladdr = this->RAM->read_word(tempaddress);
+            finaladdr += this->registers.Y;
+            break;
+        }
+        case default: {
+            finaladdr = 0;
+            break;
+        }
     }
 }
 
