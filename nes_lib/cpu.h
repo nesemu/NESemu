@@ -245,7 +245,7 @@ private:
 
     // Things the CPU Needs to operate
     CpuRegisters registers;
-    //TODO: Need some kind of time keeping thing to keep track of cycles
+    nes_cpu_clock_t cycles;
     NesMemory *RAM;
     const Instruction instructions[256] = {
         /* 0x00 */ {"BRK", brk, 1, 7, 0, ADDR_MODE_IMPLICIT},
@@ -516,7 +516,6 @@ private:
     void updateZeroFlag(uint8_t);
     void updateNegativeFlag(uint8_t);
     void performBranch(uint16_t);
-    nes_cpu_clock_t cycles;
 public:
     explicit NesCpu(NesMemory *);
     ~NesCpu();

@@ -27,6 +27,18 @@ uint16_t NesMemory::read_word(uint16_t address) {
     return (read_byte(address) + (uint16_t(read_byte(address+uint16_t(1))) << 8));
 }
 
+uint16_t NesMemory::read_word_page_bug(uint16_t address) {
+    uint16_t first = read_byte(address);
+    if ((address&0xFF) == 0xFF) {
+        address &= 0xFF00;
+    }
+    else {
+        address++;
+    }
+    uint16_t second = read_byte(address);
+    return first + (second << 8);
+}
+
 void NesMemory::write_word(uint16_t address, uint16_t value) {
     write_byte(address, value & 0xff); //TODO: Make sure this is okay
     write_byte(address+1, (value >> 8));

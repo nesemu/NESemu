@@ -17,6 +17,7 @@ public:
     uint8_t read_byte(uint16_t address);
     void write_byte(uint16_t address, uint8_t value);
     uint16_t read_word(uint16_t address);
+    uint16_t read_word_page_bug(uint16_t address);
     void write_word(uint16_t address, uint16_t value);
     void stack_write_word(uint16_t address, uint16_t value);
     void map_memory(uint16_t address, char * data, size_t size);

@@ -73,18 +73,18 @@ uint16_t NesCpu::getAddrBasedOnMode(AddressingMode mode) {
         case ADDR_MODE_INDIRECT: {
             uint16_t tempaddress = this->RAM->read_word(this->registers.PC);
             this->registers.PC += 2;
-            finaladdr = this->RAM->read_word(tempaddress);
+            finaladdr = this->RAM->read_word_page_bug(tempaddress);
             break;
         }
         case ADDR_MODE_INDIRECTX: {
             uint8_t tempaddress = this->RAM->read_byte(this->registers.PC++);
             tempaddress += this->registers.X;
-            finaladdr = this->RAM->read_word(tempaddress);
+            finaladdr = this->RAM->read_word_page_bug(tempaddress); //TODO: THIS MAY OR MAY NOT BE CORRECT http://wiki.nesdev.com/w/index.php/Errata#CPU
             break;
         }
         case ADDR_MODE_INDIRECTY: {
             uint8_t tempaddress = this->RAM->read_byte(this->registers.PC++);
-            finaladdr = this->RAM->read_word(tempaddress);
+            finaladdr = this->RAM->read_word_page_bug(tempaddress); //TODO: THIS MAY OR MAY NOT BE CORRECT http://wiki.nesdev.com/w/index.php/Errata#CPU
             finaladdr += this->registers.Y;
             break;
         }
@@ -100,9 +100,14 @@ uint16_t NesCpu::getAddrBasedOnMode(AddressingMode mode) {
 void NesCpu::step() {
     // TODO: Implement Interrupts
 
+    nes_cpu_clock_t insturctioncycles(0);
+
     //Fetch Op Code
     uint8_t opcode = this->RAM->read_byte(this->registers.PC++);
     const Instruction *currentInstruction = &this->instructions[opcode];
+
+    //Increment the cycle counter the base number of instructions 
+    insturctioncycles += nes_cpu_clock_t(currentInstruction->baseNumCycles);
 
     if (currentInstruction -> addrMode == INVALID_OPCODE) {
         std::cerr << "Invalid OpCode Used" << currentInstruction -> name << std::endl;
