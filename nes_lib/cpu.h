@@ -10,6 +10,7 @@
 #include <string>
 #include <functional>
 #include "memory.h"
+#include "nes_clock.h"
 
 // Set Some Mask Definitons
 #define CARRY_MASK 0x1
@@ -515,6 +516,7 @@ private:
     void updateZeroFlag(uint8_t);
     void updateNegativeFlag(uint8_t);
     void performBranch(uint16_t);
+    nes_cpu_clock_t cycles;
 public:
     explicit NesCpu(NesMemory *);
     ~NesCpu();
