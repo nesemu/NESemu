@@ -5,7 +5,22 @@ uint8_t NesMemory::read_byte(uint16_t address) {
 }
 
 void NesMemory::write_byte(uint16_t address, uint8_t value) {
-    this->ram[address] = value;
+    if (address > 0x7FFF) { // non-writable Gamepak ROM
+        return;
+    }
+    if (address < 0x2000) { // CPU RAM, mirrored 4 times
+    	int offset = address % 0x800;
+	    for (int i = 0; i < 4; ++i) {
+		    this->ram[offset + i*0x800] = value;
+	    }
+    } else if (address >= 0x2000 && address < 0x4000) { //PPU registers, mirrored every 8 bytes
+    	int offset = address % 0x8;
+	    for (int i = 0; i < 1024; ++i) {
+		    this->ram[offset + i*0x8] = value;
+	    }
+    } else {
+    	this->ram[address] = value;
+    }
 }
 
 uint16_t NesMemory::read_word(uint16_t address) {
