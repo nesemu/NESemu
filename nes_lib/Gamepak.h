@@ -20,8 +20,16 @@ class Gamepak {
 private:
     std::string filename;
     char *rom_data;
-    struct iNES_headers headers;
+    char *trainer;
+    char *PRG_rom_data;
+    char *CHR_rom_data;
+    size_t PRG_size;
+		size_t CHR_size;
+    struct iNES_headers * headers;
     int mapper;
+    std::string nametable_mirroring_type;
+
+    bool disable_mirroring;
 public:
     explicit Gamepak(std::string filename);
     ~Gamepak();
