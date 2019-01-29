@@ -9,22 +9,25 @@
 #include <cstring>
 
 Gamepak::Gamepak(std::string filename) {
-    filename = this->filename;
+    this->filename = filename;
+    rom_data = nullptr;
+    headers = {0};
+    mapper = 0;
 }
 
 Gamepak::~Gamepak() {
-    delete [] rom_data;
+    delete[] rom_data;
 }
 
 int Gamepak::initialize() {
-    ifstream romfile.open(filename, ios::binary|ios::ate); //open file at end
+    std::ifstream romfile(filename, std::ios::binary | std::ios::ate); //open file at end
     if (!romfile.is_open()) {
         std::cerr << "Error: ROM file does not exist" << std::endl;
         return EXIT_FAILURE;
     }
 
-    size_t filesize = romfile.tellg(); // get size from current filepointer location;
-    romfile.seekg(0, ios::beg); //reset file pointer to beginning;
+    std::streampos filesize = romfile.tellg(); // get size from current file pointer location;
+    romfile.seekg(0, std::ios::beg); //reset file pointer to beginning;
 
     rom_data = new char[filesize];
     romfile.read(rom_data, filesize);
@@ -33,6 +36,7 @@ int Gamepak::initialize() {
         return EXIT_FAILURE;
     }
 
+    std::cout << "ROM initialized." << std::endl;
     return EXIT_SUCCESS;
 }
 

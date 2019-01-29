@@ -1,5 +1,6 @@
 #include <iostream>
 #include <SDL.h>
+#include "nes_lib/Gamepak.h"
 
 int main(int argc, char *argv[]) {
 
@@ -57,6 +58,12 @@ int main(int argc, char *argv[]) {
 
     //TODO: Implement the rest of the main including the game loop
 
+    std::string rom_filename = argv[1];
+
+    std::cout << rom_filename << std::endl;
+
+    Gamepak rom_gamepak = Gamepak(rom_filename);
+    if (rom_gamepak.initialize()) return EXIT_FAILURE;
 
     return 0;
 }
