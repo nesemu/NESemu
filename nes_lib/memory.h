@@ -17,6 +17,7 @@ public:
     void write_byte(uint16_t address, uint8_t value);
     uint16_t read_word(uint16_t address);
     void write_word(uint16_t address, uint16_t value);
+    void stack_write_word(uint16_t address, uint16_t value);
 };
 
 #endif //NESEMU_MEMORY_H

@@ -33,7 +33,7 @@
 #define IRQ_INTERRUPT_VECTOR 0xFFFE
 
 // Define Stack Offset
-#define STACK_OFFSET 0x100
+#define STACK_BASE 0x100
 
 struct CpuRegisters {
     uint8_t A; // Accumlator
@@ -152,7 +152,6 @@ private:
     // Things the CPU Needs to operate
     CpuRegisters registers;
     //TODO: Need some kind of time keeping thing to keep track of cycles
-    //TODO: Need Some Kind of Memory (READ RAM) Access Here
     NesMemory *RAM;
     const Instruction instructions[256] = {
         /* 0x00 */ {"BRK", brk, 1, 7, 0, ADDR_MODE_IMPLICIT},
@@ -417,7 +416,12 @@ public:
     NesCpu(NesMemory *);
     ~NesCpu();
     void power_up();
+    void reset();
     void step();
+    void pushStackBtye(uint8_t);
+    uint8_t popStackByte();
+    void pushStackWord(uint16_t);
+    uint16_t popStackWord();
 };
 
 

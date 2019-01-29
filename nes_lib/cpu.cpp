@@ -114,3 +114,32 @@ void NesCpu::step() {
     currentInstruction -> instFunc(address);
 
 }
+
+void NesCpu::pushStackBtye(uint8_t data) {
+    uint16_t address = uint16_t(STACK_BASE) + this->registers.S;
+    this->RAM->write_byte(address, data);
+    this->registers.S--;
+}
+
+uint8_t NesCpu::popStackByte() {
+    this->registers.S++;
+    uint8_t data = this->RAM->read_byte(uint16_t(STACK_BASE) + this->registers.S);
+    return data;
+}
+
+void NesCpu::pushStackWord(uint16_t data) {
+    uint16_t address = uint16_t(STACK_BASE) + this->registers.S;
+    this->RAM->stack_write_word(address, data);
+    this->registers.S-=2;
+}
+
+uint16_t NesCpu::popStackWord() {
+    this->registers.S++;
+    uint16_t data = this->RAM->read_word(uint16_t(STACK_BASE) +this->registers.S);
+    this->registers.S++;
+    return data;
+}
+
+void brk(uint16_t address) {
+
+}

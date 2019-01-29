@@ -16,3 +16,8 @@ void NesMemory::write_word(uint16_t address, uint16_t value) {
     write_byte(address, value & 0xff); //TODO: Make sure this is okay
     write_byte(address+1, (value >> 8));
 }
+
+void NesMemory::stack_write_word(uint16_t address, uint16_t value) {
+    write_byte(address, (value >> 8));
+    write_byte(address-1, value & 0xff);
+}
