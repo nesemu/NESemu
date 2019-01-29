@@ -140,6 +140,11 @@ uint16_t NesCpu::popStackWord() {
     return data;
 }
 
-void brk(uint16_t address) {
-
+void NesCpu::set_flags(uint8_t mask, bool set) {
+    if (set) {
+        this->registers.P |= mask;
+    }
+    else {
+        this->registers.P &= ~mask;
+    }
 }

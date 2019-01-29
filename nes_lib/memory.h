@@ -6,6 +6,7 @@
 #define NESEMU_MEMORY_H
 
 #include <cstdint>
+#include <cstdlib>
 
 #define RAM_SIZE 0x10000 // 64K
 
@@ -18,7 +19,7 @@ public:
     uint16_t read_word(uint16_t address);
     void write_word(uint16_t address, uint16_t value);
     void stack_write_word(uint16_t address, uint16_t value);
-		void map_memory(uint16_t address, char * data, std::size_t size);
+    void map_memory(uint16_t address, char * data, size_t size);
 };
 
 #endif //NESEMU_MEMORY_H

@@ -35,6 +35,16 @@
 // Define Stack Offset
 #define STACK_BASE 0x100
 
+// Define Flag Tests
+#define TEST_CARRY(X) X&CARRY_MASK ? true : false
+#define TEST_ZERO(X) X&ZERO_MASK ? true : false
+#define TEST_INTERRUPT_DISABLE(X) X&INTERRUPT_DISABLE_MASK ? true : false
+#define TEST_DECIMAL(X) X&DECIMAL_MASK ? true : false
+#define TEST_B(X) X&B_MASK ? true : false
+#define TEST_I(X) X&I_MASK ? true : false
+#define TEST_OVERFLOW(X) X&OVERFLOW_MASK ? true : false
+#define TEST_NEGATIVE(X) X&NEGATIVE_MASK ? true : false
+
 struct CpuRegisters {
     uint8_t A; // Accumlator
     uint8_t X; // X Register
@@ -70,85 +80,86 @@ struct Instruction {
      AddressingMode addrMode;
 };
 
-// Function Prototypes for all of the Specific OPCODES
-void brk(uint16_t address);
-void ora(uint16_t address);
-void slo(uint16_t address);
-void dop(uint16_t address);
-void asl(uint16_t address);
-void asla(uint16_t address);
-void php(uint16_t address);
-void anc(uint16_t address);
-void top(uint16_t address);
-void bpl(uint16_t address);
-void clc(uint16_t address);
-void nop(uint16_t address);
-void jsr(uint16_t address);
-void myand(uint16_t address);
-void rla(uint16_t address);
-void bit(uint16_t address);
-void rol(uint16_t address);
-void rola(uint16_t address);
-void plp(uint16_t address);
-void bmi(uint16_t address);
-void sec(uint16_t address);
-void rti(uint16_t address);
-void eor(uint16_t address);
-void sre(uint16_t address);
-void lsr(uint16_t address);
-void lsra(uint16_t address);
-void pha(uint16_t address);
-void alr(uint16_t address);
-void jmp(uint16_t address);
-void bvc(uint16_t address);
-void cli(uint16_t address);
-void rts(uint16_t address);
-void adc(uint16_t address);
-void rra(uint16_t address);
-void ror(uint16_t address);
-void rora(uint16_t address);
-void pla(uint16_t address);
-void arr(uint16_t address);
-void bvs(uint16_t address);
-void sei(uint16_t address);
-void sta(uint16_t address);
-void aax(uint16_t address);
-void sty(uint16_t address);
-void stx(uint16_t address);
-void dey(uint16_t address);
-void txa(uint16_t address);
-void bcc(uint16_t address);
-void tya(uint16_t address);
-void txs(uint16_t address);
-void ldy(uint16_t address);
-void lda(uint16_t address);
-void ldx(uint16_t address);
-void lax(uint16_t address);
-void tay(uint16_t address);
-void tax(uint16_t address);
-void lxa(uint16_t address);
-void bcs(uint16_t address);
-void clv(uint16_t address);
-void tsx(uint16_t address);
-void cpy(uint16_t address);
-void cmp(uint16_t address);
-void dcp(uint16_t address);
-void dec(uint16_t address);
-void iny(uint16_t address);
-void dex(uint16_t address);
-void sax(uint16_t address);
-void bne(uint16_t address);
-void cld(uint16_t address);
-void cpx(uint16_t address);
-void sbc(uint16_t address);
-void isc(uint16_t address);
-void inc(uint16_t address);
-void inx(uint16_t address);
-void beq(uint16_t address);
-void sed(uint16_t address);
 
 class NesCpu {
 private:
+    // Function Prototypes for all of the Specific OPCODES
+    void brk(uint16_t address);
+    void ora(uint16_t address);
+    void slo(uint16_t address);
+    void dop(uint16_t address);
+    void asl(uint16_t address);
+    void asla(uint16_t address);
+    void php(uint16_t address);
+    void anc(uint16_t address);
+    void top(uint16_t address);
+    void bpl(uint16_t address);
+    void clc(uint16_t address);
+    void nop(uint16_t address);
+    void jsr(uint16_t address);
+    void myand(uint16_t address);
+    void rla(uint16_t address);
+    void bit(uint16_t address);
+    void rol(uint16_t address);
+    void rola(uint16_t address);
+    void plp(uint16_t address);
+    void bmi(uint16_t address);
+    void sec(uint16_t address);
+    void rti(uint16_t address);
+    void eor(uint16_t address);
+    void sre(uint16_t address);
+    void lsr(uint16_t address);
+    void lsra(uint16_t address);
+    void pha(uint16_t address);
+    void alr(uint16_t address);
+    void jmp(uint16_t address);
+    void bvc(uint16_t address);
+    void cli(uint16_t address);
+    void rts(uint16_t address);
+    void adc(uint16_t address);
+    void rra(uint16_t address);
+    void ror(uint16_t address);
+    void rora(uint16_t address);
+    void pla(uint16_t address);
+    void arr(uint16_t address);
+    void bvs(uint16_t address);
+    void sei(uint16_t address);
+    void sta(uint16_t address);
+    void aax(uint16_t address);
+    void sty(uint16_t address);
+    void stx(uint16_t address);
+    void dey(uint16_t address);
+    void txa(uint16_t address);
+    void bcc(uint16_t address);
+    void tya(uint16_t address);
+    void txs(uint16_t address);
+    void ldy(uint16_t address);
+    void lda(uint16_t address);
+    void ldx(uint16_t address);
+    void lax(uint16_t address);
+    void tay(uint16_t address);
+    void tax(uint16_t address);
+    void lxa(uint16_t address);
+    void bcs(uint16_t address);
+    void clv(uint16_t address);
+    void tsx(uint16_t address);
+    void cpy(uint16_t address);
+    void cmp(uint16_t address);
+    void dcp(uint16_t address);
+    void dec(uint16_t address);
+    void iny(uint16_t address);
+    void dex(uint16_t address);
+    void sax(uint16_t address);
+    void bne(uint16_t address);
+    void cld(uint16_t address);
+    void cpx(uint16_t address);
+    void sbc(uint16_t address);
+    void isc(uint16_t address);
+    void inc(uint16_t address);
+    void inx(uint16_t address);
+    void beq(uint16_t address);
+    void sed(uint16_t address);
+
     // Things the CPU Needs to operate
     CpuRegisters registers;
     //TODO: Need some kind of time keeping thing to keep track of cycles
@@ -412,16 +423,17 @@ private:
         /* 0xFF */ {"ISC", isc, 3, 7, 0, ADDR_MODE_ABSOLUTEX},
     };
     uint16_t getAddrBasedOnMode(AddressingMode);
+    void pushStackBtye(uint8_t);
+    uint8_t popStackByte();
+    void pushStackWord(uint16_t);
+    uint16_t popStackWord();
+    void set_flags(uint8_t, bool);
 public:
     NesCpu(NesMemory *);
     ~NesCpu();
     void power_up();
     void reset();
     void step();
-    void pushStackBtye(uint8_t);
-    uint8_t popStackByte();
-    void pushStackWord(uint16_t);
-    uint16_t popStackWord();
 };
 
 
