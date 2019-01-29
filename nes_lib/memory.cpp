@@ -5,6 +5,9 @@ uint8_t NesMemory::read_byte(uint16_t address) {
 }
 
 void NesMemory::write_byte(uint16_t address, uint8_t value) {
+    if (address > 0x7FFF) { // non-writable Gamepak ROM
+        return
+    }
     this->ram[address] = value;
 }
 
