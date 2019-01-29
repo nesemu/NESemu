@@ -21,3 +21,9 @@ void NesMemory::stack_write_word(uint16_t address, uint16_t value) {
     write_byte(address, (value >> 8));
     write_byte(address-1, value & 0xff);
 }
+
+void NesMemory::map_memory(uint16_t address, char *data, std::size_t size) {
+    for (int i = 0; i < size; ++i) {
+        write_byte(address+i, data[i]);
+    }
+}

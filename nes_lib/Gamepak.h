@@ -6,6 +6,7 @@
 #define NESEMU_GAMEPAK_H
 
 #include <string>
+#include "memory.h"
 
 struct iNES_headers {
     char magic_string[4]; //bytes 0-3
@@ -35,6 +36,7 @@ public:
     ~Gamepak();
     int initialize();
     int verifyHeaders();
+    int loadPRG(NesMemory *memory);
 
 
 

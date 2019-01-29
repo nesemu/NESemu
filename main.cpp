@@ -60,10 +60,11 @@ int main(int argc, char *argv[]) {
 
     std::string rom_filename = argv[1];
 
-    std::cout << rom_filename << std::endl;
+		NesMemory memory;
 
     Gamepak rom_gamepak = Gamepak(rom_filename);
     if (rom_gamepak.initialize()) return EXIT_FAILURE;
 
+    rom_gamepak.loadPRG(&memory);
     return 0;
 }

@@ -57,7 +57,7 @@ int Gamepak::verifyHeaders() {
 
     if (headers->flags[0] >> 1 | 1) { //battery RAM
         std::cout << "Battery RAM present" << std::endl;
-        /* Not completely sure what to do about this */
+        /* Currently we ignore this flag and assume no ram present */
     }
 
     if (headers->flags[0] >> 2 | 1) {
@@ -80,4 +80,15 @@ int Gamepak::verifyHeaders() {
 
 
     return EXIT_SUCCESS;
+}
+
+int Gamepak::loadPRG(NesMemory *memory) {
+    if (trainer) {
+        memory->map_memory(0x7000, trainer, 512);
+    }
+    memory->map_memory(0x8000, PRG_rom_data, PRG_size);
+    if (PRG_size <= 16*1024) { // if only 16KiB of ROM, mirror in upper address range
+        memory->map_memory(0xC000, PRG_rom_data, PRG_size);
+    }
+    return 0;
 }
