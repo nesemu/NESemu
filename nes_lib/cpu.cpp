@@ -88,11 +88,12 @@ uint16_t NesCpu::getAddrBasedOnMode(AddressingMode mode) {
             finaladdr += this->registers.Y;
             break;
         }
-        case default: {
+        default: {
             finaladdr = 0;
             break;
         }
     }
+    return finaladdr;
 }
 
 
