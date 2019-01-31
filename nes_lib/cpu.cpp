@@ -21,7 +21,6 @@ void NesCpu::power_up() {
 }
 
 uint16_t NesCpu::getAddrBasedOnMode(AddressingMode mode) {
-    //TODO: Return the Proper Address based on PC and increment Program Counter so that it at the proper spot
     uint16_t finaladdr = 0;
     switch (mode) {
         case ADDR_MODE_IMPLICIT: {
