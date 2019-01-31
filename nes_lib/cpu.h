@@ -250,6 +250,8 @@ private:
     nes_cpu_clock_t cycles;
     bool crossedpage;
     NesMemory *RAM;
+    bool IRQRequested;
+    bool NMIRequested;
     const Instruction instructions[256] = {
         /* 0x00 */ {"BRK", brk, 1, 7, 0, ADDR_MODE_IMPLICIT},
         /* 0x01 */ {"ORA", ora, 2, 6, 0, ADDR_MODE_INDIRECTX},
@@ -514,11 +516,12 @@ private:
     void pushStackWord(uint16_t);
     uint16_t popStackWord();
     void setFlags(uint8_t, bool);
-    void NMI();
-    void IRQ();
+    nes_cpu_clock_t NMI();
+    nes_cpu_clock_t IRQ();
     void updateZeroFlag(uint8_t);
     void updateNegativeFlag(uint8_t);
     nes_cpu_clock_t performBranch(uint16_t);
+    nes_cpu_clock_t getCycles();
 public:
     explicit NesCpu(NesMemory *);
     ~NesCpu();
