@@ -130,7 +130,7 @@ void NesCpu::step() {
         this->crossedpage = false;
     }
 
-    insturctioncycles += nes_cpu_clock_t(currentInstruction -> instFunc(address, this));
+    insturctioncycles += currentInstruction -> instFunc(address, this);
 
 }
 
