@@ -254,7 +254,9 @@ nes_cpu_clock_t ora(uint16_t address, NesCpu * cpu) {
 }
 
 nes_cpu_clock_t slo(uint16_t address, NesCpu * cpu) {
-    //TODO: Illegal Opcode Lookup and Implement
+    nes_cpu_clock_t cycles = asl(address, cpu);
+    cycles += ora(address, cpu);
+    return cycles;
 }
 
 nes_cpu_clock_t dop(uint16_t address, NesCpu * cpu) {
@@ -296,7 +298,9 @@ nes_cpu_clock_t php(uint16_t address, NesCpu * cpu) {
 }
 
 nes_cpu_clock_t anc(uint16_t address, NesCpu * cpu) {
-    //TODO: Illegal Opcode Lookup and Implement
+    nes_cpu_clock_t cycles = and(address, cpu);
+    cpu->setFlags(CARRY_MASK, TEST_NEGATIVE(cpu->registers.P));
+    return cycles;
 }
 
 nes_cpu_clock_t top(uint16_t address, NesCpu * cpu) {
@@ -338,7 +342,9 @@ nes_cpu_clock_t myand(uint16_t address, NesCpu * cpu) {
 }
 
 nes_cpu_clock_t rla(uint16_t address, NesCpu * cpu) {
-    //TODO: Look Up Illegal Op Code
+    nes_cpu_clock_t cycles = rol(address, cpu);
+    cycles += myand(address, cpu);
+    return cycles;
 }
 
 nes_cpu_clock_t bit(uint16_t address, NesCpu * cpu) {
@@ -423,8 +429,9 @@ nes_cpu_clock_t eor(uint16_t address, NesCpu * cpu) {
 }
 
 nes_cpu_clock_t sre(uint16_t address, NesCpu * cpu) {
-    //TODO: Illegal OpCode
-    return nes_cpu_clock_t(0);
+    nes_cpu_clock_t cycles = lsr(address, cpu);
+    cycles += eor(address, cpu);
+    return cycles;
 }
 
 nes_cpu_clock_t lsr(uint16_t address, NesCpu * cpu) {
@@ -460,7 +467,9 @@ nes_cpu_clock_t pha(uint16_t address, NesCpu * cpu) {
 }
 
 nes_cpu_clock_t alr(uint16_t address, NesCpu * cpu) {
-    //TODO: Illegal Opcode
+    nes_cpu_clock_t cycles = myand(address, cpu);
+    cycles += lsra(address, cpu);
+    return cycles;
 }
 
 nes_cpu_clock_t jmp(uint16_t address, NesCpu * cpu) {
@@ -513,7 +522,9 @@ nes_cpu_clock_t adc(uint16_t address, NesCpu * cpu) {
 }
 
 nes_cpu_clock_t rra(uint16_t address, NesCpu * cpu) {
-    //TODO: Illegal Op
+    nes_cpu_clock_t cycles = ror(address, cpu);
+    cycles += adc(address, cpu);
+    return cycles;
 }
 
 nes_cpu_clock_t ror(uint16_t address, NesCpu * cpu) {
@@ -561,7 +572,20 @@ nes_cpu_clock_t pla(uint16_t address, NesCpu * cpu) {
 }
 
 nes_cpu_clock_t arr(uint16_t address, NesCpu * cpu) {
-    //TODO: Illegal Op
+    uint8_t value = cpu->RAM->read_byte(address);
+
+    cpu->registers.A = (cpu->registers.A & value) >> 1;
+    if (TEST_CARRY(cpu->registers.P)) {
+        cpu->registers.A |= 0x80;
+    }
+
+    cpu->updateNegativeFlag(cpu->registers.A);
+    cpu->updateZeroFlag(cpu->registers.A);
+    bool newCarryFlag = ((cpu->registers.A>>6)&0x1) != 0;
+    bool newOverflowFlag = (((cpu->registers.A>>6)^(cpu->registers.A>>5))&0x1) != 0;
+    cpu->setFlags(CARRY_MASK, newCarryFlag);
+    cpu->setFlags(OVERFLOW_MASK, newOverflowFlag);
+    return nes_cpu_clock_t(0);
 }
 
 nes_cpu_clock_t bvs(uint16_t address, NesCpu * cpu) {
@@ -583,7 +607,9 @@ nes_cpu_clock_t sta(uint16_t address, NesCpu * cpu) {
 }
 
 nes_cpu_clock_t aax(uint16_t address, NesCpu * cpu) {
-    //TODO: Illegal Op
+    uint8_t value = cpu->registers.A & cpu->registers.X;
+    cpu->RAM->write_byte(address, value);
+    return nes_cpu_clock_t(0);
 }
 
 nes_cpu_clock_t sty(uint16_t address, NesCpu * cpu) {
@@ -665,7 +691,11 @@ nes_cpu_clock_t ldx(uint16_t address, NesCpu * cpu) {
 }
 
 nes_cpu_clock_t lax(uint16_t address, NesCpu * cpu) {
-    //TODO: Illegal Op
+    cpu->registers.A = cpu->RAM->read_byte(address);
+    cpu->registers.X = cpu->registers.A;
+    cpu->updateZeroFlag(cpu->registers.X);
+    cpu->updateNegativeFlag(cpu->registers.X);
+    return nes_cpu_clock_t(0);
 }
 
 nes_cpu_clock_t tay(uint16_t address, NesCpu * cpu) {
@@ -685,7 +715,11 @@ nes_cpu_clock_t tax(uint16_t address, NesCpu * cpu) {
 }
 
 nes_cpu_clock_t lxa(uint16_t address, NesCpu * cpu) {
-    //TODO: Illegal Op
+    cpu->registers.A = cpu->RAM->read_byte(address);
+    cpu->registers.X = cpu->registers.A;
+    cpu->updateNegativeFlag(cpu->registers.X);
+    cpu->updateZeroFlag(cpu->registers.X);
+    return nes_cpu_clock_t(0);
 }
 
 nes_cpu_clock_t bcs(uint16_t address, NesCpu * cpu) {
@@ -697,6 +731,7 @@ nes_cpu_clock_t bcs(uint16_t address, NesCpu * cpu) {
 
 nes_cpu_clock_t clv(uint16_t address, NesCpu * cpu) {
     cpu->setFlags(OVERFLOW_MASK, false);
+    return nes_cpu_clock_t(0);
 }
 
 nes_cpu_clock_t tsx(uint16_t address, NesCpu * cpu) {
@@ -734,7 +769,9 @@ nes_cpu_clock_t cmp(uint16_t address, NesCpu * cpu) {
 }
 
 nes_cpu_clock_t dcp(uint16_t address, NesCpu * cpu) {
-    //TODO: Illegal Op Code
+    nes_cpu_clock_t cycles = dec(address, cpu);
+    cycles += cmp(address, cpu);
+    return cycles;
 }
 
 nes_cpu_clock_t dec(uint16_t address, NesCpu * cpu) {
@@ -765,7 +802,16 @@ nes_cpu_clock_t dex(uint16_t address, NesCpu * cpu) {
 }
 
 nes_cpu_clock_t sax(uint16_t address, NesCpu * cpu) {
-    //TODO: Illegal Op
+    uint8_t value = cpu->RAM->read_byte(address);
+    uint8_t d = cpu->registers.A & cpu->registers.X;
+
+    bool newCarryFlag = (int(d) - int(value)) >= 0;
+    cpu->setFlags(CARRY_MASK, newCarryFlag);
+
+    cpu->registers.X = d - value;
+    cpu->updateZeroFlag(cpu->registers.X);
+    cpu->updateNegativeFlag(cpu->registers.X);
+    return nes_cpu_clock_t(0);
 }
 
 nes_cpu_clock_t bne(uint16_t address, NesCpu * cpu) {
@@ -820,7 +866,9 @@ nes_cpu_clock_t sbc(uint16_t address, NesCpu * cpu) {
 }
 
 nes_cpu_clock_t isc(uint16_t address, NesCpu * cpu) {
-    //TODO: Illegal Op
+    nes_cpu_clock_t cycles = inc(address, cpu);
+    cycles += sbc(address, cpu);
+    return cycles;
 }
 
 nes_cpu_clock_t inc(uint16_t address, NesCpu * cpu) {
