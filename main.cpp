@@ -2,6 +2,11 @@
 #include <SDL.h>
 #include "nes_lib/Gamepak.h"
 
+#define NES_A_BUTTON 1
+#define NES_B_BUTTON 0
+#define NES_START_BUTTON 9
+#define NES_SELECT_BUTTON 8
+
 int main(int argc, char *argv[]) {
 
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
@@ -23,6 +28,8 @@ int main(int argc, char *argv[]) {
                 nullptr);
         return -1;
     }
+
+    SDL_Joystick * joystick = nullptr;
 
     /*
     if (SDL_NumJoysticks() < 1) {
@@ -53,6 +60,8 @@ int main(int argc, char *argv[]) {
     SDL_RenderSetLogicalSize(sdl_renderer, 100, 100); //TODO: Sizes need to be changed to actual
 
     SDL_Texture * sdl_texture = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, 100, 100); //TODO: Update Sizes
+
+    joystick = SDL_JoystickOpen(0);
 
     SDL_Delay(1000);
 
