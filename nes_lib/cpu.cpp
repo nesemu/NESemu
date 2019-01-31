@@ -298,7 +298,7 @@ nes_cpu_clock_t php(uint16_t address, NesCpu * cpu) {
 }
 
 nes_cpu_clock_t anc(uint16_t address, NesCpu * cpu) {
-    nes_cpu_clock_t cycles = and(address, cpu);
+    nes_cpu_clock_t cycles = myand(address, cpu);
     cpu->setFlags(CARRY_MASK, TEST_NEGATIVE(cpu->registers.P));
     return cycles;
 }
