@@ -43,17 +43,24 @@ uint16_t NesCpu::getAddrBasedOnMode(AddressingMode mode) {
             break;
         }
         case ADDR_MODE_ZPX: {
-            finaladdr = ((this->RAM->read_byte(this->registers.PC++)) + this->registers.X);
-            break;
+           uint8_t addr = ((this->RAM->read_byte(this->registers.PC++)) + this->registers.X);
+           finaladdr = addr;
+           break;
         }
         case ADDR_MODE_ZPY: {
-            finaladdr = ((this->RAM->read_byte(this->registers.PC++)) + this->registers.Y);
+            uint8_t addr = ((this->RAM->read_byte(this->registers.PC++)) + this->registers.Y);
+            finaladdr = addr;
             break;
         }
         case ADDR_MODE_RELATIVE: {
-            uint8_t offset = this->RAM->read_byte(this->registers.PC++);
+            int8_t offset = this->RAM->read_byte(this->registers.PC++);
             finaladdr = this->registers.PC;
-            finaladdr += offset;
+            if (offset < 0) {
+                finaladdr -= uint16_t(-offset);
+            }
+            else {
+                finaladdr += uint16_t(offset);
+            }
             break;
         }
         case ADDR_MODE_ABSOLUTE: {
@@ -148,7 +155,8 @@ void NesCpu::step() {
     std::cout << " A:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.A;
     std::cout << " X:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.X;
     std::cout << " Y:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.Y;
-    std::cout << " P:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.P << std::endl;
+    std::cout << " P:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.P;
+    std::cout << " SP:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.S << std::endl;
 
 #endif
 
@@ -347,7 +355,7 @@ nes_cpu_clock_t nop(uint16_t address, NesCpu * cpu) {
 }
 
 nes_cpu_clock_t jsr(uint16_t address, NesCpu * cpu) {
-    cpu->pushStackWord(cpu->registers.PC);
+    cpu->pushStackWord(cpu->registers.PC-1);
     cpu->registers.PC = address;
     return nes_cpu_clock_t(0);
 }
@@ -437,6 +445,8 @@ nes_cpu_clock_t sec(uint16_t address, NesCpu * cpu) {
 
 nes_cpu_clock_t rti(uint16_t address, NesCpu * cpu) {
     cpu->registers.P = cpu->popStackByte();
+    cpu->setFlags(B_MASK, false);
+    cpu->setFlags(I_MASK, true);
     cpu->registers.PC = cpu->popStackWord();
     return nes_cpu_clock_t(0);
 }
@@ -514,7 +524,7 @@ nes_cpu_clock_t cli(uint16_t address, NesCpu * cpu) {
 }
 
 nes_cpu_clock_t rts(uint16_t address, NesCpu * cpu) {
-    cpu->registers.PC = cpu->popStackWord();
+    cpu->registers.PC = cpu->popStackWord() + uint16_t(1);
     return nes_cpu_clock_t(0);
 }
 
@@ -899,7 +909,7 @@ nes_cpu_clock_t inc(uint16_t address, NesCpu * cpu) {
     value++;
 
     cpu->updateNegativeFlag(value);
-    cpu->updateNegativeFlag(value);
+    cpu->updateZeroFlag(value);
 
     cpu->RAM->write_byte(address, value);
 
