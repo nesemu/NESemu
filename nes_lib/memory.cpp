@@ -1,5 +1,5 @@
 #include "memory.h"
-#include <stdio.h>
+#include <cstdio>
 #include <iostream>
 
 NesCPUMemory::NesCPUMemory(PPU *ppu, Gamepak *gamepak) {
@@ -24,8 +24,7 @@ uint8_t NesCPUMemory::read_byte(uint16_t address) {
 		return 0;
 	}
 	else if (address >= 0x4020 && address <= 0xFFFF) { // GamePak memory
-		// TODO: Route to Gamepak
-		return 0;
+		return gamepak->read_from_pak(address);
 	}
 	else return 0;
 }
@@ -47,7 +46,7 @@ void NesCPUMemory::write_byte(uint16_t address, uint8_t value) {
 			return;
     }
     else if (address >= 0x4020 && address <= 0xFFFF) { // GamePak memory
-    	// TODO: Route to Gamepak
+    	gamepak->write_to_pak(address, value);
     }
 }
 
