@@ -38,7 +38,7 @@ int Gamepak::initialize() {
         return EXIT_FAILURE;
     }
 
-    std::cout << "ROM initialized." << std::endl;
+    //std::cout << "ROM initialized." << std::endl;
     return EXIT_SUCCESS;
 }
 
@@ -55,12 +55,12 @@ int Gamepak::verifyHeaders() {
     /* Handle flags (in bit order) */
     nametable_mirroring_type = headers->flags[0] | 1 ? "vertical" : "horizontal";
 
-    if (headers->flags[0] >> 1 | 1) { //battery RAM
+    if (headers->flags[0] >> 1 & 1) { //battery RAM
         std::cout << "Battery RAM present" << std::endl;
         /* Currently we ignore this flag and assume no ram present */
     }
 
-    if (headers->flags[0] >> 2 | 1) {
+    if (headers->flags[0] >> 2 & 1) {
 	      std::cout << "Trainer present" << std::endl;
 		    trainer = rom_data + 16;
 		    PRG_rom_data = trainer + 512;

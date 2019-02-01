@@ -2,6 +2,8 @@
 // YAY FOR THIS BEING FUN!
 #include "cpu.h"
 #include <iostream>
+#include <iomanip>
+#define LOGGING
 
 NesCpu::NesCpu(NesMemory * memory) {
     this -> RAM = memory;
@@ -12,11 +14,12 @@ NesCpu::~NesCpu() {
 }
 
 void NesCpu::power_up() {
-    this->registers.P = 0x34;
+    this->registers.P = 0x24;
     this->registers.A = 0x00;
     this->registers.X = 0x00;
     this->registers.Y = 0x00;
     this->registers.S = 0xFD;
+    this->registers.PC = this->RAM->read_word(RESET_INTERRUPT_VECTOR);
     this->crossedpage = false;
 }
 
@@ -117,6 +120,7 @@ void NesCpu::step() {
     }
 
     //Fetch Op Code
+    uint16_t oldpc = this->registers.PC;
     uint8_t opcode = this->RAM->read_byte(this->registers.PC++);
     const Instruction *currentInstruction = &this->instructions[opcode];
 
@@ -135,10 +139,23 @@ void NesCpu::step() {
         this->crossedpage = false;
     }
 
+#ifdef LOGGING
+    // 0         1         2         3         4         5         6         7         8
+    // 0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
+    // C000  4C F5 C5  JMP $C5F5                       A:00 X:00 Y:00 P:24 SP:FD CYC:  0 SL:241
+
+    std::cout << std::setw(4) << std::left  << std::hex << +oldpc;
+    std::cout << " A:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.A;
+    std::cout << " X:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.X;
+    std::cout << " Y:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.Y;
+    std::cout << " P:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.P << std::endl;
+
+#endif
+
+
     insturctioncycles += currentInstruction -> instFunc(address, this);
 
     this->cycles += insturctioncycles;
-
 }
 
 void NesCpu::pushStackBtye(uint8_t data) {
@@ -230,6 +247,11 @@ nes_cpu_clock_t NesCpu::performBranch(uint16_t address) {
     return cycles;
 }
 
+void NesCpu::setPC(uint16_t newAddress) {
+    this->registers.PC = newAddress;
+}
+
+
 
 nes_cpu_clock_t brk(uint16_t address, NesCpu * cpu) {
     cpu->pushStackWord(cpu->registers.PC);
@@ -309,7 +331,7 @@ nes_cpu_clock_t top(uint16_t address, NesCpu * cpu) {
 }
 
 nes_cpu_clock_t bpl(uint16_t address, NesCpu * cpu) {
-    if (TEST_NEGATIVE(cpu->registers.P)) {
+    if (!(TEST_NEGATIVE(cpu->registers.P))) {
         cpu->performBranch(address);
     }
     return nes_cpu_clock_t(0);
@@ -394,8 +416,9 @@ nes_cpu_clock_t rola(uint16_t address, NesCpu * cpu) {
 }
 
 nes_cpu_clock_t plp(uint16_t address, NesCpu * cpu) {
-    cpu->registers.P =  cpu->popStackByte(); // TODO: Could be trouble here is a game ever reads that **nonexistent** bit
-
+    cpu->registers.P =  cpu->popStackByte(); // TODO: Changed behavior to match Nintulator Log File
+    cpu->setFlags(B_MASK, false);
+    cpu->setFlags(I_MASK, true);
     return nes_cpu_clock_t(0);
 }
 
@@ -422,8 +445,8 @@ nes_cpu_clock_t eor(uint16_t address, NesCpu * cpu) {
     uint8_t value = cpu->RAM->read_byte(address);
     cpu->registers.A = cpu->registers.A^value;
 
-    cpu->updateNegativeFlag(value);
-    cpu->updateZeroFlag(value);
+    cpu->updateNegativeFlag(cpu->registers.A);
+    cpu->updateZeroFlag(cpu->registers.A);
 
     return nes_cpu_clock_t(0);
 }
@@ -491,7 +514,7 @@ nes_cpu_clock_t cli(uint16_t address, NesCpu * cpu) {
 }
 
 nes_cpu_clock_t rts(uint16_t address, NesCpu * cpu) {
-    cpu->registers.PC = cpu->popStackWord() + uint16_t(1); //TODO: CHECK THIS!!!!!!!!!!!
+    cpu->registers.PC = cpu->popStackWord();
     return nes_cpu_clock_t(0);
 }
 
@@ -843,14 +866,14 @@ nes_cpu_clock_t sbc(uint16_t address, NesCpu * cpu) {
     uint8_t value = cpu->RAM->read_byte(address);
 
     uint8_t carry = 0;
-    if (TEST_CARRY(cpu->registers.P)) {
+    if (!(TEST_CARRY(cpu->registers.P))) {
         carry = 1;
     }
-    bool newCarryFlag = (int(value) - int(cpu->registers.A) - int(carry)) >= 0;
+    bool newCarryFlag = ( int(cpu->registers.A) - int(value) - int(carry)) >= 0;
     cpu->setFlags(CARRY_MASK, newCarryFlag);
 
     int asign = TEST_SIGN_8BIT(cpu->registers.A);
-    int valuesign = TEST_SIGN_8BIT(value);
+    int valuesign = !(TEST_SIGN_8BIT(value));
 
     cpu->registers.A = cpu->registers.A - value - carry;
 

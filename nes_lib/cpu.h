@@ -47,7 +47,7 @@
 #define TEST_OVERFLOW(X) X&OVERFLOW_MASK ? true : false
 #define TEST_NEGATIVE(X) X&NEGATIVE_MASK ? true : false
 
-#define TEST_SIGN_8BIT(X) X&0x80 ? 1 : 0;
+#define TEST_SIGN_8BIT(X) X&0x80 ? 1 : 0
 
 struct CpuRegisters {
     uint8_t A; // Accumlator
@@ -528,6 +528,7 @@ public:
     void power_up();
     void reset();
     void step();
+    void setPC(uint16_t newAddress);
 };
 
 

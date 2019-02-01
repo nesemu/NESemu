@@ -25,7 +25,7 @@ private:
     char *PRG_rom_data;
     char *CHR_rom_data;
     size_t PRG_size;
-		size_t CHR_size;
+    size_t CHR_size;
     struct iNES_headers * headers;
     int mapper;
     std::string nametable_mirroring_type;

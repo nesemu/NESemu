@@ -1,13 +1,23 @@
 #include "memory.h"
+#include <stdio.h>
+#include <iostream>
+
+NesMemory::NesMemory() {
+
+}
+
+NesMemory::~NesMemory() {
+
+}
 
 uint8_t NesMemory::read_byte(uint16_t address) {
     return this->ram[address];
 }
 
 void NesMemory::write_byte(uint16_t address, uint8_t value) {
-    if (address > 0x7FFF) { // non-writable Gamepak ROM
-        return;
-    }
+    //if (address > 0x7FFF) { // non-writable Gamepak ROM
+    //    return;
+   // }
     if (address < 0x2000) { // CPU RAM, mirrored 4 times
     	int offset = address % 0x800;
 	    for (int i = 0; i < 4; ++i) {
@@ -53,4 +63,8 @@ void NesMemory::map_memory(uint16_t address, char *data, std::size_t size) {
     for (int i = 0; i < size; ++i) {
         write_byte(address+i, data[i]);
     }
+}
+
+void NesMemory::printTest() {
+    std::cout << std::hex << +this->ram[0x6000] << std::endl;
 }
