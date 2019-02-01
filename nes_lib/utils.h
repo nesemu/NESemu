@@ -5,6 +5,8 @@
 #ifndef NESEMU_UTILS_H
 #define NESEMU_UTILS_H
 
+#include <cstdint>
+
 #define KILO 1024
 
 /* struct RegBit taken from https://bisqwit.iki.fi/jutut/kuvat/programming_examples/nesemu1/nesemu1.cc */
