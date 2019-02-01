@@ -249,7 +249,7 @@ private:
     CpuRegisters registers;
     nes_cpu_clock_t cycles;
     bool crossedpage;
-    NesMemory *RAM;
+    NesCPUMemory *RAM;
     bool IRQRequested;
     bool NMIRequested;
     const Instruction instructions[256] = {
@@ -523,7 +523,7 @@ private:
     nes_cpu_clock_t performBranch(uint16_t);
     nes_cpu_clock_t getCycles();
 public:
-    explicit NesCpu(NesMemory *);
+    explicit NesCpu(NesCPUMemory *);
     ~NesCpu();
     void power_up();
     void reset();

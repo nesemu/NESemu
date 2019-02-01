@@ -5,7 +5,7 @@
 #include <iomanip>
 #define LOGGING
 
-NesCpu::NesCpu(NesMemory * memory) {
+NesCpu::NesCpu(NesCPUMemory * memory) {
     this -> RAM = memory;
 }
 

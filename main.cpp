@@ -1,6 +1,8 @@
 #include <iostream>
 #include <SDL.h>
 #include "nes_lib/Gamepak.h"
+#include "nes_lib/PPU.h"
+#include "nes_lib/memory.h"
 #include "nes_lib/cpu.h"
 
 #define NES_A_BUTTON 1
@@ -70,13 +72,13 @@ int main(int argc, char *argv[]) {
 
     std::string rom_filename = argv[1];
 
-    NesMemory memory;
-    NesCpu cpu(&memory);
-
     Gamepak rom_gamepak = Gamepak(rom_filename);
     if (rom_gamepak.initialize()) return EXIT_FAILURE;
 
-    rom_gamepak.loadPRG(&memory);
+    PPU ppu;
+
+    NesCPUMemory memory(&ppu, &rom_gamepak);
+    NesCpu cpu(&memory);
 
     cpu.power_up();
 

@@ -6,37 +6,96 @@
 #define NESEMU_GAMEPAK_H
 
 #include <string>
-#include "memory.h"
+#include "utils.h"
 
 struct iNES_headers {
-    char magic_string[4]; //bytes 0-3
-    uint8_t PRG_ROM_size; //byte 4
-    uint8_t CHR_ROM_size; //byte 5
-    uint8_t flags[2]; //bytes 6 and 7
-    /* only flags in bytes 6 and 7 respected */
+    char magic_string[4]; // bytes 0-3
+		uint8_t PRG_ROM_size_lsb; // byte 4
+		uint8_t CHR_ROM_size_lsb; // byte 5
 
+		union {
+				uint8_t data;
+				RegBit<0,1,uint8_t> mirroring;
+				RegBit<1,1,uint8_t> battery;
+				RegBit<2,1,uint8_t> trainer;
+				RegBit<3,1,uint8_t> fourscreen;
+				RegBit<4,4,uint8_t> mapper_lsb;
+		} byte6;
+
+		union {
+				uint8_t data;
+				RegBit<0,2,uint8_t> console_type;
+				RegBit<2,2,uint8_t> iNES2_id;
+				RegBit<4,4,uint8_t> mapper_msb;
+		} byte7;
+
+		union {
+				uint8_t data;
+				RegBit<0,8,uint8_t> iNES1_PRG_RAM_size;     RegBit<0,4,uint8_t> iNES2_mapper_xsb;
+				                                            RegBit<4,4,uint8_t> iNES2_submapper;
+		} byte8;
+
+		// Bytes 9-15 iNES 2.0 ONLY
+		union {
+				uint8_t data;
+				RegBit<0,4,uint8_t> iNES2_PRG_ROM_size_msb;
+				RegBit<4,4,uint8_t> iNES2_CHR_ROM_size_msb;
+		} byte9;
+
+		union {
+				uint8_t data;
+				RegBit<0,4,uint8_t> iNES2_PRG_RAM_size;
+				RegBit<4,4,uint8_t> iNES2_PRG_NVRAM_size;
+		} byte10;
+
+		union {
+				uint8_t data;
+				RegBit<0,4,uint8_t> iNES2_CHR_RAM_size;
+				RegBit<4,4,uint8_t> iNES2_CHR_NVRAM_size;
+		} byte11;
+
+		/* Ignore bytes 12-15 */
+};
+
+union MMC1_regfile {
+	uint16_t data;
+	RegBit<0,8,uint16_t> ctrlreg;
+	RegBit<0,2,uint16_t> mirroring;
+	RegBit<2,2,uint16_t> PRGmode;
+	RegBit<4,1,uint16_t> CHRmode;
+	RegBit<8,8,uint16_t> shift;
+	RegBit<8,1,uint16_t> shift_input_byte;
 };
 
 class Gamepak {
 private:
     std::string filename;
     char *rom_data;
-    char *trainer;
-    char *PRG_rom_data;
-    char *CHR_rom_data;
+    uint8_t *trainer;
+		uint8_t *PRG_rom_data;
+    uint8_t *PRG_rom_bank1;
+		uint8_t *PRG_rom_bank2;
+    uint8_t *CHR_rom_data;
+    size_t PRG_blocks;
     size_t PRG_size;
     size_t CHR_size;
-    struct iNES_headers * headers;
-    int mapper;
+    iNES_headers * headers;
+    uint16_t mapper;
     std::string nametable_mirroring_type;
+    MMC1_regfile MMC1reg;
 
-    bool disable_mirroring;
+    uint8_t * PRG_ram;
+
+		int verifyHeaders();
+		void initMemory();
+
 public:
     explicit Gamepak(std::string filename);
     ~Gamepak();
     int initialize();
-    int verifyHeaders();
-    int loadPRG(NesMemory *memory);
+
+    void write_to_pak(uint16_t addr, uint8_t value);
+    uint8_t read_from_pak(uint16_t addr);
 
 
 

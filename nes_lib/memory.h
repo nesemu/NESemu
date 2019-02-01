@@ -7,23 +7,35 @@
 
 #include <cstdint>
 #include <cstdlib>
+#include "Gamepak.h"
+#include "PPU.h"
+#include "utils.h"
 
-#define RAM_SIZE 0x10000 // 64K
+#define CPU_RAM_SIZE 2*KILO // 2KBytes
 
-class NesMemory {
+union APU_IO_register_t {
+		uint8_t data[24];
+};
+
+class NesCPUMemory {
 private:
-    uint8_t ram[RAM_SIZE] = {0};
+    uint8_t cpu_ram[CPU_RAM_SIZE] = {0};
+    Gamepak *gamepak;
+    PPU *ppu;
+    APU_IO_register_t APU_IO_register_file;
+
 public:
-    NesMemory();
-    ~NesMemory();
+    NesCPUMemory(PPU *ppu, Gamepak *gamepak);
+    ~NesCPUMemory();
+
     uint8_t read_byte(uint16_t address);
     void write_byte(uint16_t address, uint8_t value);
     uint16_t read_word(uint16_t address);
     uint16_t read_word_page_bug(uint16_t address);
     void write_word(uint16_t address, uint16_t value);
     void stack_write_word(uint16_t address, uint16_t value);
-    void map_memory(uint16_t address, char * data, size_t size);
-    void printTest();
+    void map_memory(uint16_t address, uint8_t * data, size_t size);
+//    void printTest();
 };
 
 #endif //NESEMU_MEMORY_H
