@@ -14,7 +14,7 @@ uint8_t NesCPUMemory::read_byte(uint16_t address) {
 		return this->cpu_ram[address % 0x800];
 	}
 	else if (address >= 0x2000 && address < 0x4000) { // PPU registers, mirrored every 8 bytes
-		return ppu->read_register(address % 0x8);
+		return ppu->read_register((uint8_t)(address % 0x8));
 	}
 	else if (address >= 0x4000 && address < 0x4018) { // APU/IO registers, not mirrored
 		return APU_IO_register_file.data[address % 0x18];
@@ -24,7 +24,7 @@ uint8_t NesCPUMemory::read_byte(uint16_t address) {
 		return 0;
 	}
 	else if (address >= 0x4020 && address <= 0xFFFF) { // GamePak memory
-		return gamepak->read_from_pak(address);
+		return gamepak->read_PRG(address);
 	}
 	else return 0;
 }
@@ -37,7 +37,10 @@ void NesCPUMemory::write_byte(uint16_t address, uint8_t value) {
 	    cpu_ram[address % 0x800] = value;
     }
     else if (address >= 0x2000 && address < 0x4000) { // PPU registers, mirrored every 8 bytes
-    	ppu->write_register(address % 0x8, value);
+    	ppu->write_register(address, value);
+    }
+    else if (address == 0x4014) { // OAM DMA
+    	ppu->OAM_DMA(&cpu_ram[(uint16_t)value << 8]);
     }
     else if (address >= 0x4000 && address < 0x4018) { // APU/IO registers, not mirrored
 			APU_IO_register_file.data[address % 0x18] = value;
@@ -46,7 +49,7 @@ void NesCPUMemory::write_byte(uint16_t address, uint8_t value) {
 			return;
     }
     else if (address >= 0x4020 && address <= 0xFFFF) { // GamePak memory
-    	gamepak->write_to_pak(address, value);
+	    gamepak->write_PRG(address, value);
     }
 }
 

@@ -74,10 +74,11 @@ int Gamepak::verifyHeaders() {
 
     /* Handle flags (in bit order) */
     nametable_mirroring_type = headers->byte6.mirroring | 1 ? "vertical" : "horizontal";
+    std::cout << "Mirroring type: " << nametable_mirroring_type << std::endl;
 
     if (headers->byte6.battery) { //battery RAM
         std::cout << "Battery RAM present" << std::endl;
-        /* Currently we ignore this flag and assume 8k volatile ram present */
+        /* Currently we ignore this flag and assume 8k volatile RAM present */
     }
 
     if (headers->byte6.trainer) {
@@ -108,10 +109,10 @@ void Gamepak::initMemory() {
 }
 
 
-void Gamepak::write_to_pak(uint16_t addr, uint8_t value) {
-    if (addr < 0x6000) return;
-    else if (addr < 0x8000) { // RAM, same for mapper 0 and 1
-        PRG_ram[addr % 0x2000] = value;
+void Gamepak::write_PRG(uint16_t address, uint8_t value) {
+    if (address < 0x6000) return;
+    else if (address < 0x8000) { // RAM, same for mapper 0 and 1
+        PRG_ram[address % 0x2000] = value;
     } else if (mapper == 1) { // writing to control register
         //TODO: Implement Mapper001
         if (value >> 7) { //reset
@@ -122,13 +123,42 @@ void Gamepak::write_to_pak(uint16_t addr, uint8_t value) {
     }
 }
 
-uint8_t Gamepak::read_from_pak(uint16_t addr) {
-    if (addr < 0x6000) return 0;
-    else if (addr < 0x8000) { // RAM, same between mapper 0 and 1
-        return PRG_ram[addr % 0x2000];
+uint8_t Gamepak::read_PRG(uint16_t address) {
+    if (address < 0x6000) return 0;
+    else if (address < 0x8000) { // RAM, same between mapper 0 and 1
+        return PRG_ram[address % 0x2000];
     }
-    else if (addr < 0xC000) {
-        return PRG_rom_bank1[addr % 0x4000];
-    } else return PRG_rom_bank2[addr % 0x4000];
+    else if (address < 0xC000) {
+        return PRG_rom_bank1[address % 0x4000];
+    } else return PRG_rom_bank2[address % 0x4000];
 	return 0;
+}
+
+void Gamepak::write_CHR(uint16_t address, uint8_t value) {
+ // Do nothing; mapper 000 and 001 only support CHR ROM
+}
+
+uint8_t Gamepak::read_CHR(uint16_t address) {
+    if (address >= 0x2000) return 0;
+    if (mapper == 0) {
+        return CHR_rom_data[address];
+    }
+    // TODO: Implement Mapper001
+    return 0;
+}
+
+uint16_t Gamepak::translate_nametable_address(uint16_t address) {
+    // Assume Mapper000; TODO: Implement Mapper001
+    switch (headers->byte6.mirroring) {
+      case 0: // horizontal
+        if (address < 0x2800) {// Table A
+            return (uint16_t)(address % 0x400);
+        } else { // Table B
+            return (uint16_t)((address % 0x400) + 0x400);
+        }
+      case 1: // vertical
+        return (uint16_t)(address % 0x800);
+      default:
+          return 0;
+    }
 }

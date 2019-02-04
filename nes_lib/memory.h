@@ -5,7 +5,6 @@
 #ifndef NESEMU_MEMORY_H
 #define NESEMU_MEMORY_H
 
-#include <cstdint>
 #include <cstdlib>
 #include "Gamepak.h"
 #include "PPU.h"

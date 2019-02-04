@@ -94,8 +94,12 @@ public:
     ~Gamepak();
     int initialize();
 
-    void write_to_pak(uint16_t addr, uint8_t value);
-    uint8_t read_from_pak(uint16_t addr);
+    void write_PRG(uint16_t address, uint8_t value);
+    uint8_t read_PRG(uint16_t address);
+
+		void write_CHR(uint16_t address, uint8_t value);
+		uint8_t read_CHR(uint16_t address);
+		uint16_t translate_nametable_address(uint16_t address);
 
 
 
