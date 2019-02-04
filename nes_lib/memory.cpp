@@ -56,14 +56,15 @@ uint16_t NesCPUMemory::read_word(uint16_t address) {
 
 uint16_t NesCPUMemory::read_word_page_bug(uint16_t address) {
     uint16_t first = read_byte(address);
+    uint16_t high;
     if ((address&0xFF) == 0xFF) {
-        address &= 0xFF00;
+       high = (uint16_t)(address & 0xFF00);
     }
     else {
-        address++;
+        high = (uint16_t)(address + 1);
     }
-    uint16_t second = read_byte(address);
-    return first + (second << 8);
+    uint16_t second = read_byte(high);
+    return (first | (second << 8));
 }
 
 void NesCPUMemory::write_word(uint16_t address, uint16_t value) {
