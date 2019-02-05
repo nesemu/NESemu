@@ -20,8 +20,8 @@ uint8_t PPU::read_register(uint8_t address) {
 		case 4:
 			return memory.read_byte_OAM((uint8_t)reg.OAMaddr);
 		case 7:
-			result = memory.read_byte(vram_address);
-			vram_address += reg.Inc ? 32 : 1;
+			result = memory.read_byte(vram_address.data);
+			vram_address.data += reg.Inc ? 32 : 1;
 			return result;
 		default: return 0;
 	}
@@ -61,8 +61,8 @@ void PPU::write_register(uint16_t address, uint8_t value) {
 			 write_toggle = !write_toggle;
 			 break;
 		case 7:
-			memory.write_byte(vram_address, value);
-			vram_address += reg.Inc ? 32 : 1;
+			memory.write_byte(vram_address.data, value);
+			vram_address.data += reg.Inc ? 32 : 1;
 			break;
 		default: break;
 	}
@@ -80,7 +80,7 @@ void PPU::tick() {
 	if (scanline == POSTRENDER_SCANLINE) {
 		// do nothing
 	} else if (scanline > POSTRENDER_SCANLINE && scanline < PRERENDER_SCANLINE) { // VBlank
-		if (scanline == POSTRENDER_SCANLINE && pixel == 1) {
+		if (scanline == (POSTRENDER_SCANLINE+1) && pixel == 1) {
 			if (reg.NMIenabled) cpu->requestNMI();
 			reg.VBlank = 1;
 		}
@@ -90,7 +90,7 @@ void PPU::tick() {
 			reg.SP0hit = 0;
 			reg.SPoverflow = 0;
 		}
-	} else if (reg.ShowBGSP) {
+	} else if (!reg.ShowBGSP) {
 		// rendering disabled, do nothing
 	} else { // Render scanlines
 		render_pixel();
