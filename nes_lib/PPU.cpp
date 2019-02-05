@@ -189,5 +189,9 @@ void PPU::render_pixel() {
 }
 
 void PPU::loadTile() {
+	uint16_t attributeAddress =
+			0x23C0 | (vram_address & 0x0C00) | ((vram_address >> 4) & 0x38) | ((vram_address >> 2) & 0x07);
+	uint16_t amountToShift = (vram_address & 0x2) | ((vram_address & 0x40) >> 4);
+
 
 }
