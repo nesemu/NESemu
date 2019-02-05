@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
 
     cpu.setPC(0xC000);
 
-    size_t counter = 0;
+    nes_master_clock_t masterclock = nes_master_clock_t(0);
     SDL_Event e;
     bool quit = false;
 
@@ -98,9 +98,7 @@ int main(int argc, char *argv[]) {
             }
 
         }
-        cpu.step();
-        //memory.printTest();
-        counter++;
+        cpu.step(nes_cpu_clock_t(1));
     }
 
     delete joypad1;

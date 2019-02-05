@@ -6,8 +6,10 @@
 #define NESEMU_PPU_H
 
 #include <stdint.h>
+#include <vector>
 #include "utils.h"
 #include "PPUmemory.h"
+#include "nes_clock.h"
 
 class NesCpu;
 
@@ -53,6 +55,8 @@ public:
 		void OAM_DMA(uint8_t *CPU_memory);
 
 		void tick();
+		void step(nes_ppu_clock_t cycles);
+		void power_up();
 
 private:
 		NesCpu * cpu;
@@ -64,7 +68,7 @@ private:
 		unsigned pixel;
 		unsigned scanline;
 		size_t frame_counter = 0;
-		size_t cycle_counter = 0;
+		nes_ppu_clock_t cycle_counter;
 
 		uint16_t vram_address;
 		uint16_t temp_vram_address;
@@ -74,12 +78,15 @@ private:
 		uint16_t bg_tile_shift_reg[2];
 		uint16_t bg_palette_shift_reg[2];
 
+		uint8_t pixels[256*240];
+
 		OAM_entry * secondary_OAM[8];
 		sprite_data_t sprite_data[8];
 
 		void load_scanline(unsigned scanline);
 		void evaluate_sprites(unsigned scanline);
 		void render_pixel();
+		void loadTile();
 };
 
 

@@ -117,55 +117,57 @@ uint16_t NesCpu::getAddrBasedOnMode(AddressingMode mode) {
 }
 
 
-void NesCpu::step() {
+void NesCpu::step(nes_cpu_clock_t cycle) {
 
-    nes_cpu_clock_t insturctioncycles(0);
+    if (this->cycles < cycle) {
+        nes_cpu_clock_t insturctioncycles(0);
 
-    if (!(TEST_INTERRUPT_DISABLE(this->registers.P))) {
-        if (this->IRQRequested) {
-            insturctioncycles += this->IRQ();
+        if (!(TEST_INTERRUPT_DISABLE(this->registers.P))) {
+            if (this->IRQRequested) {
+                insturctioncycles += this->IRQ();
+            }
         }
-    }
 
-    //Fetch Op Code
-    uint16_t oldpc = this->registers.PC;
-    uint8_t opcode = this->RAM->read_byte(this->registers.PC++);
-    const Instruction *currentInstruction = &this->instructions[opcode];
+        //Fetch Op Code
+        uint16_t oldpc = this->registers.PC;
+        uint8_t opcode = this->RAM->read_byte(this->registers.PC++);
+        const Instruction *currentInstruction = &this->instructions[opcode];
 
-    //Increment the cycle counter the base number of instructions
-    insturctioncycles += nes_cpu_clock_t(currentInstruction->baseNumCycles);
+        //Increment the cycle counter the base number of instructions
+        insturctioncycles += nes_cpu_clock_t(currentInstruction->baseNumCycles);
 
-    if (currentInstruction -> addrMode == INVALID_OPCODE) {
-        std::cerr << "Invalid OpCode Used" << currentInstruction -> name << std::endl;
-        return;
-    }
+        if (currentInstruction->addrMode == INVALID_OPCODE) {
+            std::cerr << "Invalid OpCode Used" << currentInstruction->name << std::endl;
+            return;
+        }
 
-    uint16_t address = getAddrBasedOnMode(currentInstruction -> addrMode);
+        uint16_t address = getAddrBasedOnMode(currentInstruction->addrMode);
 
-    if (this->crossedpage) {
-        insturctioncycles += nes_cpu_clock_t(currentInstruction -> numPageCrossCycles);
-        this->crossedpage = false;
-    }
+        if (this->crossedpage) {
+            insturctioncycles += nes_cpu_clock_t(currentInstruction->numPageCrossCycles);
+            this->crossedpage = false;
+        }
 
 #ifdef LOGGING
-    // 0         1         2         3         4         5         6         7         8
-    // 0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
-    // C000  4C F5 C5  JMP $C5F5                       A:00 X:00 Y:00 P:24 SP:FD CYC:  0 SL:241
+        // 0         1         2         3         4         5         6         7         8
+        // 0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
+        // C000  4C F5 C5  JMP $C5F5                       A:00 X:00 Y:00 P:24 SP:FD CYC:  0 SL:241
 
-    std::cout << std::setfill('0') << std::setw(4) << std::right  << std::hex << +oldpc;
-    std::cout << " A:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.A;
-    std::cout << " X:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.X;
-    std::cout << " Y:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.Y;
-    std::cout << " P:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.P;
-    std::cout << " SP:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.S;
-    std::cout << " CYC:"  << std::dec << this->cycles.count() << std::endl;
+        std::cout << std::setfill('0') << std::setw(4) << std::right << std::hex << +oldpc;
+        std::cout << " A:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.A;
+        std::cout << " X:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.X;
+        std::cout << " Y:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.Y;
+        std::cout << " P:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.P;
+        std::cout << " SP:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.S;
+        std::cout << " CYC:" << std::dec << this->cycles.count() << std::endl;
 
 #endif
 
 
-    insturctioncycles += currentInstruction -> instFunc(address, this);
+        insturctioncycles += currentInstruction->instFunc(address, this);
 
-    this->cycles += insturctioncycles;
+        this->cycles += insturctioncycles;
+    }
 
 }
 

@@ -9,6 +9,68 @@ void PPU::assign_cpu(NesCpu *cpu) {
 	this->cpu = cpu;
 }
 
+void PPU::power_up() {
+	cycle_counter = nes_ppu_clock_t(0);
+	scanline = 241;
+	reg.ShowBG = 0;
+}
+
+void PPU::step(nes_ppu_clock_t cycles) {
+	while (this->cycle_counter < cycles) {
+		tick();
+
+		bool isVisible = (scanline < POSTRENDER_SCANLINE);
+		bool isVBlankLine = (scanline == POSTRENDER_SCANLINE+1);
+		bool isPrerender = (scanline == PRERENDER_SCANLINE);
+
+		bool shouldDraw = reg.ShowBGSP && isVisible && ((pixel > 0 && pixel < 257) || (pixel > 320 && pixel < 337));
+		bool shouldFetch = reg.ShowBGSP && (isVisible || isPrerender) && ((pixel > 0 && pixel < 257) || (pixel > 320 && pixel < 337)) \
+		&& pixel%8 == 0;
+
+		if (shouldDraw) {
+			render_pixel();
+		}
+
+		if (shouldFetch) {
+			loadTile();
+
+			if (pixel == 256) {
+				incrementVert();
+			}
+			else {
+				incrementcorseHorz();
+			}
+		}
+
+		if (isVBlankLine && pixel == 1) {
+			reg.VBlank = 1;
+			if (reg.NMIenabled) cpu->requestNMI();
+			//TODO: set output image here
+		}
+		else if(scanline == PRERENDER_SCANLINE && pixel == 1) {
+			reg.VBlank = 0;
+			reg.SP0hit = 0;
+			reg.SPoverflow = 0;
+		}
+
+		if (reg.ShowBGSP && pixel == 257) {
+			evaluate_sprites();
+		}
+
+		if (reg.ShowBGSP) {
+			if ((isVisible || isPrerender) && pixel == 257) {
+				copyHtoV();
+			}
+			else if (isPrerender && pixel == 304) {
+				copyVtoV();
+			}
+		}
+
+		cycle_counter++;
+	}
+
+}
+
 uint8_t PPU::read_register(uint8_t address) {
 	uint8_t result;
 	switch (address) {
@@ -65,7 +127,7 @@ void PPU::tick() {
 	if (scanline == POSTRENDER_SCANLINE) {
 		// do nothing
 	} else if (scanline > POSTRENDER_SCANLINE && scanline < PRERENDER_SCANLINE) { // VBlank
-		if (scanline == POSTRENDER_SCANLINE && pixel == 1) {
+		if (scanline == (POSTRENDER_SCANLINE+1) && pixel == 1) {
 			if (reg.NMIenabled) cpu->requestNMI();
 			reg.VBlank = 1;
 		}
@@ -75,7 +137,7 @@ void PPU::tick() {
 			reg.SP0hit = 0;
 			reg.SPoverflow = 0;
 		}
-	} else if (reg.ShowBGSP) {
+	} else if (!reg.ShowBGSP) {
 		// rendering disabled, do nothing
 	} else { // Render scanlines
 		render_pixel();
@@ -83,15 +145,17 @@ void PPU::tick() {
 
 	/* Advance Cycle */
 	pixel++;
-	if (pixel == PIXELS_PER_LINE || (pixel < PIXELS_PER_LINE && scanline == PRERENDER_SCANLINE && !(frame_counter % 2))) {
-		pixel = 0;
-		load_scanline(++scanline);
-	}
-	if (scanline > PRERENDER_SCANLINE) {
+
+	bool isOdd = (frame_counter&0x1) != 0;
+	if (scanline == PRERENDER_SCANLINE && (pixel == PIXELS_PER_LINE || (pixel == (PIXELS_PER_LINE-1) && isOdd))) {
 		scanline = 0;
+		pixel = 0;
 		frame_counter++;
 	}
-	cycle_counter++;
+	else if (pixel == PIXELS_PER_LINE) {
+		scanline++;
+		pixel = 0;
+	}
 }
 
 void PPU::load_scanline(unsigned scanline) {
@@ -121,5 +185,9 @@ void PPU::evaluate_sprites(unsigned scanline) {
 }
 
 void PPU::render_pixel() {
+
+}
+
+void PPU::loadTile() {
 
 }
