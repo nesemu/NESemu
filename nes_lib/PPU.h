@@ -59,21 +59,25 @@ private:
 		NesCpu * cpu;
 		PPUregtype reg;
 		PPUmemory memory;
-		uint16_t PPU_address;
-		uint16_t scroll_position;
 
 		unsigned pixel;
 		unsigned scanline;
 		size_t frame_counter = 0;
 		size_t cycle_counter = 0;
 
-		uint16_t vram_address;
-		uint16_t temp_vram_address;
+		union {
+				uint16_t data;
+				RegBit<0,5,uint16_t> coarseX;
+				RegBit<5,5,uint16_t> coarseY;
+				RegBit<10,2,uint16_t> NTselect;
+				RegBit<12,3,uint16_t> fineY;
+		} vram_address, temp_vram_address;
+
 		uint8_t x_fine_scroll;
 		bool write_toggle;
 
 		uint16_t bg_tile_shift_reg[2];
-		uint16_t bg_palette_shift_reg[2];
+		uint8_t bg_palette_shift_reg[2];
 
 		OAM_entry * secondary_OAM[8];
 		sprite_data_t sprite_data[8];
@@ -85,8 +89,11 @@ private:
 		};
 
 		void load_scanline(unsigned scanline);
+		void load_background(unsigned scanline);
 		void evaluate_sprites(unsigned scanline);
 		void render_pixel();
+
+		void load_bg_tile();
 };
 
 

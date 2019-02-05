@@ -13,16 +13,15 @@ uint8_t PPU::read_register(uint8_t address) {
 	uint8_t result;
 	switch (address) {
 		case 2:
-			PPU_address = 0;
-			scroll_position = 0; // not sure about this one
+			write_toggle = 0;
 			result = (uint8_t)reg.status;
 			reg.VBlank = 0;
 			return result;
 		case 4:
 			return memory.read_byte_OAM((uint8_t)reg.OAMaddr);
 		case 7:
-			result = memory.read_byte(PPU_address);
-			PPU_address += reg.Inc ? 32 : 1;
+			result = memory.read_byte(vram_address);
+			vram_address += reg.Inc ? 32 : 1;
 			return result;
 		default: return 0;
 	}
@@ -32,7 +31,9 @@ void PPU::write_register(uint16_t address, uint8_t value) {
 	address %= 0x8;
 	switch (address) {
 		case 0:
-			reg.sysctrl = value; break;
+			reg.sysctrl = value;
+			temp_vram_address.NTselect = reg.BaseNTA;
+			break;
 		case 1:
 			reg.dispctrl = value; break;
 		case 3:
@@ -42,12 +43,26 @@ void PPU::write_register(uint16_t address, uint8_t value) {
 			reg.OAMaddr++;
 			break;
 		case 5:
-			scroll_position = scroll_position << 8 | value; break;
+			if (write_toggle == 0) {
+				temp_vram_address.coarseX = value >> 3;
+				x_fine_scroll = (uint8_t)(value % 0b111);
+			} else {
+				temp_vram_address.fineY = value & 0b111;
+				temp_vram_address.coarseY = value >> 3;
+			}
+			write_toggle = !write_toggle;
+			break;
 		case 6:
-			PPU_address = PPU_address << 8 | value; break;
+			 if (write_toggle == 0) {
+			 	temp_vram_address.data = ((value & 0x003F) << 8) + (temp_vram_address.data & 0xFF00);
+			 } else {
+			 	temp_vram_address.data = (temp_vram_address.data & 0xFF00) + value;
+			 }
+			 write_toggle = !write_toggle;
+			 break;
 		case 7:
-			memory.write_byte(PPU_address, value);
-			PPU_address += reg.Inc ? 32 : 1;
+			memory.write_byte(vram_address, value);
+			vram_address += reg.Inc ? 32 : 1;
 			break;
 		default: break;
 	}
@@ -96,7 +111,23 @@ void PPU::tick() {
 
 void PPU::load_scanline(unsigned scanline) {
 	if (scanline >= POSTRENDER_SCANLINE || !reg.ShowBGSP) return;
+	load_bg_tile();
+	increment_x();
+	load_bg_tile();
+
 	evaluate_sprites(scanline);
+}
+
+void PPU::load_bg_tile() {
+	uint16_t nametable_tile_address = 0x2000 | (vram_address.data & 0x0FFF);
+	uint16_t nametable_attribute_address = 0x23C0 | (vram_address.data & 0x0C00) | \
+		((vram_address.data >> 4) & 0x38) | ((vram_address.data >> 2) & 0x07);
+	uint8_t pattern_tile = memory.read_byte(nametable_tile_address);
+	uint16_t pattern_table_address = reg.BGaddr << 12 + pattern_tile << 4 + vram_address.fineY;
+	bg_tile_shift_reg[0] = memory.read_byte(pattern_table_address) << 8 | (bg_tile_shift_reg[0] & 0xFFFF0000);
+	bg_tile_shift_reg[1] = memory.read_byte(pattern_table_address + 0x1000) << 8 | (bg_tile_shift_reg[1] & 0xFFFF0000); // next bitplane
+
+
 }
 
 void PPU::evaluate_sprites(unsigned scanline) {
