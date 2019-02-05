@@ -14,6 +14,7 @@ class NesCpu;
 #define POSTRENDER_SCANLINE 240
 #define PRERENDER_SCANLINE 261
 #define PIXELS_PER_LINE 341
+#define MAKE_ARGB(R,G,B) (R<<16)|(G<<8)|B
 
 /* union regtype taken from https://bisqwit.iki.fi/jutut/kuvat/programming_examples/nesemu1/nesemu1.cc */
 
@@ -76,6 +77,12 @@ private:
 
 		OAM_entry * secondary_OAM[8];
 		sprite_data_t sprite_data[8];
+		constexpr static uint32_t ntsc_palette [64] = {
+				MAKE_ARGB(84,  84,  84),    MAKE_ARGB(0,  30, 116),    MAKE_ARGB(8,  16, 144),    MAKE_ARGB(48,   0, 136),   MAKE_ARGB(68,   0, 100),   MAKE_ARGB(92,   0,  48),   MAKE_ARGB(84,   4,   0),   MAKE_ARGB(60,  24,   0),   MAKE_ARGB(32,  42,   0),   MAKE_ARGB(8,  58,   0),   MAKE_ARGB(0,  64,   0),    MAKE_ARGB(0,  60,   0),    MAKE_ARGB(0,  50,  60),    MAKE_ARGB(0,   0,   0),   MAKE_ARGB(0, 0, 0), MAKE_ARGB(0, 0, 0),
+				MAKE_ARGB(152, 150, 152),   MAKE_ARGB(8,  76, 196),    MAKE_ARGB(48,  50, 236),   MAKE_ARGB(92,  30, 228),   MAKE_ARGB(136,  20, 176),  MAKE_ARGB(160,  20, 100),  MAKE_ARGB(152,  34,  32),  MAKE_ARGB(120,  60,   0),  MAKE_ARGB(84,  90,   0),   MAKE_ARGB(40, 114,   0),  MAKE_ARGB(8, 124,   0),    MAKE_ARGB(0, 118,  40),    MAKE_ARGB(0, 102, 120),    MAKE_ARGB(0,   0,   0),   MAKE_ARGB(0, 0, 0), MAKE_ARGB(0, 0, 0),
+				MAKE_ARGB(236, 238, 236),   MAKE_ARGB(76, 154, 236),   MAKE_ARGB(120, 124, 236),  MAKE_ARGB(176,  98, 236),  MAKE_ARGB(228,  84, 236),  MAKE_ARGB(236,  88, 180),  MAKE_ARGB(236, 106, 100),  MAKE_ARGB(212, 136,  32),  MAKE_ARGB(160, 170,   0),  MAKE_ARGB(116, 196,   0), MAKE_ARGB(76, 208,  32),   MAKE_ARGB(56, 204, 108),   MAKE_ARGB(56, 180, 204),   MAKE_ARGB(60,  60,  60),  MAKE_ARGB(0, 0, 0), MAKE_ARGB(0, 0, 0),
+				MAKE_ARGB(236, 238, 236),   MAKE_ARGB(168, 204, 236),  MAKE_ARGB(188, 188, 236),  MAKE_ARGB(212, 178, 236),  MAKE_ARGB(236, 174, 236),  MAKE_ARGB(236, 174, 212),  MAKE_ARGB(236, 180, 176),  MAKE_ARGB(228, 196, 144),  MAKE_ARGB(204, 210, 120),  MAKE_ARGB(180, 222, 120), MAKE_ARGB(168, 226, 144),  MAKE_ARGB(152, 226, 180),  MAKE_ARGB(160, 214, 228),  MAKE_ARGB(160, 162, 160), MAKE_ARGB(0, 0, 0), MAKE_ARGB(0, 0, 0)
+		};
 
 		void load_scanline(unsigned scanline);
 		void evaluate_sprites(unsigned scanline);
