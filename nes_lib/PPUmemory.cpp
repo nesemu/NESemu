@@ -52,3 +52,7 @@ uint8_t PPUmemory::read_byte_OAM(uint8_t address) {
 void PPUmemory::write_byte_OAM(uint8_t address, uint8_t value) {
 	OAM.data[address] = value;
 }
+
+OAM_entry * PPUmemory::read_entry_OAM(uint8_t index) {
+	return &OAM.entries[index];
+}

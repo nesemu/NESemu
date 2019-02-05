@@ -81,6 +81,8 @@ int main(int argc, char *argv[]) {
     NesCPUMemory memory(&ppu, &rom_gamepak, joypad1, joypad2);
     NesCpu cpu(&memory);
 
+    ppu.assign_cpu(&cpu);
+
     cpu.power_up();
 
     cpu.setPC(0xC000);

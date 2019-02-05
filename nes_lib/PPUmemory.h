@@ -39,6 +39,7 @@ public:
 		void write_byte(uint16_t address, uint8_t value);
 		uint8_t read_byte_OAM(uint8_t address);
 		void write_byte_OAM(uint8_t address, uint8_t value);
+		OAM_entry * read_entry_OAM(uint8_t index);
 };
 
 
