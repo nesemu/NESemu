@@ -529,6 +529,7 @@ public:
     void reset();
     void step();
     void setPC(uint16_t newAddress);
+    void requestNMI();
 };
 
 

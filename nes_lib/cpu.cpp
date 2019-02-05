@@ -14,6 +14,7 @@ NesCpu::~NesCpu() {
 }
 
 void NesCpu::power_up() {
+    this->cycles = nes_cpu_clock_t(7);
     this->registers.P = 0x24;
     this->registers.A = 0x00;
     this->registers.X = 0x00;
@@ -156,7 +157,8 @@ void NesCpu::step() {
     std::cout << " X:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.X;
     std::cout << " Y:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.Y;
     std::cout << " P:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.P;
-    std::cout << " SP:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.S << std::endl;
+    std::cout << " SP:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.S;
+    std::cout << " CYC:"  << std::dec << this->cycles.count() << std::endl;
 
 #endif
 
@@ -164,6 +166,7 @@ void NesCpu::step() {
     insturctioncycles += currentInstruction -> instFunc(address, this);
 
     this->cycles += insturctioncycles;
+
 }
 
 void NesCpu::pushStackBtye(uint8_t data) {
@@ -200,6 +203,10 @@ void NesCpu::setFlags(uint8_t mask, bool set) {
     }
 }
 
+void NesCpu::requestNMI() {
+    this->NMIRequested = true;
+}
+
 
 
 nes_cpu_clock_t NesCpu::NMI() {
@@ -212,6 +219,7 @@ nes_cpu_clock_t NesCpu::NMI() {
     this->registers.PC = this->RAM->read_word(NMI_INTERRUPT_VECTOR);
     //Per NESDev Wiki http://wiki.nesdev.com/w/index.php/CPU_ALL
     this->setFlags(INTERRUPT_DISABLE_MASK, true);
+    this->NMIRequested = false;
 
     return nes_cpu_clock_t(7);
 }
@@ -340,7 +348,7 @@ nes_cpu_clock_t top(uint16_t address, NesCpu * cpu) {
 
 nes_cpu_clock_t bpl(uint16_t address, NesCpu * cpu) {
     if (!(TEST_NEGATIVE(cpu->registers.P))) {
-        cpu->performBranch(address);
+        return cpu->performBranch(address);
     }
     return nes_cpu_clock_t(0);
 }
