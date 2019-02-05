@@ -4,11 +4,7 @@
 #include "nes_lib/PPU.h"
 #include "nes_lib/memory.h"
 #include "nes_lib/cpu.h"
-
-#define NES_A_BUTTON 1
-#define NES_B_BUTTON 0
-#define NES_START_BUTTON 9
-#define NES_SELECT_BUTTON 8
+#include "nes_lib/InputDevice.h"
 
 int main(int argc, char *argv[]) {
 
@@ -32,19 +28,6 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    SDL_Joystick * joystick = nullptr;
-
-    /*
-    if (SDL_NumJoysticks() < 1) {
-        SDL_ShowSimpleMessageBox(
-                SDL_MESSAGEBOX_ERROR,
-                "Usage error",
-                "No Joypad Connected",
-                nullptr);
-        return -1;
-    }
-    */
-
     SDL_Window * sdl_window;
     SDL_Renderer * sdl_renderer;
     SDL_CreateWindowAndRenderer(100, 100, SDL_WINDOW_SHOWN, &sdl_window, &sdl_renderer); //TODO: Sizes Need Changed to actual
@@ -64,7 +47,25 @@ int main(int argc, char *argv[]) {
 
     SDL_Texture * sdl_texture = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, 100, 100); //TODO: Update Sizes
 
-    joystick = SDL_JoystickOpen(0);
+    InputDevice * joypad1 = nullptr;
+    InputDevice * joypad2 = nullptr;
+
+    int numJoysticks = SDL_NumJoysticks();
+
+    if (numJoysticks == 0) {
+        joypad1 = new InputDevice(-1);
+        joypad2 = new InputDevice(-2);
+    }
+    else if (numJoysticks == 1) {
+        joypad1 = new InputDevice(0);
+        joypad2 = new InputDevice(-1);
+    }
+    else if (numJoysticks == 2) {
+        joypad1 = new InputDevice(0);
+        joypad2 = new InputDevice(1);
+    }
+
+    SDL_JoystickEventState(SDL_DISABLE);
 
     SDL_Delay(1000);
 
@@ -77,7 +78,7 @@ int main(int argc, char *argv[]) {
 
     PPU ppu;
 
-    NesCPUMemory memory(&ppu, &rom_gamepak);
+    NesCPUMemory memory(&ppu, &rom_gamepak, joypad1, joypad2);
     NesCpu cpu(&memory);
 
     cpu.power_up();
@@ -85,12 +86,24 @@ int main(int argc, char *argv[]) {
     cpu.setPC(0xC000);
 
     size_t counter = 0;
+    SDL_Event e;
+    bool quit = false;
+    bool strobe = false;
 
-    while(counter < 8992) {
+    while(!quit) {
+        while(SDL_PollEvent(&e) != 0) {
+            if (e.type == SDL_QUIT) {
+                quit = true;
+            }
+
+        }
         cpu.step();
         //memory.printTest();
         counter++;
     }
+
+    delete joypad1;
+    delete joypad2;
 
     return 0;
 }
