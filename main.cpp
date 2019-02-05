@@ -88,7 +88,6 @@ int main(int argc, char *argv[]) {
     size_t counter = 0;
     SDL_Event e;
     bool quit = false;
-    bool strobe = false;
 
     while(!quit) {
         while(SDL_PollEvent(&e) != 0) {
@@ -104,6 +103,11 @@ int main(int argc, char *argv[]) {
 
     delete joypad1;
     delete joypad2;
+    SDL_DestroyRenderer(sdl_renderer);
+    SDL_DestroyTexture(sdl_texture);
+    SDL_DestroyWindow(sdl_window);
+
+    SDL_Quit();
 
     return 0;
 }
