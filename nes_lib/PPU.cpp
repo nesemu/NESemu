@@ -5,7 +5,8 @@
 #include "PPU.h"
 #include "cpu.h"
 
-PPU::PPU() {
+PPU::PPU(Gamepak * gamepak) {
+	memory = new PPUmemory(gamepak);
 	frame_buffer = new uint32_t [SCREEN_X*SCREEN_Y];
 }
 
@@ -15,6 +16,7 @@ void PPU::assign_cpu(NesCpu *cpu) {
 
 PPU::~PPU() {
 	delete frame_buffer;
+	delete memory;
 }
 
 void PPU::power_up() {
@@ -33,9 +35,9 @@ uint8_t PPU::read_register(uint8_t address) {
 			reg.VBlank = 0;
 			return result;
 		case 4:
-			return memory.read_byte_OAM((uint8_t)reg.OAMaddr);
+			return memory->read_byte_OAM((uint8_t)reg.OAMaddr);
 		case 7:
-			result = memory.read_byte(vram_address.data);
+			result = memory->read_byte(vram_address.data);
 			vram_address.data += reg.Inc ? 32 : 1;
 			return result;
 		default: return 0;
@@ -54,7 +56,7 @@ void PPU::write_register(uint16_t address, uint8_t value) {
 		case 3:
 			reg.OAMaddr = value; break;
 		case 4:
-			memory.write_byte_OAM((uint8_t)reg.OAMaddr, value);
+			memory->write_byte_OAM((uint8_t)reg.OAMaddr, value);
 			reg.OAMaddr++;
 			break;
 		case 5:
@@ -76,7 +78,7 @@ void PPU::write_register(uint16_t address, uint8_t value) {
 			 write_toggle = !write_toggle;
 			 break;
 		case 7:
-			memory.write_byte(vram_address.data, value);
+			memory->write_byte(vram_address.data, value);
 			vram_address.data += reg.Inc ? 32 : 1;
 			break;
 		default: break;
@@ -86,7 +88,7 @@ void PPU::write_register(uint16_t address, uint8_t value) {
 void PPU::OAM_DMA(uint8_t *CPU_memory) {
 	uint8_t i = (uint8_t)reg.OAMaddr;
 	do {
-		memory.write_byte_OAM(i, *CPU_memory);
+		memory->write_byte_OAM(i, *CPU_memory);
 		CPU_memory++;
 	} while (++i != reg.OAMaddr);
 }
@@ -165,9 +167,9 @@ void PPU::load_bg_tile() {
 	uint16_t nametable_attribute_address = (uint16_t)(0x23C0 | (vram_address.data & 0x0C00) | \
 		((vram_address.data >> 4) & 0x38) | ((vram_address.data >> 2) & 0x07));
 	uint16_t shift = (uint16_t)((vram_address.data & 0x2) | ((vram_address.data & 0x40) >> 4));
-	uint8_t attribute_bits = (uint8_t )((memory.read_byte(nametable_attribute_address) >> shift) & 0x3);
+	uint8_t attribute_bits = (uint8_t )((memory->read_byte(nametable_attribute_address) >> shift) & 0x3);
 
-	uint8_t pattern_tile = memory.read_byte(nametable_tile_address);
+	uint8_t pattern_tile = memory->read_byte(nametable_tile_address);
 
 	uint16_t pattern_table_address = (uint16_t)((reg.BGaddr << 12) + (pattern_tile << 4) + vram_address.fineY);
 	populateShiftRegister(pattern_tile, attribute_bits, false, vram_address.fineY);
@@ -177,7 +179,7 @@ void PPU::evaluate_sprites(unsigned scanline) {
 	// TODO: Support 8x16 sprite mode
 	int secondary_counter = 0;
 	for (uint8_t i = 0; i < OAM_ENTRIES && secondary_counter < 8; i++) {
-		OAM_entry * entry = memory.read_entry_OAM(i);
+		OAM_entry * entry = memory->read_entry_OAM(i);
 		int ydiff = scanline - entry->y_coordinate;
 		if (ydiff >= 0 && ydiff < 8) secondary_OAM[secondary_counter++] = entry;
 	}
@@ -187,8 +189,8 @@ void PPU::evaluate_sprites(unsigned scanline) {
 
 	for (int i = 0; i < 8; i++) {
 		unsigned tile_index = (reg.SPaddr << 12) | (secondary_OAM[i]->tile_number << 8) | (scanline - secondary_OAM[i]->y_coordinate);
-		sprite_data->bitmap_shift_reg[0] = memory.read_byte((uint16_t)tile_index);
-		sprite_data->bitmap_shift_reg[1] = memory.read_byte((uint16_t)(tile_index+8));
+		sprite_data->bitmap_shift_reg[0] = memory->read_byte((uint16_t)tile_index);
+		sprite_data->bitmap_shift_reg[1] = memory->read_byte((uint16_t)(tile_index+8));
 		sprite_data[i].attribute.data = secondary_OAM[i]->attribute;
 		sprite_data[i].x_position = secondary_OAM[i]->x_coordinate;
 	}
@@ -223,7 +225,7 @@ void PPU::render_pixel() {
 		finalcolor = bgpixel;
 	}
 	else {
-		finalcolor = ntsc_palette[memory.read_byte(BACKGROUND_PALETTE_ADDRESS) & 0x3F];
+		finalcolor = ntsc_palette[memory->read_byte(BACKGROUND_PALETTE_ADDRESS) & 0x3F];
 	}
 
 	if (showSprites && showBackground) {
@@ -270,8 +272,8 @@ void PPU::populateShiftRegister(uint8_t pattern_tile, uint16_t attribute_bits, b
 		show_pixels = (bool)reg.ShowBG;
 	}
 
-	uint8_t low = memory.read_byte(base_address + (uint16_t)pattern_tile*16 + (uint16_t)y_offset);
-	uint8_t high = memory.read_byte(base_address + (uint16_t)pattern_tile*16 + (uint16_t)y_offset + (uint16_t)8);
+	uint8_t low = memory->read_byte(base_address + (uint16_t)pattern_tile*16 + (uint16_t)y_offset);
+	uint8_t high = memory->read_byte(base_address + (uint16_t)pattern_tile*16 + (uint16_t)y_offset + (uint16_t)8);
 
 	for (int i = 0; i < 8; i++) {
 		bool lowBit = ((low>>uint(7-i))&0x1) != 0;
@@ -290,7 +292,7 @@ void PPU::populateShiftRegister(uint8_t pattern_tile, uint16_t attribute_bits, b
 			bg_pixel_valid[i+8] = false;
 		}
 		else {
-			uint8_t palette_index = (memory.read_byte(base_palette_address+(attribute_bits<<2)+index) & (uint8_t) 0x3F);
+			uint8_t palette_index = (memory->read_byte(base_palette_address+(attribute_bits<<2)+index) & (uint8_t) 0x3F);
 			bg_pixels[i+8] = ntsc_palette[palette_index];
 			bg_pixel_valid[i+8] = true;
 		}
@@ -335,3 +337,4 @@ void PPU::h_to_v() {
 void PPU::v_to_v() {
 	temp_vram_address.data = uint16_t ((vram_address.data & 0x041F) | (temp_vram_address.data & ~0x041F));
 }
+

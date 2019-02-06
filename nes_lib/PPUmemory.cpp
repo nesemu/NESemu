@@ -4,7 +4,9 @@
 
 #include "PPUmemory.h"
 
-PPUmemory::PPUmemory() {}
+PPUmemory::PPUmemory(Gamepak * gamepak) {
+	this->gamepak = gamepak;
+}
 
 PPUmemory::~PPUmemory() {
 

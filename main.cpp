@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
 
     double expectedtime = (double)1/60 * 1000;
 
-    PPU ppu;
+    PPU ppu = PPU(&rom_gamepak);
 
     NesCPUMemory memory(&ppu, &rom_gamepak, joypad1, joypad2);
     NesCpu cpu(&memory);
@@ -123,8 +123,6 @@ int main(int argc, char *argv[]) {
             }
             ppuclock++;
         }
-
-
     }
 
     delete joypad1;

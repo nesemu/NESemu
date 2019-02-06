@@ -32,7 +32,7 @@ private:
 		uint8_t read_buffer;
 
 public:
-		PPUmemory();
+		explicit PPUmemory(Gamepak * gamepak);
 		~PPUmemory();
 
 		uint8_t read_byte(uint16_t address);

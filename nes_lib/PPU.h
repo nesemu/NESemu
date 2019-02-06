@@ -54,7 +54,7 @@ struct sprite_data_t {
 class PPU {
 public:
 
-        PPU();
+        explicit PPU(Gamepak * gamepak);
         ~PPU();
 
         void power_up();
@@ -70,7 +70,7 @@ public:
 private:
 		NesCpu * cpu;
 		PPUregtype reg;
-		PPUmemory memory;
+		PPUmemory * memory;
 
 		unsigned pixel;
 		unsigned scanline;
