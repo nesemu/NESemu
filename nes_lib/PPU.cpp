@@ -102,7 +102,7 @@ bool PPU::step() {
 	pixel++;
 	bool outputready = false;
 	bool isOdd = ((frame_counter & 0x1) != 0);
-	if (scanline == PRERENDER_SCANLINE && (pixel == PIXELS_PER_LINE || (pixel == (PIXELS_PER_LINE-1) && isOdd))) {
+	if (scanline == PRERENDER_SCANLINE && (pixel == PIXELS_PER_LINE || (pixel == (PIXELS_PER_LINE-1) && !isOdd))) {
 		pixel = 0;
 		scanline = 0;
 		frame_counter++;
@@ -118,7 +118,7 @@ bool PPU::step() {
 	bool isPrerender = scanline == PRERENDER_SCANLINE;
 
 	bool isDrawing = isRendering && isVisible && ((pixel > 0 && pixel < 256) || (pixel > 320 && pixel < 337));
-	bool isFetching = isRendering && (isVisible || isPrerender) && ((pixel > 0 && pixel < 256) || (pixel > 320 && pixel < 337)) && pixel%8==0;
+	bool isFetching = isRendering && (isVisible || isPrerender) && ((pixel > 0 && pixel < 256) || (pixel > 320 && pixel < 337)) && pixel % 8 == 0;
 
 	if (isDrawing) {
 		render_pixel();
@@ -147,14 +147,14 @@ bool PPU::step() {
 	}
 
 	if (isFetching && pixel == 257) {
-		evaluate_sprites(scanline); //TODO: @ETHAN Check to make sure this is okay
+		evaluate_sprites(scanline+1);
 	}
 
 	if (isRendering) {
-		if (pixel == 257) {
+		if (isFetching && pixel == 257) {
 			h_to_v();
 		}
-		else if (isPrerender && pixel == 304) {
+		else if (isPrerender && (pixel >= 280 || pixel <= 304)) {
 			v_to_v();
 		}
 	}
@@ -168,10 +168,7 @@ void PPU::load_bg_tile() {
 		((vram_address.data >> 4) & 0x38) | ((vram_address.data >> 2) & 0x07));
 	uint16_t shift = (uint16_t)((vram_address.data & 0x2) | ((vram_address.data & 0x40) >> 4));
 	uint8_t attribute_bits = (uint8_t )((memory->read_byte(nametable_attribute_address) >> shift) & 0x3);
-
 	uint8_t pattern_tile = memory->read_byte(nametable_tile_address);
-
-	uint16_t pattern_table_address = (uint16_t)((reg.BGaddr << 12) + (pattern_tile << 4) + vram_address.fineY);
 	populateShiftRegister(pattern_tile, attribute_bits, false, vram_address.fineY);
 }
 
@@ -198,30 +195,31 @@ void PPU::evaluate_sprites(unsigned scanline) {
 
 void PPU::render_pixel() {
 	uint32_t bgpixel = bg_pixels[x_fine_scroll];
-	for (int i = x_fine_scroll; i < 15; i++) {
+	bool bgpixelvalid = bg_pixel_valid[x_fine_scroll];
+	for (int i = 0; i < 15; i++) {
 		bg_pixels[i] = bg_pixels[i+1];
 		bg_pixel_valid[i] = bg_pixel_valid[i+1];
 	}
 
 	int x = pixel - 1;
 
-	if (x > 256) {
+	if (x >= 256) {
 		return;
 	}
 
 	uint32_t finalcolor;
 
-	bool showSprites = x >= 8 || reg.ShowSP8;
-	bool showBackground = x >= 8 || reg.ShowBG8;
+	bool showSprites = (x >= 8 || reg.ShowSP8) && reg.ShowSP;
+	bool showBackground = (x >= 8 || reg.ShowBG8) && reg.ShowBG;
 	bool isBorder = x < 8 || x > 247 || scanline < 8 || scanline > 231;
 
 	if (isBorder) {
 		finalcolor = ntsc_palette[0x3F];
 	}
-	else if (showSprites && fg_pixel_valid[x] && (fg_pixel_infront[x] || !bg_pixel_valid[x])) {
+	else if (showSprites && fg_pixel_valid[x] && (fg_pixel_infront[x] || !bgpixelvalid)) {
 		finalcolor = fg_pixels[x];
 	}
-	else if (showBackground && bg_pixel_valid[x]) {
+	else if (showBackground && bgpixelvalid) {
 		finalcolor = bgpixel;
 	}
 	else {
@@ -229,7 +227,7 @@ void PPU::render_pixel() {
 	}
 
 	if (showSprites && showBackground) {
-		if (bg_pixel_valid[x] && fg_pixel_valid[x] && fg_pixel_sp0[x] && x < 255) {
+		if (bgpixelvalid && fg_pixel_valid[x] && fg_pixel_sp0[x] && x < 255) { //TODO: is this timing right?
 			reg.SP0hit = 1;
 		}
 	}
@@ -272,12 +270,12 @@ void PPU::populateShiftRegister(uint8_t pattern_tile, uint16_t attribute_bits, b
 		show_pixels = (bool)reg.ShowBG;
 	}
 
-	uint8_t low = memory->read_byte(base_address + (uint16_t)pattern_tile*16 + (uint16_t)y_offset);
-	uint8_t high = memory->read_byte(base_address + (uint16_t)pattern_tile*16 + (uint16_t)y_offset + (uint16_t)8);
+	uint8_t low = memory->read_byte(base_address + (uint16_t)(pattern_tile << 4) + (uint16_t)y_offset);
+	uint8_t high = memory->read_byte(base_address + (uint16_t)(pattern_tile << 4) + (uint16_t)y_offset + (uint16_t)8);
 
 	for (int i = 0; i < 8; i++) {
-		bool lowBit = ((low>>uint(7-i))&0x1) != 0;
-		bool highBit = ((high>>uint(7-i))&0x1) != 0;
+		bool lowBit = (bool)((low >> uint(7-i)) & 0x1);
+		bool highBit = (bool)((high >> uint(7-i)) & 0x1);
 
 		uint16_t index = 0;
 		if (highBit) {
@@ -331,10 +329,11 @@ void PPU::increment_y() {
 }
 
 void PPU::h_to_v() {
-	vram_address.data = uint16_t((vram_address.data & 0xFBE0) | (temp_vram_address.data & ~0xFBE0));
+	vram_address.coarseX = temp_vram_address.coarseX;
 }
 
 void PPU::v_to_v() {
-	temp_vram_address.data = uint16_t ((vram_address.data & 0x041F) | (temp_vram_address.data & ~0x041F));
+	vram_address.coarseY = temp_vram_address.coarseY;
+	vram_address.fineY = temp_vram_address.fineY;
 }
 
