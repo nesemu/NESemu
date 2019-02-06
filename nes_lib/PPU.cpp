@@ -21,6 +21,7 @@ void PPU::power_up() {
 	scanline = 241;
 	pixel = 0;
 	reg.ShowBG = 1;
+	cycle_counter = nes_ppu_clock_t(0);
 }
 
 uint8_t PPU::read_register(uint8_t address) {
@@ -94,16 +95,17 @@ uint32_t* PPU::get_frambuffer() {
 	return frame_buffer;
 }
 
-void PPU::tick() {
+bool PPU::step() {
 	/* Advance Cycle */
 	pixel++;
+	bool outputready = false;
 	bool isOdd = ((frame_counter & 0x1) != 0);
 	if (scanline == PRERENDER_SCANLINE && (pixel == PIXELS_PER_LINE || (pixel == (PIXELS_PER_LINE-1) && isOdd))) {
 		pixel = 0;
 		scanline = 0;
 		frame_counter++;
 	}
-	else if (pixel == PRERENDER_SCANLINE) {
+	else if (pixel == PIXELS_PER_LINE) {
 		scanline++;
 		pixel = 0;
 	}
@@ -113,8 +115,8 @@ void PPU::tick() {
 	bool isVBlank = scanline == (POSTRENDER_SCANLINE+1);
 	bool isPrerender = scanline == PRERENDER_SCANLINE;
 
-	bool isDrawing = isRendering && isVBlank && ((pixel > 0 && pixel < 256) || (pixel > 320 && pixel < 337));
-	bool isFetching = isRendering && isVBlank && ((pixel > 0 && pixel < 256) || (pixel > 320 && pixel < 337)) && pixel%8==0;
+	bool isDrawing = isRendering && isVisible && ((pixel > 0 && pixel < 256) || (pixel > 320 && pixel < 337));
+	bool isFetching = isRendering && (isVisible || isPrerender) && ((pixel > 0 && pixel < 256) || (pixel > 320 && pixel < 337)) && pixel%8==0;
 
 	if (isDrawing) {
 		render_pixel();
@@ -134,7 +136,7 @@ void PPU::tick() {
 	if (isVBlank && pixel == 1) {
 		reg.VBlank = 1;
 		if (reg.NMIenabled) cpu->requestNMI();
-		//TODO: OUTPUT IMAGE HERE
+		outputready = true;
 	}
 	else if (isPrerender && pixel == 1) {
 		reg.VBlank = 0;
@@ -155,6 +157,7 @@ void PPU::tick() {
 		}
 	}
 	cycle_counter++;
+	return outputready;
 }
 
 void PPU::load_scanline(unsigned scanline) {

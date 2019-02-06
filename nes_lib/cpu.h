@@ -527,7 +527,7 @@ public:
     ~NesCpu();
     void power_up();
     void reset();
-    void step();
+    nes_cpu_clock_t step();
     void setPC(uint16_t newAddress);
     void requestNMI();
 };

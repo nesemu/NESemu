@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include "utils.h"
 #include "PPUmemory.h"
+#include "nes_clock.h"
 
 class NesCpu;
 
@@ -64,7 +65,7 @@ public:
 		void OAM_DMA(uint8_t *CPU_memory);
 		uint32_t * get_frambuffer();
 
-		void tick();
+		bool step();
 
 private:
 		NesCpu * cpu;
@@ -74,7 +75,7 @@ private:
 		unsigned pixel;
 		unsigned scanline;
 		size_t frame_counter = 0;
-		size_t cycle_counter = 0;
+		nes_ppu_clock_t cycle_counter;
 
 		union {
 				uint16_t data;

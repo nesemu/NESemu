@@ -117,7 +117,7 @@ uint16_t NesCpu::getAddrBasedOnMode(AddressingMode mode) {
 }
 
 
-void NesCpu::step() {
+nes_cpu_clock_t NesCpu::step() {
 
     nes_cpu_clock_t insturctioncycles(0);
 
@@ -135,15 +135,15 @@ void NesCpu::step() {
     //Increment the cycle counter the base number of instructions
     insturctioncycles += nes_cpu_clock_t(currentInstruction->baseNumCycles);
 
-    if (currentInstruction -> addrMode == INVALID_OPCODE) {
-        std::cerr << "Invalid OpCode Used" << currentInstruction -> name << std::endl;
-        return;
+    if (currentInstruction->addrMode == INVALID_OPCODE) {
+        std::cerr << "Invalid OpCode Used" << currentInstruction->name << std::endl;
+        return insturctioncycles;
     }
 
-    uint16_t address = getAddrBasedOnMode(currentInstruction -> addrMode);
+    uint16_t address = getAddrBasedOnMode(currentInstruction->addrMode);
 
     if (this->crossedpage) {
-        insturctioncycles += nes_cpu_clock_t(currentInstruction -> numPageCrossCycles);
+        insturctioncycles += nes_cpu_clock_t(currentInstruction->numPageCrossCycles);
         this->crossedpage = false;
     }
 
@@ -152,22 +152,24 @@ void NesCpu::step() {
     // 0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
     // C000  4C F5 C5  JMP $C5F5                       A:00 X:00 Y:00 P:24 SP:FD CYC:  0 SL:241
 
-    std::cout << std::setfill('0') << std::setw(4) << std::right  << std::hex << +oldpc;
+    std::cout << std::setfill('0') << std::setw(4) << std::right << std::hex << +oldpc;
     std::cout << " A:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.A;
     std::cout << " X:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.X;
     std::cout << " Y:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.Y;
     std::cout << " P:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.P;
     std::cout << " SP:" << std::setfill('0') << std::setw(2) << std::right << std::hex << +this->registers.S;
-    std::cout << " CYC:"  << std::dec << this->cycles.count() << std::endl;
+    std::cout << " CYC:" << std::dec << this->cycles.count() << std::endl;
 
 #endif
 
 
-    insturctioncycles += currentInstruction -> instFunc(address, this);
+    insturctioncycles += currentInstruction->instFunc(address, this);
 
     this->cycles += insturctioncycles;
-
+    return insturctioncycles;
 }
+
+
 
 void NesCpu::pushStackBtye(uint8_t data) {
     uint16_t address = uint16_t(STACK_BASE) + this->registers.S;
