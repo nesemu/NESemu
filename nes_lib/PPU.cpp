@@ -145,7 +145,7 @@ bool PPU::step() {
 	}
 
 	if (isRendering && pixel == 257) {
-		evaluate_sprites(scanline+1); //TODO: @ETHAN Check to make srue this is okay
+		//evaluate_sprites(scanline); //TODO: @ETHAN Check to make srue this is okay
 	}
 
 	if (isRendering) {

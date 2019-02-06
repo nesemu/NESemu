@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
         }
 
         cpuclock += cpu.step();
-        /*
+
         while (ppuclock.count() < cpuclock.count()*3) {
             imageReady = ppu.step();
 
@@ -123,7 +123,7 @@ int main(int argc, char *argv[]) {
             }
             ppuclock++;
         }
-         */
+
 
     }
 
