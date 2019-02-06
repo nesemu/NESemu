@@ -20,7 +20,7 @@ PPU::~PPU() {
 }
 
 void PPU::power_up() {
-	scanline = 241;
+	scanline = POSTRENDER_SCANLINE + 1;
 	pixel = 0;
 	reg.ShowBG = 1;
 	cycle_counter = nes_ppu_clock_t(0);
@@ -126,13 +126,11 @@ bool PPU::step() {
 
 	if (isFetching) {
 		load_bg_tile();
+		increment_x();
+	}
 
-		if (pixel == 256) {
-			increment_y();
-		}
-		else {
-			increment_x();
-		}
+	if (isRendering && (isVisible || isPrerender) && pixel == 256) {
+		increment_y();
 	}
 
 	if (isVBlank && pixel == 1) {
@@ -146,12 +144,12 @@ bool PPU::step() {
 		reg.SPoverflow = 0;
 	}
 
-	if (isFetching && pixel == 257) {
-		evaluate_sprites(scanline+1);
-	}
+//	if (isRendering && (isVisible || isPrerender) && pixel == 257) {
+//		evaluate_sprites(scanline+1);
+//	}
 
 	if (isRendering) {
-		if (isFetching && pixel == 257) {
+		if ((isPrerender || isDrawing) && pixel == 257) {
 			h_to_v();
 		}
 		else if (isPrerender && (pixel >= 280 || pixel <= 304)) {
@@ -224,6 +222,7 @@ void PPU::render_pixel() {
 	}
 	else {
 		finalcolor = ntsc_palette[memory->read_byte(BACKGROUND_PALETTE_ADDRESS) & 0x3F];
+//		finalcolor = ntsc_palette[33];
 	}
 
 	if (showSprites && showBackground) {
