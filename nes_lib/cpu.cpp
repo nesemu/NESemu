@@ -313,9 +313,9 @@ nes_cpu_clock_t asl(uint16_t address, NesCpu * cpu) {
     cpu->updateZeroFlag(value);
     cpu->updateNegativeFlag(value);
 
-    cpu->RAM->write_byte(address, value); //TODO: Implement Some Kind of Timing Here In Case Writes Take Longer
+    nes_cpu_clock_t cycles = cpu->RAM->write_byte(address, value);
 
-    return nes_cpu_clock_t(0);
+    return cycles;
 }
 
 nes_cpu_clock_t asla(uint16_t address, NesCpu * cpu) {
@@ -409,9 +409,9 @@ nes_cpu_clock_t rol(uint16_t address, NesCpu * cpu) {
     cpu->updateZeroFlag(value);
     cpu->updateNegativeFlag(value);
 
-    cpu->RAM->write_byte(address, value);
+    nes_cpu_clock_t cycles = cpu->RAM->write_byte(address, value);
 
-    return nes_cpu_clock_t(0);
+    return cycles;
 
 }
 
@@ -486,9 +486,9 @@ nes_cpu_clock_t lsr(uint16_t address, NesCpu * cpu) {
     cpu->updateZeroFlag(value);
     cpu->updateNegativeFlag(value);
 
-    cpu->RAM->write_byte(address, value);
+    nes_cpu_clock_t cycles = cpu->RAM->write_byte(address, value);
 
-    return nes_cpu_clock_t(0);
+    return cycles;
 }
 
 nes_cpu_clock_t lsra(uint16_t address, NesCpu * cpu) {
@@ -583,9 +583,9 @@ nes_cpu_clock_t ror(uint16_t address, NesCpu * cpu) {
      cpu->updateNegativeFlag(value);
      cpu->updateZeroFlag(value);
 
-     cpu->RAM->write_byte(address, value);
+    nes_cpu_clock_t cycles = cpu->RAM->write_byte(address, value);
 
-     return nes_cpu_clock_t(0);
+     return cycles;
 }
 
 nes_cpu_clock_t rora(uint16_t address, NesCpu * cpu) {
@@ -644,27 +644,27 @@ nes_cpu_clock_t sei(uint16_t address, NesCpu * cpu) {
 }
 
 nes_cpu_clock_t sta(uint16_t address, NesCpu * cpu) {
-    cpu->RAM->write_byte(address, cpu->registers.A);
+    nes_cpu_clock_t cycles = cpu->RAM->write_byte(address, cpu->registers.A);
 
-    return nes_cpu_clock_t(0);
+    return cycles;
 }
 
 nes_cpu_clock_t aax(uint16_t address, NesCpu * cpu) {
     uint8_t value = cpu->registers.A & cpu->registers.X;
-    cpu->RAM->write_byte(address, value);
-    return nes_cpu_clock_t(0);
+    nes_cpu_clock_t cycles = cpu->RAM->write_byte(address, value);
+    return cycles;
 }
 
 nes_cpu_clock_t sty(uint16_t address, NesCpu * cpu) {
-    cpu->RAM->write_byte(address, cpu->registers.Y);
+    nes_cpu_clock_t cycles = cpu->RAM->write_byte(address, cpu->registers.Y);
 
-    return nes_cpu_clock_t(0);
+    return cycles;
 }
 
 nes_cpu_clock_t stx(uint16_t address, NesCpu * cpu) {
-    cpu->RAM->write_byte(address, cpu->registers.X);
+    nes_cpu_clock_t cycles = cpu->RAM->write_byte(address, cpu->registers.X);
 
-    return nes_cpu_clock_t(0);
+    return cycles;
 }
 
 nes_cpu_clock_t dey(uint16_t address, NesCpu * cpu) {
@@ -823,9 +823,9 @@ nes_cpu_clock_t dec(uint16_t address, NesCpu * cpu) {
     cpu->updateZeroFlag(value);
     cpu->updateNegativeFlag(value);
 
-    cpu->RAM->write_byte(address, value);
+    nes_cpu_clock_t cycles = cpu->RAM->write_byte(address, value);
 
-    return nes_cpu_clock_t(0);
+    return cycles;
 }
 
 nes_cpu_clock_t iny(uint16_t address, NesCpu * cpu) {
@@ -921,9 +921,9 @@ nes_cpu_clock_t inc(uint16_t address, NesCpu * cpu) {
     cpu->updateNegativeFlag(value);
     cpu->updateZeroFlag(value);
 
-    cpu->RAM->write_byte(address, value);
+    nes_cpu_clock_t cycles = cpu->RAM->write_byte(address, value);
 
-    return nes_cpu_clock_t(0);
+    return cycles;
 }
 
 nes_cpu_clock_t inx(uint16_t address, NesCpu * cpu) {

@@ -39,10 +39,12 @@ uint8_t NesCPUMemory::read_byte(uint16_t address) {
 	else return 0;
 }
 
-void NesCPUMemory::write_byte(uint16_t address, uint8_t value) {
+nes_cpu_clock_t NesCPUMemory::write_byte(uint16_t address, uint8_t value) {
+
     //if (address > 0x7FFF) { // non-writable Gamepak ROM
     //    return;
    // }
+   nes_cpu_clock_t cycles = nes_cpu_clock_t(0);
     if (address < 0x2000) { // CPU RAM, mirrored 4 times
 	    cpu_ram[address % 0x800] = value;
     }
@@ -51,6 +53,7 @@ void NesCPUMemory::write_byte(uint16_t address, uint8_t value) {
     }
     else if (address == 0x4014) { // OAM DMA
     	ppu->OAM_DMA(&cpu_ram[(uint16_t)value << 8]);
+    	cycles = nes_cpu_clock_t(512);
     }
     else if (address >= 0x4000 && address < 0x4018) { // APU/IO registers, not mirrored
 		if (address == 0x4016) {
@@ -62,11 +65,12 @@ void NesCPUMemory::write_byte(uint16_t address, uint8_t value) {
         }
     }
     else if (address >= 0x4018 && address < 0x4020) { // Disabled APU/IO functionality
-			return;
+			return nes_cpu_clock_t(0);
     }
     else if (address >= 0x4020 && address <= 0xFFFF) { // GamePak memory
 	    gamepak->write_PRG(address, value);
     }
+    return cycles;
 }
 
 uint16_t NesCPUMemory::read_word(uint16_t address) {
