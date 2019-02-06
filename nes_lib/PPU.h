@@ -14,6 +14,9 @@ class NesCpu;
 #define POSTRENDER_SCANLINE 240
 #define PRERENDER_SCANLINE 261
 #define PIXELS_PER_LINE 341
+#define BACKGROUND_PALETTE_ADDRESS 0x3F00
+#define SPRITE_PALETTE_ADDRESS 0x3F10
+
 #define MAKE_ARGB(R,G,B) (R<<16)|(G<<8)|B
 
 /* union regtype taken from https://bisqwit.iki.fi/jutut/kuvat/programming_examples/nesemu1/nesemu1.cc */
@@ -79,6 +82,9 @@ private:
 		uint16_t bg_tile_shift_reg[2];
 		uint8_t bg_palette_shift_reg[2];
 
+		uint32_t bg_pixels[16];
+		uint32_t fg_pixesl[16];
+
 		OAM_entry * secondary_OAM[8];
 		sprite_data_t sprite_data[8];
 		constexpr static uint32_t ntsc_palette [64] = {
@@ -94,6 +100,7 @@ private:
 		void render_pixel();
 
 		void load_bg_tile();
+		void populateShiftRegister(uint8_t, uint16_t, bool, int);
 };
 
 

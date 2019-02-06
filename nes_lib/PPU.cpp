@@ -158,6 +158,7 @@ void PPU::load_bg_tile() {
 	uint8_t pattern_tile = memory.read_byte(nametable_tile_address);
 
 	uint16_t pattern_table_address = (uint16_t)((reg.BGaddr << 12) + (pattern_tile << 4) + vram_address.fineY);
+	populateShiftRegister(pattern_tile, attribute_bits, false, vram_address.fineY);
 	bg_tile_shift_reg[0] = (memory.read_byte(pattern_table_address) << 8) | (bg_tile_shift_reg[0] & 0xFFFF0000);
 	bg_tile_shift_reg[1] = (memory.read_byte(pattern_table_address + 0x1000) << 8) | (bg_tile_shift_reg[1] & 0xFFFF0000); // next bitplane
 
@@ -177,7 +178,7 @@ void PPU::evaluate_sprites(unsigned scanline) {
 	}
 
 	for (int i = 0; i < 8; i++) {
-		unsigned tile_index = reg.SPaddr << 12 | secondary_OAM[i]->tile_number << 8 | (scanline - secondary_OAM[i]->y_coordinate);
+		unsigned tile_index = (reg.SPaddr << 12) | (secondary_OAM[i]->tile_number << 8) | (scanline - secondary_OAM[i]->y_coordinate);
 		sprite_data->bitmap_shift_reg[0] = memory.read_byte((uint16_t)tile_index);
 		sprite_data->bitmap_shift_reg[1] = memory.read_byte((uint16_t)(tile_index+8));
 		sprite_data[i].attribute.data = secondary_OAM[i]->attribute;
@@ -187,4 +188,63 @@ void PPU::evaluate_sprites(unsigned scanline) {
 
 void PPU::render_pixel() {
 
+}
+
+void PPU::populateShiftRegister(uint8_t pattern_tile, uint16_t attribute_bits, bool is_foreground, int y_offset) {
+	uint16_t base_address;
+	uint16_t base_palette_address;
+	bool show_pixels;
+
+	if (is_foreground) {
+		if (reg.SPsize) {
+			if ((pattern_tile&0x1) == 0 ){
+				base_address = 0x0000;
+			}
+			else {
+				base_address = 0x1000;
+			}
+
+			if (y_offset > 7) {
+				pattern_tile |= 0x1;
+				y_offset -= 8;
+			}
+			else {
+				pattern_tile &=0x10;
+			}
+		}
+		else {
+			base_address = reg.SPaddr ? (uint16_t) 0x1000 : (uint16_t) 0x0000;
+		}
+		base_palette_address = (uint16_t)SPRITE_PALETTE_ADDRESS;
+		show_pixels = (bool)reg.ShowSP;
+	}
+	else {
+		base_address = reg.BGaddr ? (uint16_t) 0x1000 : (uint16_t) 0x0000;
+		base_palette_address = (uint16_t)BACKGROUND_PALETTE_ADDRESS;
+		show_pixels = (bool)reg.ShowBG;
+	}
+
+	uint8_t low = memory.read_byte(base_address + (uint16_t)pattern_tile*16 + (uint16_t)y_offset);
+	uint8_t high = memory.read_byte(base_address + (uint16_t)pattern_tile*16 + (uint16_t)y_offset + (uint16_t)8);
+
+	for (int i = 0; i < 8; i++) {
+		bool lowBit = ((low>>uint(7-i))&0x1) != 0;
+		bool highBit = ((low>>uint(7-i))&0x1) != 0;
+
+		uint16_t index = 0;
+		if (highBit) {
+			index |= 0x2;
+		}
+		if (lowBit) {
+			index |= 0x1;
+		}
+
+		if (index == 0 || !show_pixels) {
+			bg_pixels[i+8] = 0;
+		}
+		else {
+			uint8_t palette_index = (memory.read_byte(base_palette_address+(attribute_bits<<2)+index) & (uint8_t) 0x3F);
+			bg_pixels[i+8] = ntsc_palette[palette_index];
+		}
+	}
 }
