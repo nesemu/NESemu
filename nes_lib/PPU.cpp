@@ -77,34 +77,64 @@ void PPU::OAM_DMA(uint8_t *CPU_memory) {
 }
 
 void PPU::tick() {
-	if (scanline == POSTRENDER_SCANLINE) {
-		// do nothing
-	} else if (scanline > POSTRENDER_SCANLINE && scanline < PRERENDER_SCANLINE) { // VBlank
-		if (scanline == (POSTRENDER_SCANLINE+1) && pixel == 1) {
-			if (reg.NMIenabled) cpu->requestNMI();
-			reg.VBlank = 1;
-		}
-	} else if (scanline == PRERENDER_SCANLINE) {
-		if (pixel == 1) {
-			reg.VBlank = 0;
-			reg.SP0hit = 0;
-			reg.SPoverflow = 0;
-		}
-	} else if (!reg.ShowBGSP) {
-		// rendering disabled, do nothing
-	} else { // Render scanlines
+	/* Advance Cycle */
+	pixel++;
+	bool isOdd = ((frame_counter & 0x1) != 0);
+	if (scanline == PRERENDER_SCANLINE && (pixel == PIXELS_PER_LINE || (pixel == (PIXELS_PER_LINE-1) && isOdd))) {
+		pixel = 0;
+		scanline = 0;
+		frame_counter++;
+	}
+	else if (pixel == PRERENDER_SCANLINE) {
+		scanline++;
+		pixel = 0;
+	}
+
+	bool isRendering = (bool)reg.ShowBGSP;
+	bool isVisible = scanline < POSTRENDER_SCANLINE;
+	bool isVBlank = scanline == (POSTRENDER_SCANLINE+1);
+	bool isPrerender = scanline == PRERENDER_SCANLINE;
+
+	bool isDrawing = isRendering && isVBlank && ((pixel > 0 && pixel < 256) || (pixel > 320 && pixel < 337));
+	bool isFetching = isRendering && isVBlank && ((pixel > 0 && pixel < 256) || (pixel > 320 && pixel < 337)) && pixel%8==0;
+
+	if (isDrawing) {
 		render_pixel();
 	}
 
-	/* Advance Cycle */
-	pixel++;
-	if (pixel == PIXELS_PER_LINE || (pixel < PIXELS_PER_LINE && scanline == PRERENDER_SCANLINE && !(frame_counter % 2))) {
-		pixel = 0;
-		load_scanline(++scanline);
+	if (isFetching) {
+		load_bg_tile();
+
+		if (pixel == 256) {
+			increment_y();
+		}
+		else {
+			increment_x();
+		}
 	}
-	if (scanline > PRERENDER_SCANLINE) {
-		scanline = 0;
-		frame_counter++;
+
+	if (isVBlank && pixel == 1) {
+		reg.VBlank = 1;
+		if (reg.NMIenabled) cpu->requestNMI();
+		//TODO: OUTPUT IMAGE HERE
+	}
+	else if (isPrerender && pixel == 1) {
+		reg.VBlank = 0;
+		reg.SP0hit = 0;
+		reg.SPoverflow = 0;
+	}
+
+	if (isRendering && pixel == 257) {
+		evaluate_sprites(scanline); //TODO: @ETHAN Check to make srue this is okay
+	}
+
+	if (isRendering) {
+		if ((isVisible || isPrerender) && pixel == 257) {
+			h_to_v();
+		}
+		else if (isPrerender && pixel == 304) {
+			v_to_v();
+		}
 	}
 	cycle_counter++;
 }
