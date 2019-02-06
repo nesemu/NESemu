@@ -52,11 +52,17 @@ struct sprite_data_t {
 
 class PPU {
 public:
-		void assign_cpu(NesCpu * cpu);
+
+        PPU();
+        ~PPU();
+
+        void power_up();
+        void assign_cpu(NesCpu * cpu);
 
 		uint8_t read_register(uint8_t address);
 		void write_register(uint16_t address, uint8_t value);
 		void OAM_DMA(uint8_t *CPU_memory);
+		uint32_t * get_frambuffer();
 
 		void tick();
 
@@ -92,7 +98,7 @@ private:
 		bool fg_pixel_infront[256];
 		bool fg_pixel_sp0[256];
 
-		uint32_t frame_buffer[SCREEN_X*SCREEN_Y];
+		uint32_t *frame_buffer;
 
 		OAM_entry * secondary_OAM[8];
 		sprite_data_t sprite_data[8];
@@ -110,6 +116,11 @@ private:
 
 		void load_bg_tile();
 		void populateShiftRegister(uint8_t, uint16_t, bool, int);
+
+		void increment_x();
+		void increment_y();
+		void h_to_v();
+		void v_to_v();
 };
 
 

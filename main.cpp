@@ -84,10 +84,9 @@ int main(int argc, char *argv[]) {
     ppu.assign_cpu(&cpu);
 
     cpu.power_up();
+    ppu.power_up();
 
-    cpu.setPC(0xC000);
 
-    size_t counter = 0;
     SDL_Event e;
     bool quit = false;
 
@@ -99,8 +98,6 @@ int main(int argc, char *argv[]) {
 
         }
         cpu.step();
-        //memory.printTest();
-        counter++;
     }
 
     delete joypad1;

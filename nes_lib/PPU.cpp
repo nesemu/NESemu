@@ -5,8 +5,22 @@
 #include "PPU.h"
 #include "cpu.h"
 
+PPU::PPU() {
+	frame_buffer = new uint32_t [SCREEN_X*SCREEN_Y];
+}
+
 void PPU::assign_cpu(NesCpu *cpu) {
 	this->cpu = cpu;
+}
+
+PPU::~PPU() {
+	delete frame_buffer;
+}
+
+void PPU::power_up() {
+	scanline = 241;
+	pixel = 0;
+	reg.ShowBG = 1;
 }
 
 uint8_t PPU::read_register(uint8_t address) {
@@ -74,6 +88,10 @@ void PPU::OAM_DMA(uint8_t *CPU_memory) {
 		memory.write_byte_OAM(i, *CPU_memory);
 		CPU_memory++;
 	} while (++i != reg.OAMaddr);
+}
+
+uint32_t* PPU::get_frambuffer() {
+	return frame_buffer;
 }
 
 void PPU::tick() {
@@ -247,7 +265,7 @@ void PPU::populateShiftRegister(uint8_t pattern_tile, uint16_t attribute_bits, b
 				y_offset -= 8;
 			}
 			else {
-				pattern_tile &=0x10;
+				pattern_tile &= ~0x01;
 			}
 		}
 		else {
@@ -287,4 +305,43 @@ void PPU::populateShiftRegister(uint8_t pattern_tile, uint16_t attribute_bits, b
 			bg_pixel_valid[i+8] = true;
 		}
 	}
+}
+
+void PPU::increment_x() {
+    if (vram_address.coarseX == 31) {
+		vram_address.data &= ~0x001F;
+		vram_address.data ^= 0x0400;
+    }
+    else  {
+    	vram_address.coarseX++;
+    }
+}
+
+void PPU::increment_y() {
+	if (vram_address.fineY < 7) {
+		vram_address.fineY++;
+	}
+	else {
+		vram_address.fineY = 0;
+		int y = vram_address.coarseY;
+		if (y == 29) {
+			y = 0;
+			vram_address.data ^= 0x0800;
+		}
+		else if (y == 31) {
+			y = 0;
+		}
+		else {
+			y += 1;
+		}
+		vram_address.coarseY = y;
+	}
+}
+
+void PPU::h_to_v() {
+	vram_address.data = uint16_t((vram_address.data & 0xFBE0) | (temp_vram_address.data & ~0xFBE0));
+}
+
+void PPU::v_to_v() {
+	temp_vram_address.data = uint16_t ((vram_address.data & 0x041F) | (temp_vram_address.data & ~0x041F));
 }
