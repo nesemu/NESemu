@@ -149,13 +149,17 @@ void PPU::load_scanline(unsigned scanline) {
 }
 
 void PPU::load_bg_tile() {
-	uint16_t nametable_tile_address = 0x2000 | (vram_address.data & 0x0FFF);
-	uint16_t nametable_attribute_address = 0x23C0 | (vram_address.data & 0x0C00) | \
-		((vram_address.data >> 4) & 0x38) | ((vram_address.data >> 2) & 0x07);
+	uint16_t nametable_tile_address = (uint16_t)(0x2000 | (vram_address.data & 0x0FFF));
+	uint16_t nametable_attribute_address = (uint16_t)(0x23C0 | (vram_address.data & 0x0C00) | \
+		((vram_address.data >> 4) & 0x38) | ((vram_address.data >> 2) & 0x07));
+	uint16_t shift = (uint16_t)((vram_address.data & 0x2) | ((vram_address.data & 0x40) >> 4));
+	uint8_t attribute_bits = (uint8_t )((memory.read_byte(nametable_attribute_address) >> shift) & 0x3);
+
 	uint8_t pattern_tile = memory.read_byte(nametable_tile_address);
-	uint16_t pattern_table_address = reg.BGaddr << 12 + pattern_tile << 4 + vram_address.fineY;
-	bg_tile_shift_reg[0] = memory.read_byte(pattern_table_address) << 8 | (bg_tile_shift_reg[0] & 0xFFFF0000);
-	bg_tile_shift_reg[1] = memory.read_byte(pattern_table_address + 0x1000) << 8 | (bg_tile_shift_reg[1] & 0xFFFF0000); // next bitplane
+
+	uint16_t pattern_table_address = (uint16_t)((reg.BGaddr << 12) + (pattern_tile << 4) + vram_address.fineY);
+	bg_tile_shift_reg[0] = (memory.read_byte(pattern_table_address) << 8) | (bg_tile_shift_reg[0] & 0xFFFF0000);
+	bg_tile_shift_reg[1] = (memory.read_byte(pattern_table_address + 0x1000) << 8) | (bg_tile_shift_reg[1] & 0xFFFF0000); // next bitplane
 
 
 }
