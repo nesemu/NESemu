@@ -16,6 +16,8 @@ class NesCpu;
 #define PIXELS_PER_LINE 341
 #define BACKGROUND_PALETTE_ADDRESS 0x3F00
 #define SPRITE_PALETTE_ADDRESS 0x3F10
+#define SCREEN_X 256
+#define SCREEN_Y 240
 
 #define MAKE_ARGB(R,G,B) (R<<16)|(G<<8)|B
 
@@ -83,7 +85,14 @@ private:
 		uint8_t bg_palette_shift_reg[2];
 
 		uint32_t bg_pixels[16];
-		uint32_t fg_pixesl[16];
+		bool bg_pixel_valid[16];
+
+		uint32_t fg_pixels[256];
+		bool fg_pixel_valid[256];
+		bool fg_pixel_infront[256];
+		bool fg_pixel_sp0[256];
+
+		uint32_t frame_buffer[SCREEN_X*SCREEN_Y];
 
 		OAM_entry * secondary_OAM[8];
 		sprite_data_t sprite_data[8];

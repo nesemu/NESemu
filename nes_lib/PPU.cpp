@@ -187,6 +187,44 @@ void PPU::evaluate_sprites(unsigned scanline) {
 }
 
 void PPU::render_pixel() {
+	uint32_t bgpixel = bg_pixels[x_fine_scroll];
+	for (int i = x_fine_scroll; i < 15; i++) {
+		bg_pixels[i] = bg_pixels[i+1];
+		bg_pixel_valid[i] = bg_pixel_valid[i+1];
+	}
+
+	int x = pixel - 1;
+
+	if (x > 256) {
+		return;
+	}
+
+	uint32_t finalcolor;
+
+	bool showSprites = x >= 8 || reg.ShowSP8;
+	bool showBackground = x >= 8 || reg.ShowBG8;
+	bool isBorder = x < 8 || x > 247 || scanline < 8 || scanline > 231;
+
+	if (isBorder) {
+		finalcolor = ntsc_palette[0x3F];
+	}
+	else if (showSprites && fg_pixel_valid[x] && (fg_pixel_infront[x] || !bg_pixel_valid[x])) {
+		finalcolor = fg_pixels[x];
+	}
+	else if (showBackground && bg_pixel_valid[x]) {
+		finalcolor = bgpixel;
+	}
+	else {
+		finalcolor = ntsc_palette[memory.read_byte(BACKGROUND_PALETTE_ADDRESS) & 0x3F];
+	}
+
+	if (showSprites && showBackground) {
+		if (bg_pixel_valid[x] && fg_pixel_valid[x] && fg_pixel_sp0[x] && x < 255) {
+			reg.SP0hit = 1;
+		}
+	}
+
+	frame_buffer[x+(scanline*SCREEN_X)] = finalcolor;
 
 }
 
@@ -241,10 +279,12 @@ void PPU::populateShiftRegister(uint8_t pattern_tile, uint16_t attribute_bits, b
 
 		if (index == 0 || !show_pixels) {
 			bg_pixels[i+8] = 0;
+			bg_pixel_valid[i+8] = false;
 		}
 		else {
 			uint8_t palette_index = (memory.read_byte(base_palette_address+(attribute_bits<<2)+index) & (uint8_t) 0x3F);
 			bg_pixels[i+8] = ntsc_palette[palette_index];
+			bg_pixel_valid[i+8] = true;
 		}
 	}
 }
