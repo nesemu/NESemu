@@ -78,7 +78,7 @@ void PPU::write_register(uint16_t address, uint8_t value) {
 			 write_toggle = !write_toggle;
 			 break;
 		case 7:
-			memory->write_byte(vram_address.data, value);
+			memory->write_byte(temp_vram_address.data, value);
 			vram_address.data += reg.Inc ? 32 : 1;
 			break;
 		default: break;

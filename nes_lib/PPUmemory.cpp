@@ -36,7 +36,7 @@ uint8_t PPUmemory::buffered_read_byte(uint16_t address) {
 uint8_t PPUmemory::direct_read_byte(uint16_t address) {
 	// decode address, update/return read buffer
 	uint8_t result = 0;
-	if (address < 0x3F00) {
+	if (address < 0x3F00)  {
 		if (address < 0x2000) {
 			result = gamepak->read_CHR(address);
 		} else {
