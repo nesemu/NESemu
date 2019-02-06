@@ -146,8 +146,8 @@ bool PPU::step() {
 		reg.SPoverflow = 0;
 	}
 
-	if (isRendering && pixel == 257) {
-		//evaluate_sprites(scanline); //TODO: @ETHAN Check to make srue this is okay
+	if (isFetching && pixel == 257) {
+		evaluate_sprites(scanline); //TODO: @ETHAN Check to make sure this is okay
 	}
 
 	if (isRendering) {
@@ -277,7 +277,7 @@ void PPU::populateShiftRegister(uint8_t pattern_tile, uint16_t attribute_bits, b
 
 	for (int i = 0; i < 8; i++) {
 		bool lowBit = ((low>>uint(7-i))&0x1) != 0;
-		bool highBit = ((low>>uint(7-i))&0x1) != 0;
+		bool highBit = ((high>>uint(7-i))&0x1) != 0;
 
 		uint16_t index = 0;
 		if (highBit) {
