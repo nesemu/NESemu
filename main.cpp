@@ -66,8 +66,7 @@ int main(int argc, char *argv[]) {
     }
 
     SDL_JoystickEventState(SDL_DISABLE);
-
-    SDL_Delay(1000);
+    
 
     //TODO: Implement the rest of the main including the game loop
 
