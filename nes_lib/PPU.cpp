@@ -71,7 +71,7 @@ void PPU::write_register(uint16_t address, uint8_t value) {
 			break;
 		case 6:
 			 if (write_toggle == 0) {
-			 	temp_vram_address.data = ((value & 0x003F) << 8) + (temp_vram_address.data & 0xFF00);
+			 	temp_vram_address.data = ((value & 0x003F) << 8) + (temp_vram_address.data & 0x00FF);
 			 } else {
 			 	temp_vram_address.data = (temp_vram_address.data & 0xFF00) + value;
 			 }
@@ -212,7 +212,7 @@ void PPU::render_pixel() {
 	bool isBorder = x < 8 || x > 247 || scanline < 8 || scanline > 231;
 
 	if (isBorder) {
-		finalcolor = ntsc_palette[0x3F];
+		finalcolor = ntsc_palette[0x33];
 	}
 	else if (showSprites && fg_pixel_valid[x] && (fg_pixel_infront[x] || !bgpixelvalid)) {
 		finalcolor = fg_pixels[x];
@@ -221,8 +221,8 @@ void PPU::render_pixel() {
 		finalcolor = bgpixel;
 	}
 	else {
-		finalcolor = ntsc_palette[memory->direct_read_byte(BACKGROUND_PALETTE_ADDRESS) & 0x3F];
-//		finalcolor = ntsc_palette[33];
+//		finalcolor = ntsc_palette[memory->direct_read_byte(BACKGROUND_PALETTE_ADDRESS) & 0x3F];
+		finalcolor = ntsc_palette[33];
 	}
 
 	if (showSprites && showBackground) {
