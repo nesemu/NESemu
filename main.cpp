@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
             imageReady = ppu.step();
 
             if (imageReady) {
-                SDL_UpdateTexture(sdl_texture, nullptr, ppu.get_frambuffer(), SCREEN_X * sizeof(uint32_t));
+                SDL_UpdateTexture(sdl_texture, nullptr, ppu.get_framebuffer(), SCREEN_X * sizeof(uint32_t));
                 SDL_RenderClear(sdl_renderer);
                 SDL_RenderCopy(sdl_renderer, sdl_texture, nullptr, nullptr);
                 SDL_RenderPresent(sdl_renderer);

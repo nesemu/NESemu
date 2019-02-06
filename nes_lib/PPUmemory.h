@@ -35,7 +35,8 @@ public:
 		explicit PPUmemory(Gamepak * gamepak);
 		~PPUmemory();
 
-		uint8_t read_byte(uint16_t address);
+		uint8_t buffered_read_byte(uint16_t address);
+		uint8_t direct_read_byte(uint16_t address);
 		void write_byte(uint16_t address, uint8_t value);
 		uint8_t read_byte_OAM(uint8_t address);
 		void write_byte_OAM(uint8_t address, uint8_t value);

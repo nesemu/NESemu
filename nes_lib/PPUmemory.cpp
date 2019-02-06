@@ -12,7 +12,7 @@ PPUmemory::~PPUmemory() {
 
 }
 
-uint8_t PPUmemory::read_byte(uint16_t address) {
+uint8_t PPUmemory::buffered_read_byte(uint16_t address) {
 	// decode address, update/return read buffer
 	uint8_t result = 0;
 	if (address < 0x3F00) {
@@ -29,6 +29,24 @@ uint8_t PPUmemory::read_byte(uint16_t address) {
 		} else result = palette_RAM[address % 32];
 		uint16_t index = gamepak->translate_nametable_address(address);
 		read_buffer = nametable_vram[index];
+	}
+	return result;
+}
+
+uint8_t PPUmemory::direct_read_byte(uint16_t address) {
+	// decode address, update/return read buffer
+	uint8_t result = 0;
+	if (address < 0x3F00) {
+		if (address < 0x2000) {
+			result = gamepak->read_CHR(address);
+		} else {
+			uint16_t index = gamepak->translate_nametable_address(address);
+			result = nametable_vram[index];
+		}
+	} else {
+		if (address % 4 == 0) {
+			result = palette_RAM[0];
+		} else result = palette_RAM[address % 32];
 	}
 	return result;
 }

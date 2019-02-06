@@ -63,7 +63,7 @@ public:
 		uint8_t read_register(uint8_t address);
 		void write_register(uint16_t address, uint8_t value);
 		void OAM_DMA(uint8_t *CPU_memory);
-		uint32_t * get_frambuffer();
+		uint32_t * get_framebuffer();
 
 		bool step();
 

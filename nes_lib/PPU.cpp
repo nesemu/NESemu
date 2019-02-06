@@ -37,7 +37,7 @@ uint8_t PPU::read_register(uint8_t address) {
 		case 4:
 			return memory->read_byte_OAM((uint8_t)reg.OAMaddr);
 		case 7:
-			result = memory->read_byte(vram_address.data);
+			result = memory->buffered_read_byte(temp_vram_address.data);
 			vram_address.data += reg.Inc ? 32 : 1;
 			return result;
 		default: return 0;
@@ -93,7 +93,7 @@ void PPU::OAM_DMA(uint8_t *CPU_memory) {
 	} while (++i != reg.OAMaddr);
 }
 
-uint32_t* PPU::get_frambuffer() {
+uint32_t* PPU::get_framebuffer() {
 	return frame_buffer;
 }
 
@@ -165,8 +165,8 @@ void PPU::load_bg_tile() {
 	uint16_t nametable_attribute_address = (uint16_t)(0x23C0 | (vram_address.data & 0x0C00) | \
 		((vram_address.data >> 4) & 0x38) | ((vram_address.data >> 2) & 0x07));
 	uint16_t shift = (uint16_t)((vram_address.data & 0x2) | ((vram_address.data & 0x40) >> 4));
-	uint8_t attribute_bits = (uint8_t )((memory->read_byte(nametable_attribute_address) >> shift) & 0x3);
-	uint8_t pattern_tile = memory->read_byte(nametable_tile_address);
+	uint8_t attribute_bits = (uint8_t )((memory->direct_read_byte(nametable_attribute_address) >> shift) & 0x3);
+	uint8_t pattern_tile = memory->direct_read_byte(nametable_tile_address);
 	populateShiftRegister(pattern_tile, attribute_bits, false, vram_address.fineY);
 }
 
@@ -184,8 +184,8 @@ void PPU::evaluate_sprites(unsigned scanline) {
 
 	for (int i = 0; i < 8; i++) {
 		unsigned tile_index = (reg.SPaddr << 12) | (secondary_OAM[i]->tile_number << 8) | (scanline - secondary_OAM[i]->y_coordinate);
-		sprite_data->bitmap_shift_reg[0] = memory->read_byte((uint16_t)tile_index);
-		sprite_data->bitmap_shift_reg[1] = memory->read_byte((uint16_t)(tile_index+8));
+		sprite_data->bitmap_shift_reg[0] = memory->direct_read_byte((uint16_t)tile_index);
+		sprite_data->bitmap_shift_reg[1] = memory->direct_read_byte((uint16_t)(tile_index+8));
 		sprite_data[i].attribute.data = secondary_OAM[i]->attribute;
 		sprite_data[i].x_position = secondary_OAM[i]->x_coordinate;
 	}
@@ -221,7 +221,7 @@ void PPU::render_pixel() {
 		finalcolor = bgpixel;
 	}
 	else {
-		finalcolor = ntsc_palette[memory->read_byte(BACKGROUND_PALETTE_ADDRESS) & 0x3F];
+		finalcolor = ntsc_palette[memory->direct_read_byte(BACKGROUND_PALETTE_ADDRESS) & 0x3F];
 //		finalcolor = ntsc_palette[33];
 	}
 
@@ -269,8 +269,8 @@ void PPU::populateShiftRegister(uint8_t pattern_tile, uint16_t attribute_bits, b
 		show_pixels = (bool)reg.ShowBG;
 	}
 
-	uint8_t low = memory->read_byte(base_address + (uint16_t)(pattern_tile << 4) + (uint16_t)y_offset);
-	uint8_t high = memory->read_byte(base_address + (uint16_t)(pattern_tile << 4) + (uint16_t)y_offset + (uint16_t)8);
+	uint8_t low = memory->direct_read_byte(base_address + (uint16_t)(pattern_tile << 4) + (uint16_t)y_offset);
+	uint8_t high = memory->direct_read_byte(base_address + (uint16_t)(pattern_tile << 4) + (uint16_t)y_offset + (uint16_t)8);
 
 	for (int i = 0; i < 8; i++) {
 		bool lowBit = (bool)((low >> uint(7-i)) & 0x1);
@@ -289,7 +289,7 @@ void PPU::populateShiftRegister(uint8_t pattern_tile, uint16_t attribute_bits, b
 			bg_pixel_valid[i+8] = false;
 		}
 		else {
-			uint8_t palette_index = (memory->read_byte(base_palette_address+(attribute_bits<<2)+index) & (uint8_t) 0x3F);
+			uint8_t palette_index = (memory->direct_read_byte(base_palette_address+(attribute_bits<<2)+index) & (uint8_t) 0x3F);
 			bg_pixels[i+8] = ntsc_palette[palette_index];
 			bg_pixel_valid[i+8] = true;
 		}
