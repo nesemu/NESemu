@@ -88,9 +88,6 @@ private:
 		uint8_t x_fine_scroll;
 		bool write_toggle;
 
-		uint16_t bg_tile_shift_reg[2];
-		uint8_t bg_palette_shift_reg[2];
-
 		uint32_t bg_pixels[16];
 		bool bg_pixel_valid[16];
 
@@ -110,8 +107,6 @@ private:
 				MAKE_ARGB(236, 238, 236),   MAKE_ARGB(168, 204, 236),  MAKE_ARGB(188, 188, 236),  MAKE_ARGB(212, 178, 236),  MAKE_ARGB(236, 174, 236),  MAKE_ARGB(236, 174, 212),  MAKE_ARGB(236, 180, 176),  MAKE_ARGB(228, 196, 144),  MAKE_ARGB(204, 210, 120),  MAKE_ARGB(180, 222, 120), MAKE_ARGB(168, 226, 144),  MAKE_ARGB(152, 226, 180),  MAKE_ARGB(160, 214, 228),  MAKE_ARGB(160, 162, 160), MAKE_ARGB(0, 0, 0), MAKE_ARGB(0, 0, 0)
 		};
 
-		void load_scanline(unsigned scanline);
-		void load_background(unsigned scanline);
 		void evaluate_sprites(unsigned scanline);
 		void render_pixel();
 

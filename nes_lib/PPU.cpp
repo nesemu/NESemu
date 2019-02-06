@@ -145,11 +145,11 @@ bool PPU::step() {
 	}
 
 	if (isRendering && pixel == 257) {
-		evaluate_sprites(scanline); //TODO: @ETHAN Check to make srue this is okay
+		evaluate_sprites(scanline+1); //TODO: @ETHAN Check to make srue this is okay
 	}
 
 	if (isRendering) {
-		if ((isVisible || isPrerender) && pixel == 257) {
+		if (pixel == 257) {
 			h_to_v();
 		}
 		else if (isPrerender && pixel == 304) {
@@ -158,15 +158,6 @@ bool PPU::step() {
 	}
 	cycle_counter++;
 	return outputready;
-}
-
-void PPU::load_scanline(unsigned scanline) {
-	if (scanline >= POSTRENDER_SCANLINE || !reg.ShowBGSP) return;
-	load_bg_tile();
-	increment_x();
-	load_bg_tile();
-
-	evaluate_sprites(scanline);
 }
 
 void PPU::load_bg_tile() {
@@ -180,10 +171,6 @@ void PPU::load_bg_tile() {
 
 	uint16_t pattern_table_address = (uint16_t)((reg.BGaddr << 12) + (pattern_tile << 4) + vram_address.fineY);
 	populateShiftRegister(pattern_tile, attribute_bits, false, vram_address.fineY);
-	bg_tile_shift_reg[0] = (memory.read_byte(pattern_table_address) << 8) | (bg_tile_shift_reg[0] & 0xFFFF0000);
-	bg_tile_shift_reg[1] = (memory.read_byte(pattern_table_address + 0x1000) << 8) | (bg_tile_shift_reg[1] & 0xFFFF0000); // next bitplane
-
-
 }
 
 void PPU::evaluate_sprites(unsigned scanline) {
