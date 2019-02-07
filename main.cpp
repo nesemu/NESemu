@@ -7,8 +7,143 @@
 #include "nes_lib/cpu.h"
 #include "nes_lib/InputDevice.h"
 
+class LTimer
+{
+public:
+    //Initializes variables
+    LTimer();
+
+    //The various clock actions
+    void start();
+    void stop();
+    void pause();
+    void unpause();
+
+    //Gets the timer's time
+    Uint32 getTicks();
+
+    //Checks the status of the timer
+    bool isStarted();
+    bool isPaused();
+
+private:
+    //The clock time when the timer started
+    Uint32 mStartTicks;
+
+    //The ticks stored when the timer was paused
+    Uint32 mPausedTicks;
+
+    //The timer status
+    bool mPaused;
+    bool mStarted;
+};
+
+LTimer::LTimer()
+{
+    //Initialize the variables
+    mStartTicks = 0;
+    mPausedTicks = 0;
+
+    mPaused = false;
+    mStarted = false;
+}
+
+void LTimer::start()
+{
+    //Start the timer
+    mStarted = true;
+
+    //Unpause the timer
+    mPaused = false;
+
+    //Get the current clock time
+    mStartTicks = SDL_GetTicks();
+    mPausedTicks = 0;
+}
+
+void LTimer::stop()
+{
+    //Stop the timer
+    mStarted = false;
+
+    //Unpause the timer
+    mPaused = false;
+
+    //Clear tick variables
+    mStartTicks = 0;
+    mPausedTicks = 0;
+}
+
+void LTimer::pause()
+{
+    //If the timer is running and isn't already paused
+    if( mStarted && !mPaused )
+    {
+        //Pause the timer
+        mPaused = true;
+
+        //Calculate the paused ticks
+        mPausedTicks = SDL_GetTicks() - mStartTicks;
+        mStartTicks = 0;
+    }
+}
+
+void LTimer::unpause()
+{
+    //If the timer is running and paused
+    if( mStarted && mPaused )
+    {
+        //Unpause the timer
+        mPaused = false;
+
+        //Reset the starting ticks
+        mStartTicks = SDL_GetTicks() - mPausedTicks;
+
+        //Reset the paused ticks
+        mPausedTicks = 0;
+    }
+}
+
+Uint32 LTimer::getTicks()
+{
+    //The actual timer time
+    Uint32 time = 0;
+
+    //If the timer is running
+    if( mStarted )
+    {
+        //If the timer is paused
+        if( mPaused )
+        {
+            //Return the number of ticks when the timer was paused
+            time = mPausedTicks;
+        }
+        else
+        {
+            //Return the current time minus the start time
+            time = SDL_GetTicks() - mStartTicks;
+        }
+    }
+
+    return time;
+}
+
+bool LTimer::isStarted()
+{
+    //Timer is running and paused or unpaused
+    return mStarted;
+}
+
+bool LTimer::isPaused()
+{
+    //Timer is running and paused
+    return mPaused && mStarted;
+}
+
 int main(int argc, char *argv[]) {
 
+    const int SCREEN_FPS = 60;
+    const int SCREEN_TICK_PER_FRAME = 1000 / SCREEN_FPS;
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
         SDL_ShowSimpleMessageBox(
                 SDL_MESSAGEBOX_ERROR,
@@ -91,11 +226,9 @@ int main(int argc, char *argv[]) {
 
     SDL_Event e;
     bool quit = false;
-    Uint64 prev_counter = SDL_GetPerformanceCounter();
-    Uint64 curr_counter = SDL_GetPerformanceCounter();
-    Uint64 count_per_second = SDL_GetPerformanceFrequency();
+    LTimer capTimer;
 
-    double msPerFrame = (1/30)*1000;
+
 
     nes_cpu_clock_t cpuclock = nes_cpu_clock_t(7);
     nes_ppu_clock_t ppuclock = nes_ppu_clock_t(0);
@@ -105,6 +238,7 @@ int main(int argc, char *argv[]) {
     }
 
 
+    capTimer.start();
     while(true) {
         cpuclock += cpu.step();
 
@@ -116,12 +250,11 @@ int main(int argc, char *argv[]) {
                 SDL_RenderClear(sdl_renderer);
                 SDL_RenderCopy(sdl_renderer, sdl_texture, nullptr, nullptr);
                 SDL_RenderPresent(sdl_renderer);
-                curr_counter = SDL_GetPerformanceCounter();
-                double actualTime = ((curr_counter - prev_counter) * 1000)/count_per_second;
-                double sleepTime = msPerFrame - actualTime;
-                //std::cout << sleepTime << std::endl;
-                //SDL_Delay(sleepTime);
-                prev_counter = SDL_GetPerformanceCounter();
+                int frameticks = capTimer.getTicks();
+                if (frameticks < SCREEN_TICK_PER_FRAME) {
+                    SDL_Delay(SCREEN_TICK_PER_FRAME - frameticks);
+                }
+                capTimer.start();
             }
             ppuclock++;
         }
