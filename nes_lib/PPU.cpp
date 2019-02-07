@@ -4,6 +4,7 @@
 
 #include "PPU.h"
 #include "cpu.h"
+#include "PPUmemory.h"
 
 PPU::PPU(Gamepak * gamepak) {
 	memory = new PPUmemory(gamepak);
@@ -146,10 +147,9 @@ bool PPU::step() {
 		reg.SPoverflow = 0;
 	}
 
-//	if (isRendering && (isVisible || isPrerender) && pixel == 320) {
-//		evaluate_sprites(scanline+1);
-//		calculate_fg_pixels();
-//	}
+	if (isRendering && pixel == 257) {
+		evaluate_sprites();
+	}
 
 	if (isRendering) {
 		if ((isPrerender || isVisible) && pixel == 257) {
@@ -173,25 +173,83 @@ void PPU::load_bg_tile() {
 	populateShiftRegister(pattern_tile, attribute_bits, false, vram_address.fineY);
 }
 
-void PPU::evaluate_sprites(unsigned scanline) {
-	// TODO: Support 8x16 sprite mode
-	int secondary_counter = 0;
-	for (uint8_t i = 0; i < OAM_ENTRIES && secondary_counter < 8; i++) {
-		OAM_entry * entry = memory->read_entry_OAM(i);
-		int ydiff = scanline - entry->y_coordinate;
-		if (ydiff >= 0 && ydiff < 8) secondary_OAM[secondary_counter++] = entry;
-	}
-	while (secondary_counter < 8) {
-		secondary_OAM[secondary_counter++] = nullptr;
-	}
+void PPU::evaluate_sprites() {
+    for (int i = 0; i < 256; i++) {
+        fg_pixel_sp0[i] = false;
+        fg_pixel_valid[i] = false;
+        fg_pixel_infront[i] = false;
+    }
 
-	for (int i = 0; i < 8; i++) {
-		unsigned tile_index = (reg.SPaddr << 12) | (secondary_OAM[i]->tile_number << 8) | (scanline - secondary_OAM[i]->y_coordinate);
-		sprite_data->bitmap_shift_reg[0] = memory->direct_read_byte((uint16_t)tile_index);
-		sprite_data->bitmap_shift_reg[1] = memory->direct_read_byte((uint16_t)(tile_index+8));
-		sprite_data[i].attribute.data = secondary_OAM[i]->attribute;
-		sprite_data[i].x_position = secondary_OAM[i]->x_coordinate;
-	}
+    if (!reg.ShowSP || scanline == 0) {
+        return;
+    }
+
+    int sprite_height = 8;
+    if (reg.SPsize) {
+        sprite_height = 16;
+    }
+
+    int num_sprites = 0;
+    for (int i = 0; i < 64; i++) {
+    	OAM_entry *currentSprite = memory->read_entry_OAM(uint8_t(i));
+    	int y = int(currentSprite -> y_coordinate) + 1;
+        int x = int(currentSprite -> x_coordinate);
+
+        if (y >= 0xF0 || scanline+1 < y || scanline+1 >= y+sprite_height) {
+            continue;
+        }
+        num_sprites++;
+
+        if (num_sprites > 8) {
+            reg.SPoverflow = 1;
+            break;
+        }
+
+        int y_offset = scanline + 1 - y;
+        uint8_t pattern_index = currentSprite ->tile_number;
+
+        auto attributes = currentSprite->attribute;
+        bool flip_h = (bool)attributes.flip_H;
+        bool flip_v = (bool)attributes.flip_V;
+        bool in_front = (bool)(attributes.priority == 0);
+
+        if (flip_v) {
+            y_offset = sprite_height - 1 - y_offset;
+        }
+
+        uint16_t palette_bits = uint16_t(attributes.palette & 0x3);
+
+        populateShiftRegister(pattern_index, palette_bits, true, y_offset);
+
+
+
+        for (int k = 0; k < 8; k++) {
+            int pk = k;
+
+            if (flip_h) {
+                pk = 7 - k;
+            }
+
+            if (x + k > 0xff) {
+                break;
+            }
+
+            int pos = x + k;
+
+            if (!fg_pixel_valid[pos] && fg_sr_pixels_valid[pk]) {
+                fg_pixels[pos] = fg_sr_pixels[pk];
+                fg_pixel_valid[pos] = true;
+
+                if (i == 0) {
+                    fg_pixel_sp0[pos] = true;
+                }
+
+                fg_pixel_infront[pos] = in_front;
+            }
+        }
+
+    }
+
 }
 
 void PPU::render_pixel() {
@@ -217,9 +275,9 @@ void PPU::render_pixel() {
 	if (isBorder) {
 		finalcolor = ntsc_palette[0x3F];
 	}
-//	else if (showSprites && fg_pixel_valid[x] && (fg_pixel_infront[x] || !bgpixelvalid)) {
-//		finalcolor = fg_pixels[x];
-//	}
+	else if (showSprites && fg_pixel_valid[x] && (fg_pixel_infront[x] || !bgpixelvalid)) {
+		finalcolor = fg_pixels[x];
+	}
 	else if (showBackground && bgpixelvalid) {
 		finalcolor = bgpixel;
 	}
@@ -228,11 +286,11 @@ void PPU::render_pixel() {
 //		finalcolor = ntsc_palette[33];
 	}
 
-//	if (showSprites && showBackground) {
-//		if (bgpixelvalid && fg_pixel_valid[x] && fg_pixel_sp0[x] && x < 255) { //TODO: is this timing right?
-//			reg.SP0hit = 1;
-//		}
-//	}
+	if (showSprites && showBackground) {
+		if (bgpixelvalid && fg_pixel_valid[x] && fg_pixel_sp0[x] && x < 255) { //TODO: is this timing right?
+			reg.SP0hit = 1;
+		}
+	}
 
 	frame_buffer[(scanline*SCREEN_X) + x] = finalcolor;
 
@@ -286,15 +344,30 @@ void PPU::populateShiftRegister(uint8_t pattern_tile, uint16_t attribute_bits, b
 		if (lowBit) {
 			index |= 0x1;
 		}
-
-		if (index == 0 || !show_pixels) {
-			bg_pixels[i+8] = 0;
-			bg_pixel_valid[i+8] = false;
+		if (is_foreground) {
+			if (index == 0 || !show_pixels) {
+				fg_sr_pixels[i] = 0;
+				fg_sr_pixels_valid[i] = false;
+			} else {
+				uint8_t palette_index = (
+						memory->direct_read_byte(base_palette_address + (attribute_bits << 2) + index) &
+						(uint8_t) 0x3F);
+				fg_sr_pixels[i] = ntsc_palette[palette_index];
+				fg_sr_pixels_valid[i] = true;
+			}
 		}
 		else {
-			uint8_t palette_index = (memory->direct_read_byte(base_palette_address+(attribute_bits<<2)+index) & (uint8_t) 0x3F);
-			bg_pixels[i+8] = ntsc_palette[palette_index];
-			bg_pixel_valid[i+8] = true;
+
+			if (index == 0 || !show_pixels) {
+				bg_pixels[i + 8] = 0;
+				bg_pixel_valid[i + 8] = false;
+			} else {
+				uint8_t palette_index = (
+						memory->direct_read_byte(base_palette_address + (attribute_bits << 2) + index) &
+						(uint8_t) 0x3F);
+				bg_pixels[i + 8] = ntsc_palette[palette_index];
+				bg_pixel_valid[i + 8] = true;
+			}
 		}
 	}
 }

@@ -98,6 +98,9 @@ private:
 		bool fg_pixel_infront[256];
 		bool fg_pixel_sp0[256];
 
+        uint32_t fg_sr_pixels[8];
+        bool fg_sr_pixels_valid[8];
+
 		uint32_t *frame_buffer;
 
 		OAM_entry * secondary_OAM[8];
@@ -109,7 +112,7 @@ private:
 				MAKE_ARGB(236, 238, 236),   MAKE_ARGB(168, 204, 236),  MAKE_ARGB(188, 188, 236),  MAKE_ARGB(212, 178, 236),  MAKE_ARGB(236, 174, 236),  MAKE_ARGB(236, 174, 212),  MAKE_ARGB(236, 180, 176),  MAKE_ARGB(228, 196, 144),  MAKE_ARGB(204, 210, 120),  MAKE_ARGB(180, 222, 120), MAKE_ARGB(168, 226, 144),  MAKE_ARGB(152, 226, 180),  MAKE_ARGB(160, 214, 228),  MAKE_ARGB(160, 162, 160), MAKE_ARGB(0, 0, 0), MAKE_ARGB(0, 0, 0)
 		};
 
-		void evaluate_sprites(unsigned scanline);
+		void evaluate_sprites();
 		void render_pixel();
 
 		void load_bg_tile();
