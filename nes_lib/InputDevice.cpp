@@ -6,7 +6,7 @@
 #include <iostream>
 
 InputDevice::InputDevice(int num) {
-    keyboardState = nullptr;
+   keyboardState = SDL_GetKeyboardState(nullptr);
     if (num == -1) {
         inputType = INPUT_TYPE_KEYBOARD_PLAYER_1;
     }
@@ -146,7 +146,7 @@ void InputDevice::reset() {
         SDL_JoystickUpdate();
     }
     else if (inputType == INPUT_TYPE_KEYBOARD_PLAYER_1 || inputType == INPUT_TYPE_KEYBOARD_PLAYER_2 ) {
-        keyboardState = SDL_GetKeyboardState(nullptr);
+        //keyboardState = SDL_GetKeyboardState(nullptr);
     }
     buttonNum = 0;
 

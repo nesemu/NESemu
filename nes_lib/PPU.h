@@ -39,7 +39,8 @@ union PPUregtype // PPU register file
 };
 
 struct sprite_data_t {
-		uint8_t bitmap_shift_reg[2];
+		uint8_t y_position;
+		uint8_t tile_index;
 		union {
 			uint8_t data;
 			RegBit<0,2,uint8_t> palette;
@@ -88,18 +89,26 @@ private:
 		uint8_t x_fine_scroll;
 		bool write_toggle;
 
-		uint32_t bg_pixels[16];
-		bool bg_pixel_valid[16];
+		uint32_t bg_pixels[16]{0};
+		bool bg_pixel_valid[16]{false};
+
+		uint32_t fg_sr_pixels[8]{0};
+		bool fg_sr_pixels_valid[8]{false};
 
 		uint32_t fg_pixels[256];
-		bool fg_pixel_valid[256];
-		bool fg_pixel_infront[256];
-		bool fg_pixel_sp0[256];
+		bool fg_pixel_valid[256]{false};
+		bool fg_pixel_infront[256]{false};
+		bool fg_pixel_sp0[256]{false};
 
 		uint32_t *frame_buffer;
 
+		uint8_t read_buffer;
+
 		OAM_entry * secondary_OAM[8];
-		sprite_data_t sprite_data[8];
+		union {
+			sprite_data_t entries[OAM_ENTRIES];
+			uint8_t data[OAM_ENTRIES * sizeof(sprite_data_t)];
+		} sprite_data;
 		constexpr static uint32_t ntsc_palette [64] = {
 				MAKE_ARGB(84,  84,  84),    MAKE_ARGB(0,  30, 116),    MAKE_ARGB(8,  16, 144),    MAKE_ARGB(48,   0, 136),   MAKE_ARGB(68,   0, 100),   MAKE_ARGB(92,   0,  48),   MAKE_ARGB(84,   4,   0),   MAKE_ARGB(60,  24,   0),   MAKE_ARGB(32,  42,   0),   MAKE_ARGB(8,  58,   0),   MAKE_ARGB(0,  64,   0),    MAKE_ARGB(0,  60,   0),    MAKE_ARGB(0,  50,  60),    MAKE_ARGB(0,   0,   0),   MAKE_ARGB(0, 0, 0), MAKE_ARGB(0, 0, 0),
 				MAKE_ARGB(152, 150, 152),   MAKE_ARGB(8,  76, 196),    MAKE_ARGB(48,  50, 236),   MAKE_ARGB(92,  30, 228),   MAKE_ARGB(136,  20, 176),  MAKE_ARGB(160,  20, 100),  MAKE_ARGB(152,  34,  32),  MAKE_ARGB(120,  60,   0),  MAKE_ARGB(84,  90,   0),   MAKE_ARGB(40, 114,   0),  MAKE_ARGB(8, 124,   0),    MAKE_ARGB(0, 118,  40),    MAKE_ARGB(0, 102, 120),    MAKE_ARGB(0,   0,   0),   MAKE_ARGB(0, 0, 0), MAKE_ARGB(0, 0, 0),
@@ -107,7 +116,7 @@ private:
 				MAKE_ARGB(236, 238, 236),   MAKE_ARGB(168, 204, 236),  MAKE_ARGB(188, 188, 236),  MAKE_ARGB(212, 178, 236),  MAKE_ARGB(236, 174, 236),  MAKE_ARGB(236, 174, 212),  MAKE_ARGB(236, 180, 176),  MAKE_ARGB(228, 196, 144),  MAKE_ARGB(204, 210, 120),  MAKE_ARGB(180, 222, 120), MAKE_ARGB(168, 226, 144),  MAKE_ARGB(152, 226, 180),  MAKE_ARGB(160, 214, 228),  MAKE_ARGB(160, 162, 160), MAKE_ARGB(0, 0, 0), MAKE_ARGB(0, 0, 0)
 		};
 
-		void evaluate_sprites(unsigned scanline);
+		void evaluate_sprites();
 		void render_pixel();
 
 		void load_bg_tile();

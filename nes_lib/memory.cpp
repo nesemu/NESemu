@@ -52,7 +52,7 @@ nes_cpu_clock_t NesCPUMemory::write_byte(uint16_t address, uint8_t value) {
     	ppu->write_register(address, value);
     }
     else if (address == 0x4014) { // OAM DMA
-    	ppu->OAM_DMA(&cpu_ram[(uint16_t)value << 8]);
+    	ppu->OAM_DMA(&cpu_ram[(uint16_t)value*0x100]);
     	cycles = nes_cpu_clock_t(512);
     }
     else if (address >= 0x4000 && address < 0x4018) { // APU/IO registers, not mirrored

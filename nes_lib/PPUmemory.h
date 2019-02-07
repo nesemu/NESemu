@@ -9,13 +9,19 @@
 #include "Gamepak.h"
 #include <cstdint>
 
-#define VRAM_SIZE 2*KILO
+#define VRAM_SIZE 16*KILO
 #define OAM_ENTRIES 64
 
 struct OAM_entry {
 		uint8_t y_coordinate;
 		uint8_t tile_number;
-		uint8_t attribute;
+		union {
+			uint8_t data;
+			RegBit<0,2,uint8_t> palette;
+			RegBit<5,1,uint8_t> priority;
+			RegBit<6,1,uint8_t> flip_H;
+			RegBit<7,1,uint8_t> flip_V;
+		} attribute;
 		uint8_t x_coordinate;
 };
 
@@ -30,6 +36,7 @@ private:
 		} OAM;
 		uint8_t palette_RAM[32];
 		uint8_t read_buffer;
+		uint16_t map_memory(uint16_t address);
 
 public:
 		explicit PPUmemory(Gamepak * gamepak);

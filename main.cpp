@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
 
     SDL_Window * sdl_window;
     SDL_Renderer * sdl_renderer;
-    SDL_CreateWindowAndRenderer(SCREEN_X, SCREEN_Y, SDL_WINDOW_SHOWN, &sdl_window, &sdl_renderer); //TODO: Sizes Need Changed to actual
+    SDL_CreateWindowAndRenderer(SCREEN_X*2, SCREEN_Y*2, SDL_WINDOW_SHOWN, &sdl_window, &sdl_renderer); //TODO: Sizes Need Changed to actual
     if (!sdl_window || !sdl_renderer) {
         SDL_ShowSimpleMessageBox(
                 SDL_MESSAGEBOX_ERROR,
@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
     }
 
     SDL_JoystickEventState(SDL_DISABLE);
-    
+
 
     //TODO: Implement the rest of the main including the game loop
 
@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
 
         cpuclock += cpu.step();
 
-        while (ppuclock.count() < cpuclock.count()*3) {
+        while (ppuclock.count() != cpuclock.count()*3) {
             imageReady = ppu.step();
 
             if (imageReady) {
@@ -119,6 +119,7 @@ int main(int argc, char *argv[]) {
                 auto time = (double)delta_ticks * 1000 / count_per_second;
                 auto sleeptime = expectedtime - time;
                 //SDL_Delay(sleeptime);
+                prev_counter = cur_counter;
             }
             ppuclock++;
         }

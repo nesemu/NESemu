@@ -66,7 +66,7 @@ int Gamepak::verifyHeaders() {
         CHR_size = headers->CHR_ROM_size_lsb * 8u * KILO;
     }
 
-    if (mapper >> 1) { // Any mapper other than 0 or 1
+    if (mapper > 1) { // Any mapper other than 0 or 1
         std::cerr << "Invalid or unsupported mapper: " << mapper << std::endl;
         return EXIT_FAILURE;
     } else std::cout << "Mapper " << mapper << " detected" << std::endl;
@@ -150,15 +150,26 @@ uint8_t Gamepak::read_CHR(uint16_t address) {
 uint16_t Gamepak::translate_nametable_address(uint16_t address) {
     // Assume Mapper000; TODO: Implement Mapper001
     switch (headers->byte6.mirroring) {
-      case 0: // horizontal
-        if (address < 0x2800) {// Table A
-            return (uint16_t)(address % 0x400);
-        } else { // Table B
-            return (uint16_t)((address % 0x400) + 0x400);
+        case 0: {
+            if ((address >= 0x2400) && (address < 0x2800)) {// Table A
+                address = (uint16_t) (address - 0x400);
+            } else if (address >= 0x2C00 && address < 0x3000) { // Table B
+                address = (uint16_t) (address - 0x400);
+            }
+            break;
         }
-      case 1: // vertical
-        return (uint16_t)(address % 0x800);
-      default:
-          return 0;
+        case 1: {
+            if (address >= 0x2800 && address < 0x2C00) {
+                address = (uint16_t) (address - 0x800);
+            }
+            else if (address >= 0x2C00 && address < 0x3000) {
+                address = (uint16_t)(address - 0x800);
+            }
+            break;
+        }
+        default: {
+            address = address;
+        }
     }
+    return address;
 }
