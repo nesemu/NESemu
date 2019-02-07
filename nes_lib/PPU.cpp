@@ -220,9 +220,9 @@ void PPU::render_pixel() {
 //	else if (showSprites && fg_pixel_valid[x] && (fg_pixel_infront[x] || !bgpixelvalid)) {
 //		finalcolor = fg_pixels[x];
 //	}
-//	else if (showBackground && bgpixelvalid) {
-//		finalcolor = bgpixel;
-//	}
+	else if (showBackground && bgpixelvalid) {
+		finalcolor = bgpixel;
+	}
 	else {
 		finalcolor = ntsc_palette[memory->direct_read_byte(BACKGROUND_PALETTE_ADDRESS) & 0x3F];
 //		finalcolor = ntsc_palette[33];
@@ -234,7 +234,7 @@ void PPU::render_pixel() {
 //		}
 //	}
 
-	frame_buffer[x+(scanline*SCREEN_X)] = finalcolor;
+	frame_buffer[(scanline*SCREEN_X) + x] = finalcolor;
 
 }
 
