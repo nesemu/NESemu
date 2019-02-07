@@ -16,6 +16,7 @@ InputDevice::InputDevice(int num) {
     else {
         joypad = SDL_JoystickOpen(num);
         id = SDL_JoystickInstanceID(joypad);
+        inputType = INPUT_TYPE_JOYPAD;
     }
     strobe = false;
     buttonNum = 0;
@@ -48,10 +49,10 @@ uint8_t InputDevice::readController() {
                 pressed = (bool) SDL_JoystickGetButton(joypad, NES_START_BUTTON);
                 break;
             case 4:
-                pressed = (SDL_JoystickGetAxis(joypad, 1) > 8000);
+                pressed = (SDL_JoystickGetAxis(joypad, 1) < -8000);
                 break;
             case 5:
-                pressed = (SDL_JoystickGetAxis(joypad, 1) < -8000);
+                pressed = (SDL_JoystickGetAxis(joypad, 1) > 8000);
                 break;
             case 6:
                 pressed = (SDL_JoystickGetAxis(joypad, 0) < -8000);

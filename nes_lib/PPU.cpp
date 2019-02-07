@@ -62,7 +62,7 @@ void PPU::write_register(uint16_t address, uint8_t value) {
 		case 5:
 			if (write_toggle == 0) {
 				temp_vram_address.coarseX = value >> 3;
-				x_fine_scroll = (uint8_t)(value % 0b111);
+				x_fine_scroll = (uint8_t)(value & 0b111);
 			} else {
 				temp_vram_address.fineY = value & 0b111;
 				temp_vram_address.coarseY = value >> 3;
@@ -152,10 +152,10 @@ bool PPU::step() {
 //	}
 
 	if (isRendering) {
-		if ((isPrerender || isDrawing) && pixel == 257) {
+		if ((isPrerender || isVisible) && pixel == 257) {
 			h_to_v();
 		}
-		else if (isPrerender && (pixel >= 280 || pixel <= 304)) {
+		else if (isPrerender && (pixel >= 280 && pixel <= 304)) {
 			v_to_v();
 		}
 	}
@@ -331,8 +331,7 @@ void PPU::increment_y() {
 }
 
 void PPU::h_to_v() {
-	vram_address.coarseX = temp_vram_address.coarseX;
-	vram_address.NTselectX = temp_vram_address.NTselectX;
+	vram_address.data = (vram_address.data & 0xFBE0) | (temp_vram_address.data & ~0xFBE0);
 }
 
 void PPU::v_to_v() {

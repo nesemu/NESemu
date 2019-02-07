@@ -52,6 +52,7 @@ int main(int argc, char *argv[]) {
     InputDevice * joypad2 = nullptr;
 
     int numJoysticks = SDL_NumJoysticks();
+    std::cout << "Num Joysticks: " << numJoysticks << std::endl;
 
     if (numJoysticks == 0) {
         joypad1 = new InputDevice(-1);

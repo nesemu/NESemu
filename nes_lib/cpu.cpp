@@ -3,7 +3,7 @@
 #include "cpu.h"
 #include <iostream>
 #include <iomanip>
-#define LOGGING
+//#define LOGGING
 
 NesCpu::NesCpu(NesCPUMemory * memory) {
     this -> RAM = memory;
