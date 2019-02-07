@@ -147,6 +147,7 @@ void InputDevice::reset() {
         SDL_JoystickUpdate();
     }
     else if (inputType == INPUT_TYPE_KEYBOARD_PLAYER_1 || inputType == INPUT_TYPE_KEYBOARD_PLAYER_2 ) {
+        SDL_PumpEvents();
         keyboardState = SDL_GetKeyboardState(nullptr);
     }
     buttonNum = 0;
