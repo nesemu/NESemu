@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
 
     SDL_Window * sdl_window;
     SDL_Renderer * sdl_renderer;
-    SDL_CreateWindowAndRenderer(SCREEN_X*2, SCREEN_Y*2, SDL_WINDOW_SHOWN, &sdl_window, &sdl_renderer); //TODO: Sizes Need Changed to actual
+    SDL_CreateWindowAndRenderer(SCREEN_X, SCREEN_Y, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE, &sdl_window, &sdl_renderer); //TODO: Sizes Need Changed to actual
     if (!sdl_window || !sdl_renderer) {
         SDL_ShowSimpleMessageBox(
                 SDL_MESSAGEBOX_ERROR,
@@ -42,7 +42,6 @@ int main(int argc, char *argv[]) {
     }
 
     SDL_SetWindowTitle(sdl_window, "Ethan And Kyle NESEmu v0.1");
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
     SDL_RenderSetLogicalSize(sdl_renderer, SCREEN_X, SCREEN_Y); //TODO: Sizes need to be changed to actual
 
@@ -68,7 +67,7 @@ int main(int argc, char *argv[]) {
     }
 
     SDL_JoystickEventState(SDL_DISABLE);
-    
+
 
     //TODO: Implement the rest of the main including the game loop
 
@@ -100,10 +99,10 @@ int main(int argc, char *argv[]) {
 
     nes_cpu_clock_t cpuclock = nes_cpu_clock_t(7);
     nes_ppu_clock_t ppuclock = nes_ppu_clock_t(0);
-    bool imageReady = false;
+    bool imageReady;
 
     while(!quit) {
-        while(SDL_PollEvent(&e) != 0) {
+        while (SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT) {
                 quit = true;
             }

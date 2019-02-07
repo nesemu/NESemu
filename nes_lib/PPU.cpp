@@ -5,7 +5,6 @@
 #include "PPU.h"
 #include "cpu.h"
 #include "PPUmemory.h"
-#include <iostream>
 
 PPU::PPU(Gamepak * gamepak) {
 	memory = new PPUmemory(gamepak);
@@ -122,7 +121,7 @@ bool PPU::step() {
 	bool isPrerender = scanline == PRERENDER_SCANLINE;
 
 	bool isDrawing = isRendering && isVisible && ((pixel > 0 && pixel < 257) || (pixel > 320 && pixel < 337));
-	bool isFetching = isRendering && (isVisible || isPrerender) && ((pixel > 1 && pixel < 256) || (pixel > 320 && pixel < 337)) && (pixel-1) % 8 == 0;
+	bool isFetching = isRendering && (isVisible || isPrerender) && ((pixel > 1 && pixel < 256) || (pixel > 320 && pixel < 337)) && (pixel) % 8 == 0;
 
 	if (isDrawing) {
 		render_pixel();
@@ -166,7 +165,7 @@ bool PPU::step() {
 
 void PPU::load_bg_tile() {
 	uint16_t nametable_tile_address = (uint16_t)(0x2000 | (vram_address.data & 0x0FFF));
-	uint16_t nametable_attribute_address = (uint16_t)(0x23C0 | (vram_address.data & 0x0C00) |
+	uint16_t nametable_attribute_address = (uint16_t)(0x23C0 | (vram_address.data & 0x0C00) | \
 		((vram_address.data >> 4) & 0x38) | ((vram_address.data >> 2) & 0x07));
 	uint16_t shift = (uint16_t)((vram_address.data & 0x2) | ((vram_address.data & 0x40) >> 4));
 	uint8_t attribute_bits = (uint8_t )((memory->direct_read_byte(nametable_attribute_address) >> shift) & 0x3);
@@ -283,8 +282,8 @@ void PPU::render_pixel() {
 		finalcolor = bgpixel;
 	}
 	else {
-	    uint8_t index = (uint8_t)(memory->direct_read_byte(BACKGROUND_PALETTE_ADDRESS) & 0x3F);
-		finalcolor = ntsc_palette[index];
+		finalcolor = ntsc_palette[memory->direct_read_byte(BACKGROUND_PALETTE_ADDRESS) & 0x3F];
+//		finalcolor = ntsc_palette[33];
 	}
 
 	if (showSprites && showBackground) {
@@ -335,8 +334,8 @@ void PPU::populateShiftRegister(uint8_t pattern_tile, uint16_t attribute_bits, b
 	uint8_t high = memory->direct_read_byte(base_address + (uint16_t)(pattern_tile << 4) + (uint16_t)y_offset + (uint16_t)8);
 
 	for (int i = 0; i < 8; i++) {
-		bool lowBit = ((low >> uint(7-i)) & 0x1) != 0;
-		bool highBit = ((high >> uint(7-i)) & 0x1) != 0;
+		bool lowBit = (bool)((low >> uint(7-i)) & 0x1);
+		bool highBit = (bool)((high >> uint(7-i)) & 0x1);
 
 		uint16_t index = 0;
 		if (highBit) {
