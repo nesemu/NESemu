@@ -5,6 +5,7 @@
 #include "PPU.h"
 #include "cpu.h"
 #include "PPUmemory.h"
+#include <iostream>
 
 PPU::PPU(Gamepak * gamepak) {
 	memory = new PPUmemory(gamepak);
@@ -165,7 +166,7 @@ bool PPU::step() {
 
 void PPU::load_bg_tile() {
 	uint16_t nametable_tile_address = (uint16_t)(0x2000 | (vram_address.data & 0x0FFF));
-	uint16_t nametable_attribute_address = (uint16_t)(0x23C0 | (vram_address.data & 0x0C00) | \
+	uint16_t nametable_attribute_address = (uint16_t)(0x23C0 | (vram_address.data & 0x0C00) |
 		((vram_address.data >> 4) & 0x38) | ((vram_address.data >> 2) & 0x07));
 	uint16_t shift = (uint16_t)((vram_address.data & 0x2) | ((vram_address.data & 0x40) >> 4));
 	uint8_t attribute_bits = (uint8_t )((memory->direct_read_byte(nametable_attribute_address) >> shift) & 0x3);
@@ -282,8 +283,8 @@ void PPU::render_pixel() {
 		finalcolor = bgpixel;
 	}
 	else {
-		finalcolor = ntsc_palette[memory->direct_read_byte(BACKGROUND_PALETTE_ADDRESS) & 0x3F];
-//		finalcolor = ntsc_palette[33];
+	    uint8_t index = (uint8_t)(memory->direct_read_byte(BACKGROUND_PALETTE_ADDRESS) & 0x3F);
+		finalcolor = ntsc_palette[index];
 	}
 
 	if (showSprites && showBackground) {
@@ -334,8 +335,8 @@ void PPU::populateShiftRegister(uint8_t pattern_tile, uint16_t attribute_bits, b
 	uint8_t high = memory->direct_read_byte(base_address + (uint16_t)(pattern_tile << 4) + (uint16_t)y_offset + (uint16_t)8);
 
 	for (int i = 0; i < 8; i++) {
-		bool lowBit = (bool)((low >> uint(7-i)) & 0x1);
-		bool highBit = (bool)((high >> uint(7-i)) & 0x1);
+		bool lowBit = ((low >> uint(7-i)) & 0x1) != 0;
+		bool highBit = ((high >> uint(7-i)) & 0x1) != 0;
 
 		uint16_t index = 0;
 		if (highBit) {
@@ -350,8 +351,7 @@ void PPU::populateShiftRegister(uint8_t pattern_tile, uint16_t attribute_bits, b
 				fg_sr_pixels_valid[i] = false;
 			} else {
 				uint8_t palette_index = (
-						memory->direct_read_byte(base_palette_address + (attribute_bits << 2) + index) &
-						(uint8_t) 0x3F);
+						memory->direct_read_byte(base_palette_address | (attribute_bits << 2) | index) & (uint8_t) 0x3F);
 				fg_sr_pixels[i] = ntsc_palette[palette_index];
 				fg_sr_pixels_valid[i] = true;
 			}
@@ -363,8 +363,7 @@ void PPU::populateShiftRegister(uint8_t pattern_tile, uint16_t attribute_bits, b
 				bg_pixel_valid[i + 8] = false;
 			} else {
 				uint8_t palette_index = (
-						memory->direct_read_byte(base_palette_address + (attribute_bits << 2) + index) &
-						(uint8_t) 0x3F);
+						memory->direct_read_byte(base_palette_address + (attribute_bits << 2) + index) & (uint8_t) 0x3F);
 				bg_pixels[i + 8] = ntsc_palette[palette_index];
 				bg_pixel_valid[i + 8] = true;
 			}

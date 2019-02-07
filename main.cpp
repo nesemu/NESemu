@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
 
     SDL_Window * sdl_window;
     SDL_Renderer * sdl_renderer;
-    SDL_CreateWindowAndRenderer(SCREEN_X, SCREEN_Y, SDL_WINDOW_SHOWN, &sdl_window, &sdl_renderer); //TODO: Sizes Need Changed to actual
+    SDL_CreateWindowAndRenderer(SCREEN_X*2, SCREEN_Y*2, SDL_WINDOW_SHOWN, &sdl_window, &sdl_renderer); //TODO: Sizes Need Changed to actual
     if (!sdl_window || !sdl_renderer) {
         SDL_ShowSimpleMessageBox(
                 SDL_MESSAGEBOX_ERROR,
@@ -93,7 +93,10 @@ int main(int argc, char *argv[]) {
     SDL_Event e;
     bool quit = false;
     Uint64 prev_counter = SDL_GetPerformanceCounter();
+    Uint64 curr_counter = SDL_GetPerformanceCounter();
     Uint64 count_per_second = SDL_GetPerformanceFrequency();
+
+    double msPerFrame = (1/30)*1000;
 
     nes_cpu_clock_t cpuclock = nes_cpu_clock_t(7);
     nes_ppu_clock_t ppuclock = nes_ppu_clock_t(0);
@@ -105,7 +108,9 @@ int main(int argc, char *argv[]) {
                 quit = true;
             }
         }
+    }
 
+    while(true) {
         cpuclock += cpu.step();
 
         while (ppuclock.count() < cpuclock.count()*3) {
@@ -116,11 +121,12 @@ int main(int argc, char *argv[]) {
                 SDL_RenderClear(sdl_renderer);
                 SDL_RenderCopy(sdl_renderer, sdl_texture, nullptr, nullptr);
                 SDL_RenderPresent(sdl_renderer);
-                Uint64 cur_counter = SDL_GetPerformanceCounter();
-                Uint64 delta_ticks = cur_counter - prev_counter;
-                auto time = (double)delta_ticks * 1000 / count_per_second;
-                auto sleeptime = expectedtime - time;
-                //SDL_Delay(sleeptime);
+                curr_counter = SDL_GetPerformanceCounter();
+                double actualTime = ((curr_counter - prev_counter) * 1000)/count_per_second;
+                double sleepTime = msPerFrame - actualTime;
+                //std::cout << sleepTime << std::endl;
+                //SDL_Delay(sleepTime);
+                prev_counter = SDL_GetPerformanceCounter();
             }
             ppuclock++;
         }

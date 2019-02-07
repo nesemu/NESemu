@@ -3,6 +3,7 @@
 //
 
 #include "PPUmemory.h"
+#include <iostream>
 
 PPUmemory::PPUmemory(Gamepak * gamepak) {
 	this->gamepak = gamepak;
@@ -24,9 +25,10 @@ uint8_t PPUmemory::buffered_read_byte(uint16_t address) {
 			read_buffer = nametable_vram[index];
 		}
 	} else {
-		if (address % 4 == 0) {
-			result = palette_RAM[address % 16];
-		} else result = palette_RAM[address % 32];
+		if (address == 0x3F10 || address == 0x3F14 || address == 0x3F18 || address == 0x3F1C) {
+			address = address-0x0010;
+		}
+		result = palette_RAM[address - 0x3F00];
 		uint16_t index = gamepak->translate_nametable_address(address);
 		read_buffer = nametable_vram[index];
 	}
@@ -44,9 +46,10 @@ uint8_t PPUmemory::direct_read_byte(uint16_t address) {
 			result = nametable_vram[index];
 		}
 	} else {
-		if (address % 4 == 0) {
-			result = palette_RAM[address % 16];
-		} else result = palette_RAM[address % 32];
+        if (address == 0x3F10 || address == 0x3F14 || address == 0x3F18 || address == 0x3F1C) {
+            address = address-0x0010;
+        }
+        result = palette_RAM[address - 0x3F00];
 	}
 	return result;
 }
@@ -59,9 +62,10 @@ void PPUmemory::write_byte(uint16_t address, uint8_t value) {
 		uint16_t index = gamepak->translate_nametable_address(address);
 		nametable_vram[index] = value;
 	} else if (address >= 0x3F00 && address < 0x4000) { // Palette table
-		if (address % 4 == 0) { // BG color
-			palette_RAM[address % 16] = value;
-		} else palette_RAM[address % 32] = value;
+        if (address == 0x3F10 || address == 0x3F14 || address == 0x3F18 || address == 0x3F1C) {
+            address = address-0x0010;
+        }
+        palette_RAM[address - 0x3F00] = value;
 	}
 }
 

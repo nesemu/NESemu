@@ -20,7 +20,7 @@ class NesCpu;
 #define SCREEN_X 256
 #define SCREEN_Y 240
 
-#define MAKE_ARGB(R,G,B) (R<<16)|(G<<8)|B
+#define MAKE_ARGB(R,G,B) (R)|(G<<8)|(B<<16)
 
 /* union regtype taken from https://bisqwit.iki.fi/jutut/kuvat/programming_examples/nesemu1/nesemu1.cc */
 
@@ -106,10 +106,70 @@ private:
 		OAM_entry * secondary_OAM[8];
 		sprite_data_t sprite_data[8];
 		constexpr static uint32_t ntsc_palette [64] = {
-				MAKE_ARGB(84,  84,  84),    MAKE_ARGB(0,  30, 116),    MAKE_ARGB(8,  16, 144),    MAKE_ARGB(48,   0, 136),   MAKE_ARGB(68,   0, 100),   MAKE_ARGB(92,   0,  48),   MAKE_ARGB(84,   4,   0),   MAKE_ARGB(60,  24,   0),   MAKE_ARGB(32,  42,   0),   MAKE_ARGB(8,  58,   0),   MAKE_ARGB(0,  64,   0),    MAKE_ARGB(0,  60,   0),    MAKE_ARGB(0,  50,  60),    MAKE_ARGB(0,   0,   0),   MAKE_ARGB(0, 0, 0), MAKE_ARGB(0, 0, 0),
-				MAKE_ARGB(152, 150, 152),   MAKE_ARGB(8,  76, 196),    MAKE_ARGB(48,  50, 236),   MAKE_ARGB(92,  30, 228),   MAKE_ARGB(136,  20, 176),  MAKE_ARGB(160,  20, 100),  MAKE_ARGB(152,  34,  32),  MAKE_ARGB(120,  60,   0),  MAKE_ARGB(84,  90,   0),   MAKE_ARGB(40, 114,   0),  MAKE_ARGB(8, 124,   0),    MAKE_ARGB(0, 118,  40),    MAKE_ARGB(0, 102, 120),    MAKE_ARGB(0,   0,   0),   MAKE_ARGB(0, 0, 0), MAKE_ARGB(0, 0, 0),
-				MAKE_ARGB(236, 238, 236),   MAKE_ARGB(76, 154, 236),   MAKE_ARGB(120, 124, 236),  MAKE_ARGB(176,  98, 236),  MAKE_ARGB(228,  84, 236),  MAKE_ARGB(236,  88, 180),  MAKE_ARGB(236, 106, 100),  MAKE_ARGB(212, 136,  32),  MAKE_ARGB(160, 170,   0),  MAKE_ARGB(116, 196,   0), MAKE_ARGB(76, 208,  32),   MAKE_ARGB(56, 204, 108),   MAKE_ARGB(56, 180, 204),   MAKE_ARGB(60,  60,  60),  MAKE_ARGB(0, 0, 0), MAKE_ARGB(0, 0, 0),
-				MAKE_ARGB(236, 238, 236),   MAKE_ARGB(168, 204, 236),  MAKE_ARGB(188, 188, 236),  MAKE_ARGB(212, 178, 236),  MAKE_ARGB(236, 174, 236),  MAKE_ARGB(236, 174, 212),  MAKE_ARGB(236, 180, 176),  MAKE_ARGB(228, 196, 144),  MAKE_ARGB(204, 210, 120),  MAKE_ARGB(180, 222, 120), MAKE_ARGB(168, 226, 144),  MAKE_ARGB(152, 226, 180),  MAKE_ARGB(160, 214, 228),  MAKE_ARGB(160, 162, 160), MAKE_ARGB(0, 0, 0), MAKE_ARGB(0, 0, 0)
+				MAKE_ARGB(0x75, 0x75, 0x75),
+				MAKE_ARGB(0x27, 0x1B, 0x8F),
+				MAKE_ARGB(0x00, 0x00, 0xAB),
+				MAKE_ARGB(0x47, 0x00, 0x9F),
+				MAKE_ARGB(0x8F, 0x00, 0x77),
+				MAKE_ARGB(0xAB, 0x00, 0x13),
+				MAKE_ARGB(0xA7, 0x00, 0x00),
+				MAKE_ARGB(0x7F, 0x0B, 0x00),
+				MAKE_ARGB(0x43, 0x2F, 0x00),
+				MAKE_ARGB(0x00, 0x47, 0x00),
+				MAKE_ARGB(0x00, 0x51, 0x00),
+				MAKE_ARGB(0x00, 0x3F, 0x17),
+				MAKE_ARGB(0x1B, 0x3F, 0x5F),
+				MAKE_ARGB(0x00, 0x00, 0x00),
+				MAKE_ARGB(0x00, 0x00, 0x00),
+				MAKE_ARGB(0x00, 0x00, 0x00),
+				MAKE_ARGB(0xBC, 0xBC, 0xBC),
+				MAKE_ARGB(0x00, 0x73, 0xEF),
+				MAKE_ARGB(0x23, 0x3B, 0xEF),
+				MAKE_ARGB(0x83, 0x00, 0xF3),
+				MAKE_ARGB(0xBF, 0x00, 0xBF),
+				MAKE_ARGB(0xE7, 0x00, 0x5B),
+				MAKE_ARGB(0xDB, 0x2B, 0x00),
+				MAKE_ARGB(0xCB, 0x4F, 0x0F),
+				MAKE_ARGB(0x8B, 0x73, 0x00),
+				MAKE_ARGB(0x00, 0x97, 0x00),
+				MAKE_ARGB(0x00, 0xAB, 0x00),
+				MAKE_ARGB(0x00, 0x93, 0x3B),
+				MAKE_ARGB(0x00, 0x83, 0x8B),
+				MAKE_ARGB(0x00, 0x00, 0x00),
+				MAKE_ARGB(0x00, 0x00, 0x00),
+				MAKE_ARGB(0x00, 0x00, 0x00),
+				MAKE_ARGB(0xFF, 0xFF, 0xFF),
+				MAKE_ARGB(0x3F, 0xBF, 0xFF),
+				MAKE_ARGB(0x5F, 0x97, 0xFF),
+				MAKE_ARGB(0xA7, 0x8B, 0xFD),
+				MAKE_ARGB(0xF7, 0x7B, 0xFF),
+				MAKE_ARGB(0xFF, 0x77, 0xB7),
+				MAKE_ARGB(0xFF, 0x77, 0x63),
+				MAKE_ARGB(0xFF, 0x9B, 0x3B),
+				MAKE_ARGB(0xF3, 0xBF, 0x3F),
+				MAKE_ARGB(0x83, 0xD3, 0x13),
+				MAKE_ARGB(0x4F, 0xDF, 0x4B),
+				MAKE_ARGB(0x58, 0xF8, 0x98),
+				MAKE_ARGB(0x00, 0xEB, 0xDB),
+				MAKE_ARGB(0x00, 0x00, 0x00),
+				MAKE_ARGB(0x00, 0x00, 0x00),
+				MAKE_ARGB(0x00, 0x00, 0x00),
+				MAKE_ARGB(0xFF, 0xFF, 0xFF),
+				MAKE_ARGB(0xAB, 0xE7, 0xFF),
+				MAKE_ARGB(0xC7, 0xD7, 0xFF),
+				MAKE_ARGB(0xD7, 0xCB, 0xFF),
+				MAKE_ARGB(0xFF, 0xC7, 0xFF),
+				MAKE_ARGB(0xFF, 0xC7, 0xDB),
+				MAKE_ARGB(0xFF, 0xBF, 0xB3),
+				MAKE_ARGB(0xFF, 0xDB, 0xAB),
+				MAKE_ARGB(0xFF, 0xE7, 0xA3),
+				MAKE_ARGB(0xE3, 0xFF, 0xA3),
+				MAKE_ARGB(0xAB, 0xF3, 0xBF),
+				MAKE_ARGB(0xB3, 0xFF, 0xCF),
+				MAKE_ARGB(0x9F, 0xFF, 0xF3),
+				MAKE_ARGB(0x00, 0x00, 0x00),
+				MAKE_ARGB(0x00, 0x00, 0x00),
+				MAKE_ARGB(0x00, 0x00, 0x00)
 		};
 
 		void evaluate_sprites();
