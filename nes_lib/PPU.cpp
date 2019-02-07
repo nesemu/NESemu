@@ -38,7 +38,7 @@ uint8_t PPU::read_register(uint8_t address) {
 		case 4:
 			return memory->read_byte_OAM((uint8_t)reg.OAMaddr);
 		case 7:
-			result = memory->buffered_read_byte(temp_vram_address.data);
+			result = memory->buffered_read_byte(vram_address.data);
 			vram_address.data += reg.Inc ? 32 : 1;
 			return result;
 		default: return 0;
