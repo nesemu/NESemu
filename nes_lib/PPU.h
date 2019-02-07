@@ -82,6 +82,8 @@ private:
 				RegBit<0,5,uint16_t> coarseX;
 				RegBit<5,5,uint16_t> coarseY;
 				RegBit<10,2,uint16_t> NTselect;
+				RegBit<10,1,uint16_t> NTselectX;
+				RegBit<11,1,uint16_t> NTselectY;
 				RegBit<12,3,uint16_t> fineY;
 		} vram_address, temp_vram_address;
 

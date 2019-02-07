@@ -332,10 +332,12 @@ void PPU::increment_y() {
 
 void PPU::h_to_v() {
 	vram_address.coarseX = temp_vram_address.coarseX;
+	vram_address.NTselectX = temp_vram_address.NTselectX;
 }
 
 void PPU::v_to_v() {
 	vram_address.coarseY = temp_vram_address.coarseY;
 	vram_address.fineY = temp_vram_address.fineY;
+	vram_address.NTselectY = temp_vram_address.NTselectY;
 }
 
