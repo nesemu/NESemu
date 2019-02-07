@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
 
     SDL_Window * sdl_window;
     SDL_Renderer * sdl_renderer;
-    SDL_CreateWindowAndRenderer(SCREEN_X, SCREEN_Y, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE, &sdl_window, &sdl_renderer); //TODO: Sizes Need Changed to actual
+    SDL_CreateWindowAndRenderer(SCREEN_X, SCREEN_Y, SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_RESIZABLE, &sdl_window, &sdl_renderer); //TODO: Sizes Need Changed to actual
     if (!sdl_window || !sdl_renderer) {
         SDL_ShowSimpleMessageBox(
                 SDL_MESSAGEBOX_ERROR,
@@ -101,13 +101,9 @@ int main(int argc, char *argv[]) {
     nes_ppu_clock_t ppuclock = nes_ppu_clock_t(0);
     bool imageReady;
 
-    while(!quit) {
-        while (SDL_PollEvent(&e) != 0) {
-            if (e.type == SDL_QUIT) {
-                quit = true;
-            }
-        }
+    while (SDL_PollEvent(&e) != 0) {
     }
+
 
     while(true) {
         cpuclock += cpu.step();

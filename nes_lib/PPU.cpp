@@ -283,7 +283,6 @@ void PPU::render_pixel() {
 	}
 	else {
 		finalcolor = ntsc_palette[memory->direct_read_byte(BACKGROUND_PALETTE_ADDRESS) & 0x3F];
-//		finalcolor = ntsc_palette[33];
 	}
 
 	if (showSprites && showBackground) {
