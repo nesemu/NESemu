@@ -79,6 +79,7 @@ private:
     size_t PRG_blocks;
     size_t PRG_size;
     size_t CHR_size;
+    size_t debugfilesize;
     iNES_headers * headers;
     uint16_t mapper;
     std::string nametable_mirroring_type;
@@ -100,6 +101,8 @@ public:
 		void write_CHR(uint16_t address, uint8_t value);
 		uint8_t read_CHR(uint16_t address);
 		uint16_t translate_nametable_address(uint16_t address);
+
+		void debug_writeback();
 
 
 

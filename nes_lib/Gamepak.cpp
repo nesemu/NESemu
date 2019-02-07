@@ -31,10 +31,12 @@ int Gamepak::initialize() {
     }
 
     std::streampos filesize = romfile.tellg(); // get size from current file pointer location;
+    this->debugfilesize = (size_t)filesize;
     romfile.seekg(0, std::ios::beg); //reset file pointer to beginning;
 
     rom_data = new char[filesize];
     romfile.read(rom_data, filesize);
+    romfile.close();
 
     if (verifyHeaders()) {
         return EXIT_FAILURE;
@@ -43,6 +45,16 @@ int Gamepak::initialize() {
 
     std::cout << "ROM initialized." << std::endl;
     return EXIT_SUCCESS;
+}
+
+void Gamepak::debug_writeback() {
+    std::ofstream debugfile("debug.nes", std::ios::binary);
+    for (size_t i = 0; i < debugfilesize; i++) {
+        debugfile.write(&rom_data[i], 1);
+    }
+    debugfile.close();
+
+
 }
 
 int Gamepak::verifyHeaders() {

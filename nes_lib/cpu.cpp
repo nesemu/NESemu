@@ -119,11 +119,15 @@ uint16_t NesCpu::getAddrBasedOnMode(AddressingMode mode) {
 
 nes_cpu_clock_t NesCpu::step() {
 
-    nes_cpu_clock_t insturctioncycles(0);
+    nes_cpu_clock_t instructioncycles(0);
+
+    if (this->NMIRequested) {
+        instructioncycles += this->NMI();
+    }
 
     if (!(TEST_INTERRUPT_DISABLE(this->registers.P))) {
         if (this->IRQRequested) {
-            insturctioncycles += this->IRQ();
+            instructioncycles += this->IRQ();
         }
     }
 
@@ -133,17 +137,17 @@ nes_cpu_clock_t NesCpu::step() {
     const Instruction *currentInstruction = &this->instructions[opcode];
 
     //Increment the cycle counter the base number of instructions
-    insturctioncycles += nes_cpu_clock_t(currentInstruction->baseNumCycles);
+    instructioncycles += nes_cpu_clock_t(currentInstruction->baseNumCycles);
 
     if (currentInstruction->addrMode == INVALID_OPCODE) {
         std::cerr << "Invalid OpCode Used" << currentInstruction->name << std::endl;
-        return insturctioncycles;
+        return instructioncycles;
     }
 
     uint16_t address = getAddrBasedOnMode(currentInstruction->addrMode);
 
     if (this->crossedpage) {
-        insturctioncycles += nes_cpu_clock_t(currentInstruction->numPageCrossCycles);
+        instructioncycles += nes_cpu_clock_t(currentInstruction->numPageCrossCycles);
         this->crossedpage = false;
     }
 
@@ -163,10 +167,10 @@ nes_cpu_clock_t NesCpu::step() {
 #endif
 
 
-    insturctioncycles += currentInstruction->instFunc(address, this);
+    instructioncycles += currentInstruction->instFunc(address, this);
 
-    this->cycles += insturctioncycles;
-    return insturctioncycles;
+    this->cycles += instructioncycles;
+    return instructioncycles;
 }
 
 

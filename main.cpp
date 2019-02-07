@@ -120,7 +120,6 @@ int main(int argc, char *argv[]) {
                 auto time = (double)delta_ticks * 1000 / count_per_second;
                 auto sleeptime = expectedtime - time;
                 //SDL_Delay(sleeptime);
-                usleep(10000);
             }
             ppuclock++;
         }

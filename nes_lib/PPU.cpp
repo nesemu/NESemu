@@ -45,8 +45,8 @@ uint8_t PPU::read_register(uint8_t address) {
 }
 
 void PPU::write_register(uint16_t address, uint8_t value) {
-	address %= 0x8;
-	switch (address) {
+//	address %= 0x8;
+	switch (address % 0x8) {
 		case 0:
 			reg.sysctrl = value;
 			temp_vram_address.NTselect = reg.BaseNTA;
@@ -72,13 +72,15 @@ void PPU::write_register(uint16_t address, uint8_t value) {
 		case 6:
 			 if (write_toggle == 0) {
 			 	temp_vram_address.data = ((value & 0x003F) << 8) + (temp_vram_address.data & 0x00FF);
+			 	temp_vram_address.data &= (uint16_t)0x7FFF;
 			 } else {
 			 	temp_vram_address.data = (temp_vram_address.data & 0xFF00) + value;
+			 	vram_address.data = temp_vram_address.data;
 			 }
 			 write_toggle = !write_toggle;
 			 break;
 		case 7:
-			memory->write_byte(temp_vram_address.data, value);
+			memory->write_byte(vram_address.data, value);
 			vram_address.data += reg.Inc ? 32 : 1;
 			break;
 		default: break;
@@ -117,8 +119,8 @@ bool PPU::step() {
 	bool isVBlank = scanline == (POSTRENDER_SCANLINE+1);
 	bool isPrerender = scanline == PRERENDER_SCANLINE;
 
-	bool isDrawing = isRendering && isVisible && ((pixel > 0 && pixel < 256) || (pixel > 320 && pixel < 337));
-	bool isFetching = isRendering && (isVisible || isPrerender) && ((pixel > 0 && pixel < 256) || (pixel > 320 && pixel < 337)) && pixel % 8 == 0;
+	bool isDrawing = isRendering && isVisible && ((pixel > 0 && pixel < 257) || (pixel > 320 && pixel < 337));
+	bool isFetching = isRendering && (isVisible || isPrerender) && ((pixel > 1 && pixel < 256) || (pixel > 320 && pixel < 337)) && (pixel-1) % 8 == 0;
 
 	if (isDrawing) {
 		render_pixel();
@@ -144,8 +146,9 @@ bool PPU::step() {
 		reg.SPoverflow = 0;
 	}
 
-//	if (isRendering && (isVisible || isPrerender) && pixel == 257) {
+//	if (isRendering && (isVisible || isPrerender) && pixel == 320) {
 //		evaluate_sprites(scanline+1);
+//		calculate_fg_pixels();
 //	}
 
 	if (isRendering) {
@@ -205,31 +208,31 @@ void PPU::render_pixel() {
 		return;
 	}
 
-	uint32_t finalcolor;
+	uint32_t finalcolor = 0;
 
 	bool showSprites = (x >= 8 || reg.ShowSP8) && reg.ShowSP;
 	bool showBackground = (x >= 8 || reg.ShowBG8) && reg.ShowBG;
 	bool isBorder = x < 8 || x > 247 || scanline < 8 || scanline > 231;
 
 	if (isBorder) {
-		finalcolor = ntsc_palette[0x33];
+		finalcolor = ntsc_palette[0x3F];
 	}
-	else if (showSprites && fg_pixel_valid[x] && (fg_pixel_infront[x] || !bgpixelvalid)) {
-		finalcolor = fg_pixels[x];
-	}
-	else if (showBackground && bgpixelvalid) {
-		finalcolor = bgpixel;
-	}
+//	else if (showSprites && fg_pixel_valid[x] && (fg_pixel_infront[x] || !bgpixelvalid)) {
+//		finalcolor = fg_pixels[x];
+//	}
+//	else if (showBackground && bgpixelvalid) {
+//		finalcolor = bgpixel;
+//	}
 	else {
-//		finalcolor = ntsc_palette[memory->direct_read_byte(BACKGROUND_PALETTE_ADDRESS) & 0x3F];
-		finalcolor = ntsc_palette[33];
+		finalcolor = ntsc_palette[memory->direct_read_byte(BACKGROUND_PALETTE_ADDRESS) & 0x3F];
+//		finalcolor = ntsc_palette[33];
 	}
 
-	if (showSprites && showBackground) {
-		if (bgpixelvalid && fg_pixel_valid[x] && fg_pixel_sp0[x] && x < 255) { //TODO: is this timing right?
-			reg.SP0hit = 1;
-		}
-	}
+//	if (showSprites && showBackground) {
+//		if (bgpixelvalid && fg_pixel_valid[x] && fg_pixel_sp0[x] && x < 255) { //TODO: is this timing right?
+//			reg.SP0hit = 1;
+//		}
+//	}
 
 	frame_buffer[x+(scanline*SCREEN_X)] = finalcolor;
 
