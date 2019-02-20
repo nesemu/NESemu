@@ -6,6 +6,7 @@
 #include "nes_lib/memory.h"
 #include "nes_lib/cpu.h"
 #include "nes_lib/InputDevice.h"
+#include "nes_apu/Sound_Queue.h"
 
 class LTimer
 {
@@ -163,7 +164,9 @@ int main(int argc, char *argv[]) {
                 nullptr);
         return -1;
     }
-
+    Sound_Queue* sound_queue;
+    sound_queue = new Sound_Queue;
+    sound_queue->init(96000);
     SDL_Window * sdl_window;
     SDL_Renderer * sdl_renderer;
     SDL_CreateWindowAndRenderer(SCREEN_X, SCREEN_Y, SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_RESIZABLE, &sdl_window, &sdl_renderer); //TODO: Sizes Need Changed to actual
@@ -214,14 +217,17 @@ int main(int argc, char *argv[]) {
     double expectedtime = (double)1/60 * 1000;
 
     PPU ppu = PPU(&rom_gamepak);
+    APU apu = APU();
 
-    NesCPUMemory memory(&ppu, &rom_gamepak, joypad1, joypad2);
+    NesCPUMemory memory(&ppu, &apu, &rom_gamepak, joypad1, joypad2);
     NesCpu cpu(&memory);
 
     ppu.assign_cpu(&cpu);
+    apu.assign_memory(&memory);
 
     cpu.power_up();
     ppu.power_up();
+    apu.power_up();
 
 
     SDL_Event e;
@@ -232,6 +238,7 @@ int main(int argc, char *argv[]) {
 
     nes_cpu_clock_t cpuclock = nes_cpu_clock_t(7);
     nes_ppu_clock_t ppuclock = nes_ppu_clock_t(0);
+    nes_cpu_clock_t end_frame = nes_cpu_clock_t(0);
     bool imageReady;
 
     while (SDL_PollEvent(&e) != 0) {
@@ -241,11 +248,14 @@ int main(int argc, char *argv[]) {
     capTimer.start();
     while(true) {
         cpuclock += cpu.step();
-
+        apu.setTime(cpuclock-end_frame);
         while (ppuclock.count() < cpuclock.count()*3) {
             imageReady = ppu.step();
-
             if (imageReady) {
+                size_t count = apu.step((cpuclock-end_frame).count());
+                if (count > 0) {
+                    sound_queue->write(apu.getSamples(), count);
+                }
                 SDL_UpdateTexture(sdl_texture, nullptr, ppu.get_framebuffer(), SCREEN_X * sizeof(uint32_t));
                 SDL_RenderClear(sdl_renderer);
                 SDL_RenderCopy(sdl_renderer, sdl_texture, nullptr, nullptr);
@@ -255,6 +265,7 @@ int main(int argc, char *argv[]) {
                     SDL_Delay(SCREEN_TICK_PER_FRAME - frameticks);
                 }
                 capTimer.start();
+                end_frame = cpuclock;
             }
             ppuclock++;
         }
@@ -262,6 +273,7 @@ int main(int argc, char *argv[]) {
 
     delete joypad1;
     delete joypad2;
+    delete sound_queue;
     SDL_DestroyRenderer(sdl_renderer);
     SDL_DestroyTexture(sdl_texture);
     SDL_DestroyWindow(sdl_window);

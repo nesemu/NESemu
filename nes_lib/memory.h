@@ -10,24 +10,22 @@
 #include "PPU.h"
 #include "utils.h"
 #include "InputDevice.h"
+#include "APU.h"
 
 #define CPU_RAM_SIZE 2*KILO // 2KBytes
 
-union APU_IO_register_t {
-		uint8_t data[24];
-};
-
+class APU;
 class NesCPUMemory {
 private:
     uint8_t cpu_ram[CPU_RAM_SIZE] = {0};
     Gamepak *gamepak;
+    APU *apu;
     PPU *ppu;
     InputDevice *joypad1;
     InputDevice *joypad2;
-    APU_IO_register_t APU_IO_register_file;
 
 public:
-    NesCPUMemory(PPU *ppu, Gamepak *gamepak, InputDevice *joypad1, InputDevice *joypad2);
+    NesCPUMemory(PPU *ppu, APU *apu, Gamepak *gamepak, InputDevice *joypad1, InputDevice *joypad2);
     ~NesCPUMemory();
 
     uint8_t read_byte(uint16_t address);

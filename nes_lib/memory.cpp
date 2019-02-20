@@ -2,11 +2,12 @@
 #include <cstdio>
 #include <iostream>
 
-NesCPUMemory::NesCPUMemory(PPU *ppu, Gamepak *gamepak, InputDevice *joypad1, InputDevice *joypad2) {
+NesCPUMemory::NesCPUMemory(PPU *ppu, APU *apu, Gamepak *gamepak, InputDevice *joypad1, InputDevice *joypad2) {
 	this->ppu = ppu;
 	this->gamepak = gamepak;
 	this->joypad1 = joypad1;
 	this->joypad2 = joypad2;
+	this->apu = apu;
 }
 
 NesCPUMemory::~NesCPUMemory() = default;
@@ -23,10 +24,12 @@ uint8_t NesCPUMemory::read_byte(uint16_t address) {
 		    return joypad1->readController();
 		}
 		else if (address == 0x4017) {
-		    return joypad2->readController();
+		    uint8_t bottom = joypad2->readController();
+		    uint8_t top = apu->apu_read(address);
+		    return top|bottom;
 		}
 		else {
-            return APU_IO_register_file.data[address % 0x18];
+            return apu->apu_read(address);
         }
 
 	}
@@ -61,7 +64,7 @@ nes_cpu_clock_t NesCPUMemory::write_byte(uint16_t address, uint8_t value) {
 		    joypad2->writeController(value);
 		}
 		else {
-            APU_IO_register_file.data[address % 0x18] = value;
+            apu->apu_write(address, value);
         }
     }
     else if (address >= 0x4018 && address < 0x4020) { // Disabled APU/IO functionality
