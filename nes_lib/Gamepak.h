@@ -87,7 +87,6 @@ private:
     size_t current_chr_bank1;
     size_t current_chr_bank2;
     size_t shift_counter;
-    bool prg_ram_enabled;
 
     uint8_t * PRG_ram;
     uint8_t * CHR_ram;
