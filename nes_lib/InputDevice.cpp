@@ -68,10 +68,10 @@ uint8_t InputDevice::readController() {
     else if (inputType == INPUT_TYPE_KEYBOARD_PLAYER_1) {
         switch (buttonNum) {
             case 0:
-                pressed = (bool)keyboardState[SDL_SCANCODE_Z];
+                pressed = (bool)keyboardState[SDL_SCANCODE_N];
                 break;
             case 1:
-                pressed = (bool)keyboardState[SDL_SCANCODE_X];
+                pressed = (bool)keyboardState[SDL_SCANCODE_M];
                 break;
             case 2:
                 pressed = (bool)keyboardState[SDL_SCANCODE_C];
