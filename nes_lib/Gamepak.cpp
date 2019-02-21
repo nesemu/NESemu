@@ -72,7 +72,8 @@ int Gamepak::verifyHeaders() {
         PRG_blocks = headers->byte9.iNES2_PRG_ROM_size_msb << 8 | headers->PRG_ROM_size_lsb;
         PRG_size = PRG_blocks * 16u * KILO;
         CHR_size = (headers->byte9.iNES2_CHR_ROM_size_msb << 8 | headers->CHR_ROM_size_lsb) * 8u * KILO;
-        //TODO: Resize CHR and PGR RAM Based on size listed in headers
+        delete [] CHR_ram;
+        CHR_ram = new uint8_t[(headers->byte11.iNES2_CHR_RAM_size)*KILO];
 
     } else {
         std::cout << "iNES 1.x format detected" << std::endl;
@@ -82,7 +83,7 @@ int Gamepak::verifyHeaders() {
         CHR_size = headers->CHR_ROM_size_lsb * 8u * KILO;
     }
 
-    if (mapper >> 1) { // Any mapper other than 0 or 1
+    if (mapper > 2) { // Any mapper other than 0 or 1
         std::cerr << "Invalid or unsupported mapper: " << mapper << std::endl;
         return EXIT_FAILURE;
     } else std::cout << "Mapper " << mapper << " detected" << std::endl;
@@ -125,6 +126,10 @@ void Gamepak::initMemory() {
         MMC1reg.shift = 0x00;
         current_chr_bank1 = 0;
         current_chr_bank2 = 0;
+    }
+    else if (mapper == 2) {
+        PRG_rom_bank1 = PRG_rom_data;
+        PRG_rom_bank2 = PRG_rom_data + (PRG_blocks-1)*16u*KILO;
     }
 }
 
@@ -188,6 +193,9 @@ void Gamepak::write_PRG(uint16_t address, uint8_t value) {
             }
         }
     }
+    else if (mapper == 2) {
+        PRG_rom_bank1 = PRG_rom_data+ (value*16u*KILO);
+    }
 }
 
 uint8_t Gamepak::read_PRG(uint16_t address) {
@@ -201,9 +209,10 @@ uint8_t Gamepak::read_PRG(uint16_t address) {
 }
 
 void Gamepak::write_CHR(uint16_t address, uint8_t value) {
+    if (address >= 0x2000) return;
     if (CHR_size == 0) {
-        if (mapper == 0) {
-            CHR_ram[address] = 0;
+        if (mapper == 0 || mapper == 2) {
+            CHR_ram[address] = value;
         }
         else if (mapper == 1) {
             if (MMC1reg.CHRmode == 0) {
@@ -225,17 +234,17 @@ void Gamepak::write_CHR(uint16_t address, uint8_t value) {
 
 uint8_t Gamepak::read_CHR(uint16_t address) {
     if (address >= 0x2000) return 0;
-    if (mapper == 0) {
-        return CHR_rom_data[address];
+    uint8_t * pointer_to_data;
+    if (CHR_size == 0) {
+        pointer_to_data = CHR_ram;
+    }
+    else {
+        pointer_to_data = CHR_rom_data;
+    }
+    if (mapper == 0 || mapper == 2) {
+        return pointer_to_data[address];
     }
     else if (mapper == 1) {
-        uint8_t * pointer_to_data;
-        if (CHR_size == 0) {
-            pointer_to_data = CHR_ram;
-        }
-        else {
-            pointer_to_data = CHR_rom_data;
-        }
         if (MMC1reg.CHRmode == 0) {
             return (pointer_to_data + (KILO * 4u * current_chr_bank1))[address];
         } else {
@@ -250,7 +259,7 @@ uint8_t Gamepak::read_CHR(uint16_t address) {
 }
 
 uint16_t Gamepak::translate_nametable_address(uint16_t address) {
-    if (mapper == 0) {
+    if (mapper == 0 || mapper == 2) {
         switch (headers->byte6.mirroring) {
             case 0: // horizontal
                 if (address < 0x2800) {// Table A
