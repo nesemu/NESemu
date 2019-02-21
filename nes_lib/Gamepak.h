@@ -72,9 +72,9 @@ private:
     std::string filename;
     char *rom_data;
     uint8_t *trainer;
-		uint8_t *PRG_rom_data;
+    uint8_t *PRG_rom_data;
     uint8_t *PRG_rom_bank1;
-		uint8_t *PRG_rom_bank2;
+    uint8_t *PRG_rom_bank2;
     uint8_t *CHR_rom_data;
     size_t PRG_blocks;
     size_t PRG_size;
@@ -84,11 +84,16 @@ private:
     uint16_t mapper;
     std::string nametable_mirroring_type;
     MMC1_regfile MMC1reg;
+    size_t current_chr_bank1;
+    size_t current_chr_bank2;
+    size_t shift_counter;
+    bool prg_ram_enabled;
 
     uint8_t * PRG_ram;
+    uint8_t * CHR_ram;
 
-		int verifyHeaders();
-		void initMemory();
+	int verifyHeaders();
+	void initMemory();
 
 public:
     explicit Gamepak(std::string filename);
