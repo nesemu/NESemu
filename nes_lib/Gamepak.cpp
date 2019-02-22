@@ -17,7 +17,6 @@ Gamepak::Gamepak(std::string filename) {
     mapper = 0;
     PRG_ram = new uint8_t[8*KILO];
     CHR_ram = new uint8_t[8*KILO];
-    prg_ram_enabled = true;
 }
 
 Gamepak::~Gamepak() {
@@ -73,6 +72,8 @@ int Gamepak::verifyHeaders() {
         PRG_blocks = headers->byte9.iNES2_PRG_ROM_size_msb << 8 | headers->PRG_ROM_size_lsb;
         PRG_size = PRG_blocks * 16u * KILO;
         CHR_size = (headers->byte9.iNES2_CHR_ROM_size_msb << 8 | headers->CHR_ROM_size_lsb) * 8u * KILO;
+        delete [] CHR_ram;
+        CHR_ram = new uint8_t[(headers->byte11.iNES2_CHR_RAM_size)*KILO];
 
     } else {
         std::cout << "iNES 1.x format detected" << std::endl;
@@ -81,11 +82,8 @@ int Gamepak::verifyHeaders() {
         PRG_size = PRG_blocks * 16u * KILO;
         CHR_size = headers->CHR_ROM_size_lsb * 8u * KILO;
     }
-    std::cout << "CHR Size: " << CHR_size << std::endl;
-    std::cout << "PRG Size: " << PRG_size << std::endl;
-    std::cout << "PRG Blocks: " << PRG_blocks << std::endl;
 
-    if (mapper >> 1) { // Any mapper other than 0 or 1
+    if (mapper > 2) { // Any mapper other than 0 or 1
         std::cerr << "Invalid or unsupported mapper: " << mapper << std::endl;
         return EXIT_FAILURE;
     } else std::cout << "Mapper " << mapper << " detected" << std::endl;
@@ -98,6 +96,7 @@ int Gamepak::verifyHeaders() {
     if (headers->byte6.battery) { //battery RAM
         std::cout << "Battery RAM present" << std::endl;
         /* Currently we ignore this flag and assume 8k volatile RAM present */
+        //TODO: Implement some kind of way to save data
     }
 
     if (headers->byte6.trainer) {
@@ -127,6 +126,10 @@ void Gamepak::initMemory() {
         MMC1reg.shift = 0x00;
         current_chr_bank1 = 0;
         current_chr_bank2 = 0;
+    }
+    else if (mapper == 2) {
+        PRG_rom_bank1 = PRG_rom_data;
+        PRG_rom_bank2 = PRG_rom_data + (PRG_blocks-1)*16u*KILO;
     }
 }
 
@@ -170,7 +173,6 @@ void Gamepak::write_PRG(uint16_t address, uint8_t value) {
                     case 0xE000: {
                         uint32_t prg_bank_modified = (MMC1reg.shift&0xE);
                         uint32_t prg_bank = (MMC1reg.shift&0xF);
-                        prg_ram_enabled = (MMC1reg.shift&0x8) != 0;
                         if ((MMC1reg.PRGmode == 0) || (MMC1reg.PRGmode == 1)) {
                             PRG_rom_bank1 = PRG_rom_data+(prg_bank_modified*16u*KILO);
                             PRG_rom_bank2 = PRG_rom_data+((prg_bank_modified+1u)*16u*KILO);
@@ -191,6 +193,9 @@ void Gamepak::write_PRG(uint16_t address, uint8_t value) {
             }
         }
     }
+    else if (mapper == 2) {
+        PRG_rom_bank1 = PRG_rom_data+ (value*16u*KILO);
+    }
 }
 
 uint8_t Gamepak::read_PRG(uint16_t address) {
@@ -204,9 +209,10 @@ uint8_t Gamepak::read_PRG(uint16_t address) {
 }
 
 void Gamepak::write_CHR(uint16_t address, uint8_t value) {
+    if (address >= 0x2000) return;
     if (CHR_size == 0) {
-        if (mapper == 0) {
-            CHR_ram[address] = 0;
+        if (mapper == 0 || mapper == 2) {
+            CHR_ram[address] = value;
         }
         else if (mapper == 1) {
             if (MMC1reg.CHRmode == 0) {
@@ -228,36 +234,24 @@ void Gamepak::write_CHR(uint16_t address, uint8_t value) {
 
 uint8_t Gamepak::read_CHR(uint16_t address) {
     if (address >= 0x2000) return 0;
-    if (mapper == 0) {
-        return CHR_rom_data[address];
+    uint8_t * pointer_to_data;
+    if (CHR_size == 0) {
+        pointer_to_data = CHR_ram;
+    }
+    else {
+        pointer_to_data = CHR_rom_data;
+    }
+    if (mapper == 0 || mapper == 2) {
+        return pointer_to_data[address];
     }
     else if (mapper == 1) {
-        if (CHR_size == 0) {
-            if (MMC1reg.CHRmode == 0) {
-                uint8_t *temppointer = CHR_ram + (KILO * 4u * current_chr_bank1);
-                return temppointer[address];
-            } else {
-                if (address <= 0x0FFF) {
-                    uint8_t *temppointer = CHR_ram + (KILO * 4u * current_chr_bank1);
-                    return temppointer[address];
-                } else if (address <= 0x1FFF) {
-                    uint8_t *temppointer = CHR_ram + (KILO * 4u * current_chr_bank2);
-                    return temppointer[(address - 0x1000)];
-                }
-            }
-        }
-        else {
-            if (MMC1reg.CHRmode == 0) {
-                uint8_t *temppointer = CHR_rom_data + (KILO * 4u * current_chr_bank1);
-                return temppointer[address];
-            } else {
-                if (address <= 0x0FFF) {
-                    uint8_t *temppointer = CHR_rom_data + (KILO * 4u * current_chr_bank1);
-                    return temppointer[address];
-                } else if (address <= 0x1FFF) {
-                    uint8_t *temppointer = CHR_rom_data + (KILO * 4u * current_chr_bank2);
-                    return temppointer[(address - 0x1000)];
-                }
+        if (MMC1reg.CHRmode == 0) {
+            return (pointer_to_data + (KILO * 4u * current_chr_bank1))[address];
+        } else {
+            if (address <= 0x0FFF) {
+                return (pointer_to_data + (KILO * 4u * current_chr_bank1))[address];
+            } else if (address <= 0x1FFF) {
+                return (pointer_to_data + (KILO * 4u * current_chr_bank2))[(address - 0x1000)];
             }
         }
     }
@@ -265,7 +259,7 @@ uint8_t Gamepak::read_CHR(uint16_t address) {
 }
 
 uint16_t Gamepak::translate_nametable_address(uint16_t address) {
-    if (mapper == 0) {
+    if (mapper == 0 || mapper == 2) {
         switch (headers->byte6.mirroring) {
             case 0: // horizontal
                 if (address < 0x2800) {// Table A
@@ -284,7 +278,7 @@ uint16_t Gamepak::translate_nametable_address(uint16_t address) {
             case 0: // Single Low
                 return (uint16_t)(address % 0x400);
             case 1: // Single High
-                return (uint16_t) ((address % 0x400) + 0x400);
+                return (uint16_t) ((address % 0x400));
             case 2: // Vertical
                 return (uint16_t) (address % 0x800);
             case 3: // Horizontal
