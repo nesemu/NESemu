@@ -138,7 +138,7 @@ void Gamepak::initMemory() {
         PRG_rom_bank2 = PRG_rom_data + (PRG_blocks-1)*16u*KILO;
     }
     std::cout << "PRG Bank 1 = " << PRG_rom_bank1 << std::endl;
-    std::cout << "PRG Bamk 2 = " << PRG_rom_bank2 << std::endl;
+    std::cout << "PRG Bank 2 = " << PRG_rom_bank2 << std::endl;
     std::cout << "CHR = " << CHR_rom_data << std::endl;
     std::cout << "Size of container = " << rom_data.size() << std::endl;
 }
@@ -209,18 +209,21 @@ void Gamepak::write_PRG(uint16_t address, uint8_t value) {
         }
     }
     else if (mapper == 2) {
-        PRG_rom_bank1 = PRG_rom_data+ ((value&0x7)*16u*KILO);
+        PRG_rom_bank1 = PRG_rom_data + ((((size_t)value&0x7)*16u*KILO));
     }
 }
 
 uint8_t Gamepak::read_PRG(uint16_t address) {
-    if (address < 0x6000) return 0;
+    if (address < 0x6000) {
+        std::cerr << "WARNING: TRYING TO READ FROM UNMAPPED MEMORY: 0x " << std::hex << +address << std::endl;
+        return 0;
+    }
     else if (address < 0x8000) { // RAM, same between mapper 0 and 1
         return PRG_ram.at(uint16_t(address % 0x2000));
     }
     else if (address < 0xC000) {
-        return (uint8_t)rom_data.at(PRG_rom_bank1+uint16_t((address % 0x4000)));
-    } else return (uint8_t)rom_data.at(PRG_rom_bank2+uint16_t((address % 0x4000)));
+        return (uint8_t)rom_data.at(PRG_rom_bank1+size_t((address % 0x4000)));
+    } else return (uint8_t)rom_data.at(PRG_rom_bank2+size_t((address % 0x4000)));
 }
 
 void Gamepak::write_CHR(uint16_t address, uint8_t value) {
