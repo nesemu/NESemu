@@ -166,7 +166,7 @@ int main(int argc, char *argv[]) {
 
     SDL_Window * sdl_window;
     SDL_Renderer * sdl_renderer;
-    SDL_CreateWindowAndRenderer(SCREEN_X, SCREEN_Y, SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_RESIZABLE, &sdl_window, &sdl_renderer); //TODO: Sizes Need Changed to actual
+    SDL_CreateWindowAndRenderer(SCREEN_X, SCREEN_Y, SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_RESIZABLE, &sdl_window, &sdl_renderer);
     if (!sdl_window || !sdl_renderer) {
         SDL_ShowSimpleMessageBox(
                 SDL_MESSAGEBOX_ERROR,
@@ -178,9 +178,9 @@ int main(int argc, char *argv[]) {
 
     SDL_SetWindowTitle(sdl_window, "Ethan And Kyle NESEmu v0.1");
 
-    SDL_RenderSetLogicalSize(sdl_renderer, SCREEN_X, SCREEN_Y); //TODO: Sizes need to be changed to actual
+    SDL_RenderSetLogicalSize(sdl_renderer, SCREEN_X, SCREEN_Y);
 
-    SDL_Texture * sdl_texture = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, SCREEN_X, SCREEN_Y); //TODO: Update Sizes
+    SDL_Texture * sdl_texture = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, SCREEN_X, SCREEN_Y);
 
     InputDevice * joypad1 = nullptr;
     InputDevice * joypad2 = nullptr;
@@ -202,9 +202,6 @@ int main(int argc, char *argv[]) {
     }
 
     SDL_JoystickEventState(SDL_DISABLE);
-
-
-    //TODO: Implement the rest of the main including the game loop
 
     std::string rom_filename = argv[1];
 
