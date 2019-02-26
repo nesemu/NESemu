@@ -271,12 +271,12 @@ uint8_t Gamepak::read_CHR(uint16_t address) {
         }
         else if (mapper == 1) {
             if (MMC1reg.CHRmode == 0) {
-                return (uint8_t)rom_data.at((KILO * 4u * current_chr_bank1)+address);
+                return (uint8_t)rom_data.at((KILO * 4u * current_chr_bank1)+address+CHR_rom_data);
             } else {
                 if (address <= 0x0FFF) {
-                    return (uint8_t)rom_data.at((KILO * 4u * current_chr_bank1)+address);
+                    return (uint8_t)rom_data.at((KILO * 4u * current_chr_bank1)+address+CHR_rom_data);
                 } else if (address <= 0x1FFF) {
-                    return (uint8_t)rom_data.at((KILO * 4u * current_chr_bank2)+(address - 0x1000));
+                    return (uint8_t)rom_data.at((KILO * 4u * current_chr_bank2)+(address - 0x1000)+CHR_rom_data);
                 }
             }
         }
