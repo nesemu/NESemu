@@ -22,6 +22,8 @@ void NesCpu::power_up() {
     this->registers.S = 0xFD;
     this->registers.PC = this->RAM->read_word(RESET_INTERRUPT_VECTOR);
     this->crossedpage = false;
+    this->IRQRequested = false;
+    this->NMIRequested = false;
 }
 
 uint16_t NesCpu::getAddrBasedOnMode(AddressingMode mode) {
