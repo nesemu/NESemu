@@ -140,7 +140,8 @@ nes_cpu_clock_t NesCpu::step() {
     instructioncycles += nes_cpu_clock_t(currentInstruction->baseNumCycles);
 
     if (currentInstruction->addrMode == INVALID_OPCODE) {
-        std::cerr << "Invalid OpCode Used" << currentInstruction->name << std::endl;
+        std::cerr << "Invalid OpCode Used " << currentInstruction->name << " PC at: " << std::hex << "0x" << +oldpc << std::endl;
+        opcode = this->RAM->read_byte(0xb826);
         return instructioncycles;
     }
 

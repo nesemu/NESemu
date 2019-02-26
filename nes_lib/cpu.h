@@ -79,7 +79,7 @@ class NesCpu;
 
 struct Instruction {
      std::string name;
-    nes_cpu_clock_t (*instFunc)(uint16_t address, NesCpu *);
+     nes_cpu_clock_t (*instFunc)(uint16_t address, NesCpu *);
      uint16_t size;
      int baseNumCycles;
      int numPageCrossCycles;
