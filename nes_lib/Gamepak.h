@@ -6,6 +6,7 @@
 #define NESEMU_GAMEPAK_H
 
 #include <string>
+#include <vector>
 #include "utils.h"
 
 struct iNES_headers {
@@ -70,12 +71,12 @@ union MMC1_regfile {
 class Gamepak {
 private:
     std::string filename;
-    char *rom_data;
+    std::vector<uint8_t> rom_data;
     uint8_t *trainer;
-    uint8_t *PRG_rom_data;
-    uint8_t *PRG_rom_bank1;
-    uint8_t *PRG_rom_bank2;
-    uint8_t *CHR_rom_data;
+    size_t PRG_rom_data;
+    size_t PRG_rom_bank1;
+    size_t PRG_rom_bank2;
+    size_t CHR_rom_data;
     size_t PRG_blocks;
     size_t PRG_size;
     size_t CHR_size;
@@ -88,8 +89,8 @@ private:
     size_t current_chr_bank2;
     size_t shift_counter;
 
-    uint8_t * PRG_ram;
-    uint8_t * CHR_ram;
+    std::vector<uint8_t> PRG_ram;
+    std::vector<uint8_t> CHR_ram;
 
 	int verifyHeaders();
 	void initMemory();
