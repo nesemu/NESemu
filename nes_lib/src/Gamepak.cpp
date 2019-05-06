@@ -2,7 +2,7 @@
 // Created by Ethan Williams on 2019-01-28.
 //
 
-#include "Gamepak.h"
+#include "../include/Gamepak.h"
 
 #include <iostream>
 #include <fstream>

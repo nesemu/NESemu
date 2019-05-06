@@ -1,11 +1,11 @@
 #include <iostream>
 #include <unistd.h>
 #include <SDL.h>
-#include "nes_lib/Gamepak.h"
-#include "nes_lib/PPU.h"
-#include "nes_lib/memory.h"
-#include "nes_lib/cpu.h"
-#include "nes_lib/InputDevice.h"
+#include "nes_lib/include/Gamepak.h"
+#include "nes_lib/include/PPU.h"
+#include "nes_lib/include/memory.h"
+#include "nes_lib/include/cpu.h"
+#include "nes_lib/include/InputDevice.h"
 
 class LTimer
 {

@@ -2,7 +2,7 @@
 // Created by Ethan Williams on 2019-02-04.
 //
 
-#include "PPUmemory.h"
+#include "../include/PPUmemory.h"
 #include <iostream>
 
 PPUmemory::PPUmemory(Gamepak * gamepak) {
