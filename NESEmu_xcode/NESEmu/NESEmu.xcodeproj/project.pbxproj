@@ -7,17 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		27DB4B792282A8AC00C98A2A /* GameWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27DB4B782282A8AC00C98A2A /* GameWindowController.swift */; };
 		F1AED9F722822C5B008A73B7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1AED9F622822C5B008A73B7 /* AppDelegate.swift */; };
 		F1AED9F922822C5B008A73B7 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = F1AED9F822822C5B008A73B7 /* GameScene.sks */; };
 		F1AED9FB22822C5B008A73B7 /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = F1AED9FA22822C5B008A73B7 /* Actions.sks */; };
 		F1AED9FD22822C5B008A73B7 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1AED9FC22822C5B008A73B7 /* GameScene.swift */; };
 		F1AED9FF22822C5B008A73B7 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1AED9FE22822C5B008A73B7 /* ViewController.swift */; };
 		F1AEDA0122822C5C008A73B7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F1AEDA0022822C5C008A73B7 /* Assets.xcassets */; };
-		F1AEDA0422822C5C008A73B7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F1AEDA0222822C5C008A73B7 /* Main.storyboard */; };
 		F1AEDA2922822CF6008A73B7 /* NESKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1AEDA2822822CF6008A73B7 /* NESKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		27DB4B782282A8AC00C98A2A /* GameWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameWindowController.swift; sourceTree = "<group>"; };
+		27DB4B7E2282AE6800C98A2A /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Main.storyboard; path = /Users/kyle/NESemu/NESEmu_xcode/NESEmu/NESEmu/Main.storyboard; sourceTree = "<absolute>"; };
 		F1AED9F322822C5B008A73B7 /* NESEmu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NESEmu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1AED9F622822C5B008A73B7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F1AED9F822822C5B008A73B7 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
@@ -25,7 +27,6 @@
 		F1AED9FC22822C5B008A73B7 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		F1AED9FE22822C5B008A73B7 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		F1AEDA0022822C5C008A73B7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		F1AEDA0322822C5C008A73B7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		F1AEDA0522822C5C008A73B7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F1AEDA0622822C5C008A73B7 /* NESEmu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NESEmu.entitlements; sourceTree = "<group>"; };
 		F1AEDA2822822CF6008A73B7 /* NESKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = NESKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -69,9 +70,10 @@
 				F1AED9FC22822C5B008A73B7 /* GameScene.swift */,
 				F1AED9FE22822C5B008A73B7 /* ViewController.swift */,
 				F1AEDA0022822C5C008A73B7 /* Assets.xcassets */,
-				F1AEDA0222822C5C008A73B7 /* Main.storyboard */,
+				27DB4B7E2282AE6800C98A2A /* Main.storyboard */,
 				F1AEDA0522822C5C008A73B7 /* Info.plist */,
 				F1AEDA0622822C5C008A73B7 /* NESEmu.entitlements */,
+				27DB4B782282A8AC00C98A2A /* GameWindowController.swift */,
 			);
 			path = NESEmu;
 			sourceTree = "<group>";
@@ -116,6 +118,11 @@
 				TargetAttributes = {
 					F1AED9F222822C5B008A73B7 = {
 						CreatedOnToolsVersion = 10.1;
+						SystemCapabilities = {
+							com.apple.Sandbox = {
+								enabled = 0;
+							};
+						};
 					};
 				};
 			};
@@ -145,7 +152,6 @@
 				F1AED9F922822C5B008A73B7 /* GameScene.sks in Resources */,
 				F1AEDA0122822C5C008A73B7 /* Assets.xcassets in Resources */,
 				F1AED9FB22822C5B008A73B7 /* Actions.sks in Resources */,
-				F1AEDA0422822C5C008A73B7 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -159,21 +165,11 @@
 				F1AED9FF22822C5B008A73B7 /* ViewController.swift in Sources */,
 				F1AED9FD22822C5B008A73B7 /* GameScene.swift in Sources */,
 				F1AED9F722822C5B008A73B7 /* AppDelegate.swift in Sources */,
+				27DB4B792282A8AC00C98A2A /* GameWindowController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXVariantGroup section */
-		F1AEDA0222822C5C008A73B7 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				F1AEDA0322822C5C008A73B7 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		F1AEDA0722822C5C008A73B7 /* Debug */ = {
@@ -295,7 +291,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = NESEmu/NESEmu.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 6FXPZ9UA8U;
@@ -314,7 +309,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = NESEmu/NESEmu.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 6FXPZ9UA8U;

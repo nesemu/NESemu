@@ -9,22 +9,23 @@
 #import "NESKitInputDevice.h"
 #import <NESKit/InputDevice.h>
 
+
 @implementation NESKitInputDevice
 InputDevice *joypad;
 
-//- (id) initWithNum:(int)num {
-//    self = [super init];
-//    joypad = new InputDevice(num);
-//    self.cppObject = joypad;
-//    return self;
-//}
-//
-//- (unsigned char) readController {
-//    return joypad->readController();
-//}
-//
-//- (void) writeControllerWithByte:(unsigned char)byte {
-//    joypad->writeController(byte);
-//}
+- (id) initWithNum:(int)num {
+    self = [super init];
+    joypad = new InputDevice(num);
+    self.cppObject = joypad;
+    return self;
+}
+
+- (unsigned char) readController {
+    return joypad->readController();
+}
+
+- (void) writeControllerWithByte:(unsigned char)byte {
+    joypad->writeController(byte);
+}
 
 @end
