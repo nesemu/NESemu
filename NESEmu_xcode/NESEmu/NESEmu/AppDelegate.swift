@@ -10,8 +10,6 @@
 import Cocoa
 import NESKit
 
-var ROMPath: String = ""
-
 struct NESSystem {
     var gamepack: NESKitGamepak
     var joypad0: NESKitInputDevice
@@ -20,6 +18,7 @@ struct NESSystem {
     var cpuMemory: NESKitMemory
     var cpu: NESKitCPU
     
+    static var ROMPath: String = ""
     static let shared = NESSystem(filename: ROMPath)
     
     init(filename: String) {
@@ -59,9 +58,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
             print(url)
             print(url.path)
-            ROMPath = url.path
+            NESSystem.ROMPath = url.path
             
-            var system = NESSystem.shared
+            _ = NESSystem.shared
         }
         
     }
