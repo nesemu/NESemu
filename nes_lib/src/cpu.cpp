@@ -325,7 +325,7 @@ nes_cpu_clock_t asl(uint16_t address, NesCpu * cpu) {
 }
 
 nes_cpu_clock_t asla(uint16_t address, NesCpu * cpu) {
-    uint8_t value = cpu->registers.A;
+//    uint8_t value = cpu->registers.A;
     bool set = ((cpu->registers.A&0x80) == 0x80);
     cpu->setFlags(CARRY_MASK, set);
     cpu->registers.A <<= 1;

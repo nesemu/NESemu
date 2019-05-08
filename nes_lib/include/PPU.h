@@ -105,7 +105,7 @@ private:
 
 		OAM_entry * secondary_OAM[8];
 		sprite_data_t sprite_data[8];
-		constexpr static uint32_t ntsc_palette [64] = {
+		inline constexpr static uint32_t ntsc_palette [64] = {
 				MAKE_ARGB(0x75, 0x75, 0x75),
 				MAKE_ARGB(0x27, 0x1B, 0x8F),
 				MAKE_ARGB(0x00, 0x00, 0xAB),
