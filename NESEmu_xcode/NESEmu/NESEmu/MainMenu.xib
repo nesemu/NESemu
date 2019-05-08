@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14490.70"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -11,7 +12,11 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="NESEmu" customModuleProvider="target"/>
+        <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="NESEmu" customModuleProvider="target">
+            <connections>
+                <outlet property="mainWindow" destination="osz-XV-aru" id="xJL-BA-Vp9"/>
+            </connections>
+        </customObject>
         <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
         <menu title="Main Menu" systemMenu="main" id="AYu-sK-qS6">
             <items>
@@ -675,5 +680,24 @@
             </items>
             <point key="canvasLocation" x="139" y="-125"/>
         </menu>
+        <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="osz-XV-aru">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+            <rect key="contentRect" x="163" y="199" width="600" height="500"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+            <value key="minSize" type="size" width="600" height="270"/>
+            <view key="contentView" wantsLayer="YES" id="fWV-qA-4VW">
+                <rect key="frame" x="0.0" y="0.0" width="600" height="500"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <connections>
+                    <outlet property="menu" destination="AYu-sK-qS6" id="i0r-d1-aZS"/>
+                </connections>
+            </view>
+            <point key="canvasLocation" x="153" y="202"/>
+        </window>
+        <viewController nibName="GameViewController" id="zcR-v3-tWM" customClass="GameViewController" customModule="NESEmu" customModuleProvider="target">
+            <connections>
+                <outlet property="view" destination="fWV-qA-4VW" id="v6c-Fc-5BY"/>
+            </connections>
+        </viewController>
     </objects>
 </document>

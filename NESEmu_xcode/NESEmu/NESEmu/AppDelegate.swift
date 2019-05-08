@@ -38,6 +38,7 @@ struct NESSystem {
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
     
+    @IBOutlet weak var mainWindow: NSWindow!
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
@@ -54,6 +55,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         dialog.begin { (result) in
             guard result == NSApplication.ModalResponse.OK, dialog.urls.isEmpty == false, let url = dialog.urls.first else {
                 print("Error")
+                NSApplication.shared.terminate(self)
                 return
             }
             print(url)
@@ -61,6 +63,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             NESSystem.ROMPath = url.path
             
             _ = NESSystem.shared
+            
+            self.mainWindow.makeKeyAndOrderFront(self)
+            
         }
         
     }
