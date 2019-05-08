@@ -10,6 +10,32 @@
 import Cocoa
 import NESKit
 
+var ROMPath: String = ""
+
+struct NESSystem {
+    var gamepack: NESKitGamepak
+    var joypad0: NESKitInputDevice
+    var joypad1: NESKitInputDevice
+    var ppu: NESKitPPU
+    var cpuMemory: NESKitMemory
+    var cpu: NESKitCPU
+    
+    static let shared = NESSystem(filename: ROMPath)
+    
+    init(filename: String) {
+        self.gamepack = NESKitGamepak.init(file: filename)
+        self.gamepack.powerup()
+        self.joypad0 = NESKitInputDevice.init(num: -1)
+        self.joypad1 = NESKitInputDevice.init(num: -2)
+        self.ppu = NESKitPPU.init(gamepak: self.gamepack)
+        self.cpuMemory = NESKitMemory.init(ppu: self.ppu, gamepak: self.gamepack, inputDevice1: self.joypad0, inputDevice2: self.joypad1)
+        self.cpu = NESKitCPU.init(memory: self.cpuMemory)
+        self.ppu.assign_cpu(self.cpu)
+        self.cpu.powerup()
+        self.ppu.powerup()
+    }
+}
+
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
     
@@ -33,17 +59,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
             print(url)
             print(url.path)
-            let gamepak = NESKitGamepak.init(file: url.path);
-            gamepak.powerup();
-            let joypad0 = NESKitInputDevice.init(num: 0);
-            let joypad1 = NESKitInputDevice.init(num: 1);
-            let ppu = NESKitPPU.init(gamepak: gamepak)
-            let cpuMemory = NESKitMemory.init(ppu: ppu, gamepak: gamepak, inputDevice1: joypad0, inputDevice2: joypad1)
-            let cpu = NESKitCPU.init(memory: cpuMemory);
+            ROMPath = url.path
             
-            ppu.assign_cpu(cpu);
-            cpu.powerup();
-            ppu.powerup();
+            var system = NESSystem.shared
         }
         
     }
