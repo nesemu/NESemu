@@ -9,6 +9,7 @@
 
 import Cocoa
 import NESKit
+import SpriteKit
 
 struct NESSystem {
     var gamepack: NESKitGamepak
@@ -18,6 +19,10 @@ struct NESSystem {
     var cpuMemory: NESKitMemory
     var cpu: NESKitCPU
     
+    static let screenx = 256
+    static let screeny = 240
+    static var cpucounter : UInt = 7
+    static var ppucounter : UInt = 0
     static var ROMPath: String = ""
     static let shared = NESSystem(filename: ROMPath)
     
@@ -38,8 +43,6 @@ struct NESSystem {
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
     
-    @IBOutlet weak var mainWindow: NSWindow!
-    
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
         
@@ -52,6 +55,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         dialog.allowsMultipleSelection = false;
         dialog.allowedFileTypes        = ["nes"];
         
+        dialog.makeKeyAndOrderFront(self)
         dialog.begin { (result) in
             guard result == NSApplication.ModalResponse.OK, dialog.urls.isEmpty == false, let url = dialog.urls.first else {
                 print("Error")
@@ -64,8 +68,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             
             _ = NESSystem.shared
             
-            self.mainWindow.makeKeyAndOrderFront(self)
-            
+            //self.mainWindow.makeKeyAndOrderFront(self)
+            //self.mainView.isPaused = false
         }
         
     }
