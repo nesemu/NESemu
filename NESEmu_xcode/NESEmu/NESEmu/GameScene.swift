@@ -8,16 +8,12 @@
 
 import SpriteKit
 import GameplayKit
-import NESKit
 
 class GameScene: SKScene {
     
     private var label : SKLabelNode?
     private var spinnyNode : SKShapeNode?
-    private var cpuclock : UInt = 7
-    private var ppuclock : UInt = 0
     
-    /*
     override func didMove(to view: SKView) {
         
         // Get label node from scene and store it for use later
@@ -89,15 +85,8 @@ class GameScene: SKScene {
         }
     }
     
-    */
+    
     override func update(_ currentTime: TimeInterval) {
-        cpuclock += NESSystem.cpu.step()
-        var imageready: Bool = false;
-        while(ppuclock < cpuclock*3) {
-            imageready = NESSystem.ppu.step()
-            if (imageready) {
-                
-            }
-        }
+        // Called before each frame is rendered
     }
 }

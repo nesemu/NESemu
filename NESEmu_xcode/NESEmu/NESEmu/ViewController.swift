@@ -12,14 +12,26 @@ import GameplayKit
 
 class ViewController: NSViewController {
 
-    var device: MTLDevice!
+    @IBOutlet var skView: SKView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        device = MTLCreateSystemDefaultDevice()
-        
+
+        if let view = self.skView {
+            // Load the SKScene from 'GameScene.sks'
+            if let scene = SKScene(fileNamed: "GameScene") {
+                // Set the scale mode to scale to fit the window
+                scene.scaleMode = .aspectFill
+                
+                // Present the scene
+                view.presentScene(scene)
+            }
+            
+            view.ignoresSiblingOrder = true
+            
+            view.showsFPS = true
+            view.showsNodeCount = true
+        }
     }
-    
 }
 
