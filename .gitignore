@@ -67,3 +67,6 @@ fabric.properties
 
 # NES rom files
 *.nes
+
+# MacOS files
+.DS_Store
