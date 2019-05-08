@@ -6,6 +6,9 @@
 #include <iostream>
 
 InputDevice::InputDevice(int num) {
+    if (SDL_WasInit(0) == 0) {
+        SDL_Init(SDL_INIT_JOYSTICK);
+    }
     keyboardState = nullptr;
     if (num == -1) {
         inputType = INPUT_TYPE_KEYBOARD_PLAYER_1;
