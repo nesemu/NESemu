@@ -42,8 +42,11 @@ struct NESSystem {
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
+    @IBOutlet weak var mainWindow: NSWindow!
+    @IBOutlet weak var mainView: SKView!
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
+        
         // Insert code here to initialize your application
         
         let dialog = NSOpenPanel();
@@ -68,8 +71,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             
             _ = NESSystem.shared
             
-            //self.mainWindow.makeKeyAndOrderFront(self)
-            //self.mainView.isPaused = false
+            self.mainWindow.makeKeyAndOrderFront(self)
+            self.mainView.isPaused = false
         }
         
     }
