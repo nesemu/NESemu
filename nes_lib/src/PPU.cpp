@@ -333,8 +333,8 @@ void PPU::populateShiftRegister(uint8_t pattern_tile, uint16_t attribute_bits, b
 	uint8_t high = memory->direct_read_byte(base_address + (uint16_t)(pattern_tile << 4) + (uint16_t)y_offset + (uint16_t)8);
 
 	for (int i = 0; i < 8; i++) {
-		bool lowBit = (bool)((low >> uint(7-i)) & 0x1);
-		bool highBit = (bool)((high >> uint(7-i)) & 0x1);
+		bool lowBit = (bool)((low >> unsigned(7-i)) & 0x1);
+		bool highBit = (bool)((high >> unsigned(7-i)) & 0x1);
 
 		uint16_t index = 0;
 		if (highBit) {

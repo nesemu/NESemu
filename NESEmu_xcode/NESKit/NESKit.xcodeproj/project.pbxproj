@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		F1AEDA1B22822CA3008A73B7 /* NESKit.h in Headers */ = {isa = PBXBuildFile; fileRef = F1AEDA1922822CA3008A73B7 /* NESKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F1AEDA2D22822D64008A73B7 /* nes_lib in Resources */ = {isa = PBXBuildFile; fileRef = F1AEDA2C22822D64008A73B7 /* nes_lib */; };
 		F1B2217922824BF00093A04E /* NESKitCPU.h in Headers */ = {isa = PBXBuildFile; fileRef = F1B2217722824BF00093A04E /* NESKitCPU.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F1B2217A22824BF00093A04E /* NESKitCPU.mm in Sources */ = {isa = PBXBuildFile; fileRef = F1B2217822824BF00093A04E /* NESKitCPU.mm */; };
 		F1B2217E228251FD0093A04E /* NESKitMemory.h in Headers */ = {isa = PBXBuildFile; fileRef = F1B2217C228251FD0093A04E /* NESKitMemory.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -18,14 +17,26 @@
 		F1B221862282563E0093A04E /* NESKitGamepak.h in Headers */ = {isa = PBXBuildFile; fileRef = F1B221842282563E0093A04E /* NESKitGamepak.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F1B221872282563E0093A04E /* NESKitGamepak.mm in Sources */ = {isa = PBXBuildFile; fileRef = F1B221852282563E0093A04E /* NESKitGamepak.mm */; };
 		F1B2218A228256AF0093A04E /* NESKitInputDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F1B22188228256AF0093A04E /* NESKitInputDevice.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F1B2218B228256AF0093A04E /* NESKitInputDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F1B22189228256AF0093A04E /* NESKitInputDevice.m */; };
+		F1B2218B228256AF0093A04E /* NESKitInputDevice.mm in Sources */ = {isa = PBXBuildFile; fileRef = F1B22189228256AF0093A04E /* NESKitInputDevice.mm */; };
+		F1B221A122826BFD0093A04E /* utils.h in Headers */ = {isa = PBXBuildFile; fileRef = F1B2219222826BFD0093A04E /* utils.h */; };
+		F1B221A222826BFD0093A04E /* Gamepak.h in Headers */ = {isa = PBXBuildFile; fileRef = F1B2219322826BFD0093A04E /* Gamepak.h */; };
+		F1B221A322826BFD0093A04E /* PPUmemory.h in Headers */ = {isa = PBXBuildFile; fileRef = F1B2219422826BFD0093A04E /* PPUmemory.h */; };
+		F1B221A422826BFD0093A04E /* nes_clock.h in Headers */ = {isa = PBXBuildFile; fileRef = F1B2219522826BFD0093A04E /* nes_clock.h */; };
+		F1B221A522826BFD0093A04E /* PPU.h in Headers */ = {isa = PBXBuildFile; fileRef = F1B2219622826BFD0093A04E /* PPU.h */; };
+		F1B221A622826BFD0093A04E /* cpu.h in Headers */ = {isa = PBXBuildFile; fileRef = F1B2219722826BFD0093A04E /* cpu.h */; };
+		F1B221A722826BFD0093A04E /* memory.h in Headers */ = {isa = PBXBuildFile; fileRef = F1B2219822826BFD0093A04E /* memory.h */; };
+		F1B221A822826BFD0093A04E /* InputDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F1B2219922826BFD0093A04E /* InputDevice.h */; };
+		F1B221A922826BFD0093A04E /* memory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1B2219B22826BFD0093A04E /* memory.cpp */; };
+		F1B221AA22826BFD0093A04E /* PPU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1B2219C22826BFD0093A04E /* PPU.cpp */; };
+		F1B221AB22826BFD0093A04E /* PPUmemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1B2219D22826BFD0093A04E /* PPUmemory.cpp */; };
+		F1B221AD22826BFD0093A04E /* Gamepak.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1B2219F22826BFD0093A04E /* Gamepak.cpp */; };
+		F1B221AE22826BFD0093A04E /* cpu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1B221A022826BFD0093A04E /* cpu.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		F1AEDA1622822CA3008A73B7 /* NESKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = NESKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1AEDA1922822CA3008A73B7 /* NESKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NESKit.h; sourceTree = "<group>"; };
 		F1AEDA1A22822CA3008A73B7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F1AEDA2C22822D64008A73B7 /* nes_lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = nes_lib; path = ../../../nes_lib; sourceTree = "<group>"; };
 		F1B2217722824BF00093A04E /* NESKitCPU.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NESKitCPU.h; sourceTree = "<group>"; };
 		F1B2217822824BF00093A04E /* NESKitCPU.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = NESKitCPU.mm; sourceTree = "<group>"; };
 		F1B2217C228251FD0093A04E /* NESKitMemory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NESKitMemory.h; sourceTree = "<group>"; };
@@ -35,7 +46,21 @@
 		F1B221842282563E0093A04E /* NESKitGamepak.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NESKitGamepak.h; sourceTree = "<group>"; };
 		F1B221852282563E0093A04E /* NESKitGamepak.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = NESKitGamepak.mm; sourceTree = "<group>"; };
 		F1B22188228256AF0093A04E /* NESKitInputDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NESKitInputDevice.h; sourceTree = "<group>"; };
-		F1B22189228256AF0093A04E /* NESKitInputDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NESKitInputDevice.m; sourceTree = "<group>"; };
+		F1B22189228256AF0093A04E /* NESKitInputDevice.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = NESKitInputDevice.mm; sourceTree = "<group>"; };
+		F1B2219222826BFD0093A04E /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
+		F1B2219322826BFD0093A04E /* Gamepak.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gamepak.h; sourceTree = "<group>"; };
+		F1B2219422826BFD0093A04E /* PPUmemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPUmemory.h; sourceTree = "<group>"; };
+		F1B2219522826BFD0093A04E /* nes_clock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nes_clock.h; sourceTree = "<group>"; };
+		F1B2219622826BFD0093A04E /* PPU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPU.h; sourceTree = "<group>"; };
+		F1B2219722826BFD0093A04E /* cpu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cpu.h; sourceTree = "<group>"; };
+		F1B2219822826BFD0093A04E /* memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = memory.h; sourceTree = "<group>"; };
+		F1B2219922826BFD0093A04E /* InputDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputDevice.h; sourceTree = "<group>"; };
+		F1B2219B22826BFD0093A04E /* memory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = memory.cpp; sourceTree = "<group>"; };
+		F1B2219C22826BFD0093A04E /* PPU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PPU.cpp; sourceTree = "<group>"; };
+		F1B2219D22826BFD0093A04E /* PPUmemory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PPUmemory.cpp; sourceTree = "<group>"; };
+		F1B2219E22826BFD0093A04E /* InputDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InputDevice.cpp; sourceTree = "<group>"; };
+		F1B2219F22826BFD0093A04E /* Gamepak.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Gamepak.cpp; sourceTree = "<group>"; };
+		F1B221A022826BFD0093A04E /* cpu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cpu.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,7 +93,7 @@
 		F1AEDA1822822CA3008A73B7 /* NESKit */ = {
 			isa = PBXGroup;
 			children = (
-				F1AEDA2C22822D64008A73B7 /* nes_lib */,
+				F1B2219022826BFD0093A04E /* nes_lib */,
 				F1AEDA1922822CA3008A73B7 /* NESKit.h */,
 				F1AEDA1A22822CA3008A73B7 /* Info.plist */,
 				F1B2217722824BF00093A04E /* NESKitCPU.h */,
@@ -80,9 +105,47 @@
 				F1B221842282563E0093A04E /* NESKitGamepak.h */,
 				F1B221852282563E0093A04E /* NESKitGamepak.mm */,
 				F1B22188228256AF0093A04E /* NESKitInputDevice.h */,
-				F1B22189228256AF0093A04E /* NESKitInputDevice.m */,
+				F1B22189228256AF0093A04E /* NESKitInputDevice.mm */,
 			);
 			path = NESKit;
+			sourceTree = "<group>";
+		};
+		F1B2219022826BFD0093A04E /* nes_lib */ = {
+			isa = PBXGroup;
+			children = (
+				F1B2219122826BFD0093A04E /* include */,
+				F1B2219A22826BFD0093A04E /* src */,
+			);
+			name = nes_lib;
+			path = ../../../nes_lib;
+			sourceTree = "<group>";
+		};
+		F1B2219122826BFD0093A04E /* include */ = {
+			isa = PBXGroup;
+			children = (
+				F1B2219222826BFD0093A04E /* utils.h */,
+				F1B2219322826BFD0093A04E /* Gamepak.h */,
+				F1B2219422826BFD0093A04E /* PPUmemory.h */,
+				F1B2219522826BFD0093A04E /* nes_clock.h */,
+				F1B2219622826BFD0093A04E /* PPU.h */,
+				F1B2219722826BFD0093A04E /* cpu.h */,
+				F1B2219822826BFD0093A04E /* memory.h */,
+				F1B2219922826BFD0093A04E /* InputDevice.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		F1B2219A22826BFD0093A04E /* src */ = {
+			isa = PBXGroup;
+			children = (
+				F1B2219B22826BFD0093A04E /* memory.cpp */,
+				F1B2219C22826BFD0093A04E /* PPU.cpp */,
+				F1B2219D22826BFD0093A04E /* PPUmemory.cpp */,
+				F1B2219E22826BFD0093A04E /* InputDevice.cpp */,
+				F1B2219F22826BFD0093A04E /* Gamepak.cpp */,
+				F1B221A022826BFD0093A04E /* cpu.cpp */,
+			);
+			path = src;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -98,6 +161,14 @@
 				F1AEDA1B22822CA3008A73B7 /* NESKit.h in Headers */,
 				F1B2217922824BF00093A04E /* NESKitCPU.h in Headers */,
 				F1B2218A228256AF0093A04E /* NESKitInputDevice.h in Headers */,
+				F1B221A522826BFD0093A04E /* PPU.h in Headers */,
+				F1B221A622826BFD0093A04E /* cpu.h in Headers */,
+				F1B221A122826BFD0093A04E /* utils.h in Headers */,
+				F1B221A822826BFD0093A04E /* InputDevice.h in Headers */,
+				F1B221A422826BFD0093A04E /* nes_clock.h in Headers */,
+				F1B221A722826BFD0093A04E /* memory.h in Headers */,
+				F1B221A222826BFD0093A04E /* Gamepak.h in Headers */,
+				F1B221A322826BFD0093A04E /* PPUmemory.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -158,7 +229,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F1AEDA2D22822D64008A73B7 /* nes_lib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -169,10 +239,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F1B2218B228256AF0093A04E /* NESKitInputDevice.m in Sources */,
+				F1B221AA22826BFD0093A04E /* PPU.cpp in Sources */,
+				F1B2218B228256AF0093A04E /* NESKitInputDevice.mm in Sources */,
 				F1B2217F228251FD0093A04E /* NESKitMemory.mm in Sources */,
+				F1B221AE22826BFD0093A04E /* cpu.cpp in Sources */,
+				F1B221A922826BFD0093A04E /* memory.cpp in Sources */,
+				F1B221AB22826BFD0093A04E /* PPUmemory.cpp in Sources */,
 				F1B2217A22824BF00093A04E /* NESKitCPU.mm in Sources */,
 				F1B221872282563E0093A04E /* NESKitGamepak.mm in Sources */,
+				F1B221AD22826BFD0093A04E /* Gamepak.cpp in Sources */,
 				F1B22183228255F90093A04E /* NESKitPPU.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
