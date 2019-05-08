@@ -14,8 +14,8 @@ InputDevice::InputDevice(int num) {
         inputType = INPUT_TYPE_KEYBOARD_PLAYER_2;
     }
     else {
-        joypad = SDL_JoystickOpen(num);
-        id = SDL_JoystickInstanceID(joypad);
+        //joypad = SDL_JoystickOpen(num);
+        //id = SDL_JoystickInstanceID(joypad);
         inputType = INPUT_TYPE_JOYPAD;
     }
     strobe = false;
@@ -151,6 +151,5 @@ void InputDevice::reset() {
         keyboardState = SDL_GetKeyboardState(nullptr);
     }
     buttonNum = 0;
-
 }
 
