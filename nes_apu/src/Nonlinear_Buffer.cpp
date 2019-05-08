@@ -1,9 +1,9 @@
 
 // Nes_Snd_Emu 0.1.7. http://www.slack.net/~ant/libs/
 
-#include "Nonlinear_Buffer.h"
+#include "../include/Nonlinear_Buffer.h"
 
-#include "Nes_Apu.h"
+#include "../include/Nes_Apu.h"
 
 /* Library Copyright (C) 2003-2005 Shay Green. This library is free software;
 you can redistribute it and/or modify it under the terms of the GNU Lesser
@@ -16,7 +16,7 @@ details. You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA */
 
-#include BLARGG_SOURCE_BEGIN
+#include BLARGG_SOURCE_BEGIN"../include/blargg_source.h"
 
 // Nonlinear_Buffer
 
@@ -86,7 +86,7 @@ long Nonlinear_Buffer::samples_avail() const
 	return buf.samples_avail();
 }
 
-#include BLARGG_ENABLE_OPTIMIZER
+#include BLARGG_ENABLE_OPTIMIZER"../include/blargg_common.h"
 
 long Nonlinear_Buffer::read_samples( blip_sample_t* out, long count )
 {

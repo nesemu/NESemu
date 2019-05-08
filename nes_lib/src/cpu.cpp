@@ -1,6 +1,6 @@
 // cpu.cpp contains the code to successfully emulate the 6502 that was inside the NES
 // YAY FOR THIS BEING FUN!
-#include "cpu.h"
+#include "../include/cpu.h"
 #include <iostream>
 #include <iomanip>
 //#define LOGGING
@@ -98,12 +98,12 @@ uint16_t NesCpu::getAddrBasedOnMode(AddressingMode mode) {
         case ADDR_MODE_INDIRECTX: {
             uint8_t tempaddress = this->RAM->read_byte(this->registers.PC++);
             tempaddress += this->registers.X;
-            finaladdr = this->RAM->read_word_page_bug(tempaddress); //TODO: THIS MAY OR MAY NOT BE CORRECT http://wiki.nesdev.com/w/index.php/Errata#CPU
+            finaladdr = this->RAM->read_word_page_bug(tempaddress);
             break;
         }
         case ADDR_MODE_INDIRECTY: {
             uint8_t tempaddress = this->RAM->read_byte(this->registers.PC++);
-            uint16_t tempaddr2 = this->RAM->read_word_page_bug(tempaddress); //TODO: THIS MAY OR MAY NOT BE CORRECT http://wiki.nesdev.com/w/index.php/Errata#CPU
+            uint16_t tempaddr2 = this->RAM->read_word_page_bug(tempaddress);
             finaladdr = tempaddr2 + this->registers.Y;
             if ((finaladdr & 0xFF00) != (tempaddr2 & 0xFF00)) {
                 this->crossedpage = true;
@@ -143,7 +143,6 @@ nes_cpu_clock_t NesCpu::step() {
 
     if (currentInstruction->addrMode == INVALID_OPCODE) {
         std::cerr << "Invalid OpCode Used " << currentInstruction->name << " PC at: " << std::hex << "0x" << +oldpc << std::endl;
-        opcode = this->RAM->read_byte(0xb826);
         return instructioncycles;
     }
 

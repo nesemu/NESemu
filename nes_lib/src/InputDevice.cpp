@@ -2,7 +2,7 @@
 // Created by Kyle Miller on 2/4/19.
 //
 
-#include "InputDevice.h"
+#include "../include/InputDevice.h"
 #include <iostream>
 
 InputDevice::InputDevice(int num) {

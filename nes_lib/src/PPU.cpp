@@ -2,9 +2,9 @@
 // Created by Ethan Williams on 2019-01-29.
 //
 
-#include "PPU.h"
-#include "cpu.h"
-#include "PPUmemory.h"
+#include "../include/PPU.h"
+#include "../include/cpu.h"
+#include "../include/PPUmemory.h"
 
 PPU::PPU(Gamepak * gamepak) {
 	memory = new PPUmemory(gamepak);

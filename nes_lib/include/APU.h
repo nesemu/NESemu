@@ -5,7 +5,7 @@
 #ifndef NESEMU_APU_H
 #define NESEMU_APU_H
 
-#include "../nes_apu/Nes_Apu.h"
+#include "Nes_Apu.h"
 #include "memory.h"
 
 class NesCPUMemory;

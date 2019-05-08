@@ -7,7 +7,6 @@
 
 #include <string>
 #include <vector>
-#include <array>
 #include "utils.h"
 
 struct iNES_headers {
