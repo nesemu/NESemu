@@ -13,8 +13,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface NESKitGamepak : NSObject
 
 - (id) initWithFile:(NSString *)filename;
+@property void *cppObject;
 
-- (id) powerup;
+- (void) powerup;
 - (void) writePRGAtAddress:(unsigned short)address withValue:(unsigned char)value;
 - (unsigned char) readPRGAtAddress:(unsigned short)address;
 - (void) writeCHRAtAddress:(unsigned short)address withValue:(unsigned char)value;

@@ -14,12 +14,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NESKitCPU : NSObject
 
-- (id) initwithMemory:(NESKitMemory *)memory;
+- (id) initWithMemory:(NESKitMemory *)memory;
+@property void *cppObject;
 
 - (void) powerup;
-- (void) reset;
 - (unsigned long) step;
-- (void) setPCtoaddress:(unsigned) address;
+- (void) setPCtoAddress:(unsigned) address;
 - (void) requestNMI;
 @end
 

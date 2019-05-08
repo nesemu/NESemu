@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface NESKitPPU : NSObject
 
 - (id) initWithGamepak:(NESKitGamepak *)gamepak;
+@property void *cppObject;
 
 - (void) powerup;
 - (void) assign_cpu:(NESKitCPU *)cpu;

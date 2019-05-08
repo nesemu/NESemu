@@ -17,7 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NESKitMemory : NSObject
 
-- (id) initWithPPU:(NESKitPPU *)ppu Gamepak:(NESKitGamepak *)gamepak InputDevice1: (NESKitInputDevice *)input1 InputDevice2: (NESKitInputDevice *)input2;
+- (id) initWithPPU:(NESKitPPU *)ppu Gamepak:(NESKitGamepak *)gamepak InputDevice1:(NESKitInputDevice *)input1 InputDevice2:(NESKitInputDevice *)input2;
+@property void *cppObject;
 
 - (unsigned int) readByteFromAddress:(unsigned short)address;
 - (unsigned long) writeByteAtAddress:(unsigned short)address withValue:(unsigned char)value;

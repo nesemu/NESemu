@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NESKitInputDevice : NSObject
 - (id) initWithNum:(int)num;
+@property void *cppObject;
 
 - (unsigned char) readController;
 - (void) writeControllerWithByte:(unsigned char)byte;
