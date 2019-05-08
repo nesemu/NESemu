@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		27DB4B6D22829FE600C98A2A /* InputDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1B2219E22826BFD0093A04E /* InputDevice.cpp */; };
+		27DB4B742282A35600C98A2A /* libSDL2-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 27DB4B732282A35600C98A2A /* libSDL2-2.0.0.dylib */; };
 		F1AEDA1B22822CA3008A73B7 /* NESKit.h in Headers */ = {isa = PBXBuildFile; fileRef = F1AEDA1922822CA3008A73B7 /* NESKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F1B2217922824BF00093A04E /* NESKitCPU.h in Headers */ = {isa = PBXBuildFile; fileRef = F1B2217722824BF00093A04E /* NESKitCPU.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F1B2217A22824BF00093A04E /* NESKitCPU.mm in Sources */ = {isa = PBXBuildFile; fileRef = F1B2217822824BF00093A04E /* NESKitCPU.mm */; };
@@ -34,6 +36,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		27DB4B732282A35600C98A2A /* libSDL2-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libSDL2-2.0.0.dylib"; path = "../../../../../usr/local/Cellar/sdl2/2.0.9_1/lib/libSDL2-2.0.0.dylib"; sourceTree = "<group>"; };
 		F1AEDA1622822CA3008A73B7 /* NESKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = NESKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1AEDA1922822CA3008A73B7 /* NESKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NESKit.h; sourceTree = "<group>"; };
 		F1AEDA1A22822CA3008A73B7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -68,17 +71,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27DB4B742282A35600C98A2A /* libSDL2-2.0.0.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		27DB4B722282A35600C98A2A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				27DB4B732282A35600C98A2A /* libSDL2-2.0.0.dylib */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		F1AEDA0C22822CA3008A73B7 = {
 			isa = PBXGroup;
 			children = (
 				F1AEDA1822822CA3008A73B7 /* NESKit */,
 				F1AEDA1722822CA3008A73B7 /* Products */,
+				27DB4B722282A35600C98A2A /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -239,6 +252,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27DB4B6D22829FE600C98A2A /* InputDevice.cpp in Sources */,
 				F1B221AA22826BFD0093A04E /* PPU.cpp in Sources */,
 				F1B2218B228256AF0093A04E /* NESKitInputDevice.mm in Sources */,
 				F1B2217F228251FD0093A04E /* NESKitMemory.mm in Sources */,
@@ -391,6 +405,10 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/sdl2/2.0.9_1/lib,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.nesemu.NESKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -415,6 +433,10 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/sdl2/2.0.9_1/lib,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.nesemu.NESKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";

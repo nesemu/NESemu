@@ -5,7 +5,7 @@
 #ifndef NESEMU_INPUTDEVICE_H
 #define NESEMU_INPUTDEVICE_H
 
-#include <SDL.h>
+#include "/usr/local/Cellar/sdl2/2.0.9_1/include/SDL2/SDL.h"
 #include <cstdint>
 
 #define NES_A_BUTTON 1
