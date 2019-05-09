@@ -68,6 +68,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
             print(url)
             print(url.path)
+            let patharr = url.path.components(separatedBy: "/")
+            let num = patharr.count
+            self.mainWindow.title = patharr[num-1]
             NESSystem.ROMPath = url.path
             
             _ = NESSystem.shared
