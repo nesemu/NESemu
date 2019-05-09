@@ -1,5 +1,5 @@
-# NESemu 
-## NES Emulator 
+# NESemu
+## NES Emulator
 ### Ethan Williams and Kyle Miller
 
 NESEmu is an open-source emulator project for the Nintendo Entertainment System,
@@ -21,19 +21,19 @@ homebrew games written for the console.
 
 ### Build
 
-NESEmu builds with CMake and requires SDL2 to run. It has been tested on macOS
-10.14 with SDL2.0.9, but should be runnable on any Unix-like operating system.
+NESEmu builds with XCode on macOS 10.14. Open NESemu.xcworkspace and build the `NESEmu` target
 
 ### Usage
 
-`./NESEmu romfile`
-
-NESEmu supports any ROM utilizing iNES Mapper 000 001 or 002. In addition, due to an SDL
-bug on macOS, the window does not accept mouse input during the game, so the
-program must be closed externally.
+Double-click on `NESEmu.app`, open a `.nes` rom file, and play! Below are the controls (currently only player one input supported):
+- A Button -> K
+- B Button -> J
+- Start -> M
+- Select -> N
+- Up/Down/Left/Right -> WASD
 
 ### Future Plans
 
 The next goals for NESEmu are adding APU emulation to output audio. In fact
-a third party audio library has already been implemented in the APU branch but 
+a third party audio library has already been implemented in the APU branch but
 we would very much like to write our own APU.
