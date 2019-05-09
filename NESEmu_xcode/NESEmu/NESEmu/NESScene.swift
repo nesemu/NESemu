@@ -15,10 +15,12 @@ class NESScene: SKScene {
     
     override init(size: CGSize) {
         node = SKSpriteNode()
-        node.anchorPoint = CGPoint(x: 0, y: 0)
-        node.size = NESScene.screenSize
+        node.size = size
+        node.yScale = -1
         
         super.init(size: size)
+        self.scaleMode = SKSceneScaleMode.aspectFit
+        self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         
         isPaused = true
         
@@ -50,9 +52,8 @@ class NESScene: SKScene {
                     let data = Data(bytesNoCopy: NESSystem.shared.ppu.getFramebuffer(), count: NESSystem.screenx*NESSystem.screeny*32, deallocator: Data.Deallocator.none)
                     texture = SKTexture(data: data, size: CGSize(width: 256, height: 240), rowLength: 256, alignment: 0)
                     texture.filteringMode = .nearest
-                    node.texture = texture
                 }
-                NESSystem.ppucounter = NESSystem.ppucounter + 1
+                NESSystem.ppucounter += 1
             }
         }
         return texture

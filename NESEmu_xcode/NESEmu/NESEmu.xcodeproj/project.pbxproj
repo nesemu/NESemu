@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		27387E932282CFE200E9BBFD /* GameWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27387E922282CFE200E9BBFD /* GameWindowController.swift */; };
+		F100804E2283A58000148149 /* NESScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100804C2283A58000148149 /* NESScene.swift */; };
 		F17EF5972282A39A006FB5CB /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F17EF5962282A39A006FB5CB /* MainMenu.xib */; };
 		F17EF59A2282A8D7006FB5CB /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F17EF5982282A8D7006FB5CB /* GameViewController.swift */; };
 		F1AED9F722822C5B008A73B7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1AED9F622822C5B008A73B7 /* AppDelegate.swift */; };
@@ -17,6 +18,7 @@
 
 /* Begin PBXFileReference section */
 		27387E922282CFE200E9BBFD /* GameWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameWindowController.swift; sourceTree = "<group>"; };
+		F100804C2283A58000148149 /* NESScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NESScene.swift; sourceTree = "<group>"; };
 		F17EF5962282A39A006FB5CB /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
 		F17EF5982282A8D7006FB5CB /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		F1AED9F322822C5B008A73B7 /* NESEmu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NESEmu.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -59,6 +61,7 @@
 		F1AED9F522822C5B008A73B7 /* NESEmu */ = {
 			isa = PBXGroup;
 			children = (
+				F100804C2283A58000148149 /* NESScene.swift */,
 				F17EF5962282A39A006FB5CB /* MainMenu.xib */,
 				F1AED9F622822C5B008A73B7 /* AppDelegate.swift */,
 				F1AEDA0022822C5C008A73B7 /* Assets.xcassets */,
@@ -154,6 +157,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				27387E932282CFE200E9BBFD /* GameWindowController.swift in Sources */,
+				F100804E2283A58000148149 /* NESScene.swift in Sources */,
 				F17EF59A2282A8D7006FB5CB /* GameViewController.swift in Sources */,
 				F1AED9F722822C5B008A73B7 /* AppDelegate.swift in Sources */,
 			);
@@ -284,7 +288,7 @@
 				CODE_SIGN_ENTITLEMENTS = NESEmu/NESEmu.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 6FXPZ9UA8U;
+				DEVELOPMENT_TEAM = 5PP9VRSG97;
 				INFOPLIST_FILE = NESEmu/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -303,7 +307,7 @@
 				CODE_SIGN_ENTITLEMENTS = NESEmu/NESEmu.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 6FXPZ9UA8U;
+				DEVELOPMENT_TEAM = 5PP9VRSG97;
 				INFOPLIST_FILE = NESEmu/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

@@ -16,10 +16,8 @@ class GameViewController: NSViewController {
         let skView = view as! SKView
         let scene = NESScene(size: view.bounds.size)
         skView.showsFPS = true
-        skView.showsNodeCount = true
         skView.ignoresSiblingOrder = true
         skView.preferredFramesPerSecond = 60
-        scene.scaleMode = .resizeFill
         skView.presentScene(scene)
     }
     
