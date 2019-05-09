@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		27387E932282CFE200E9BBFD /* GameWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27387E922282CFE200E9BBFD /* GameWindowController.swift */; };
+		277379562283B5A500C20FCE /* NESKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1AEDA2822822CF6008A73B7 /* NESKit.framework */; };
+		277379572283B5A500C20FCE /* NESKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F1AEDA2822822CF6008A73B7 /* NESKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F100804E2283A58000148149 /* NESScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100804C2283A58000148149 /* NESScene.swift */; };
 		F17EF5972282A39A006FB5CB /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F17EF5962282A39A006FB5CB /* MainMenu.xib */; };
 		F17EF59A2282A8D7006FB5CB /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F17EF5982282A8D7006FB5CB /* GameViewController.swift */; };
@@ -15,6 +17,20 @@
 		F1AEDA0122822C5C008A73B7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F1AEDA0022822C5C008A73B7 /* Assets.xcassets */; };
 		F1AEDA2922822CF6008A73B7 /* NESKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1AEDA2822822CF6008A73B7 /* NESKit.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		277379582283B5A500C20FCE /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				277379572283B5A500C20FCE /* NESKit.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		27387E922282CFE200E9BBFD /* GameWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameWindowController.swift; sourceTree = "<group>"; };
@@ -34,6 +50,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				277379562283B5A500C20FCE /* NESKit.framework in Frameworks */,
 				F1AEDA2922822CF6008A73B7 /* NESKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -91,6 +108,7 @@
 				F1AED9EF22822C5B008A73B7 /* Sources */,
 				F1AED9F022822C5B008A73B7 /* Frameworks */,
 				F1AED9F122822C5B008A73B7 /* Resources */,
+				277379582283B5A500C20FCE /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -288,7 +306,7 @@
 				CODE_SIGN_ENTITLEMENTS = NESEmu/NESEmu.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 5PP9VRSG97;
+				DEVELOPMENT_TEAM = 6FXPZ9UA8U;
 				INFOPLIST_FILE = NESEmu/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -307,7 +325,7 @@
 				CODE_SIGN_ENTITLEMENTS = NESEmu/NESEmu.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 5PP9VRSG97;
+				DEVELOPMENT_TEAM = 6FXPZ9UA8U;
 				INFOPLIST_FILE = NESEmu/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
