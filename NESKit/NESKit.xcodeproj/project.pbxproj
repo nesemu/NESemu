@@ -128,7 +128,7 @@
 				F1B2219A22826BFD0093A04E /* src */,
 			);
 			name = nes_lib;
-			path = ../../../nes_lib;
+			path = ../../nes_lib;
 			sourceTree = "<group>";
 		};
 		F1B2219122826BFD0093A04E /* include */ = {
