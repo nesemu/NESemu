@@ -10,6 +10,7 @@
 import Cocoa
 import NESKit
 import SpriteKit
+import GameController
 
 struct NESSystem {
     var gamepack: NESKitGamepak
@@ -74,7 +75,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.mainWindow.makeKeyAndOrderFront(self)
             self.mainView.isPaused = false
         }
-        
     }
     
     func applicationWillTerminate(_ aNotification: Notification) {

@@ -27,4 +27,10 @@ InputDevice *joypad;
     joypad->writeController(byte);
 }
 
+- (void) updateExternalStateForButton:(int)num withState:(bool)state{
+    if (num >= 0) {
+        joypad->externState[num] = state;
+    }
+}
+
 @end

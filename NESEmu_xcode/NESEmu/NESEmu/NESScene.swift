@@ -58,4 +58,48 @@ class NESScene: SKScene {
         }
         return texture
     }
+    
+    override func keyDown(with event: NSEvent) {
+        handleKeyPress(event: event, downOrUp: true)
+    }
+    
+    override func keyUp(with event: NSEvent) {
+        handleKeyPress(event: event, downOrUp: false)
+    }
+    
+    func handleKeyPress(event: NSEvent, downOrUp: Bool) {
+        let characters = event.characters
+        var buttonNum: Int = -1;
+        for char in characters ?? "" {
+            switch char {
+            case "j": // A button
+                buttonNum = 0;
+                break
+            case "k": // B button
+                buttonNum = 1;
+                break
+            case "n": // Select
+                buttonNum = 2;
+                break
+            case "m": // Start
+                buttonNum = 3;
+                break
+            case "w": // Up
+                buttonNum = 4;
+                break
+            case "s": // Down
+                buttonNum = 5;
+                break
+            case "a": // Left
+                buttonNum = 6;
+                break
+            case "d": // Right
+                buttonNum = 7;
+                break
+            default:
+                break
+            }
+            NESSystem.shared.joypad0.updateExternalState(forButton: Int32(buttonNum), withState: downOrUp)
+        }
+    }
 }

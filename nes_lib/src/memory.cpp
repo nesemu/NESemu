@@ -18,16 +18,16 @@ uint8_t NesCPUMemory::read_byte(uint16_t address) {
 	else if (address >= 0x2000 && address < 0x4000) { // PPU registers, mirrored every 8 bytes
 		return ppu->read_register((uint8_t)(address % 0x8));
 	}
-	else if (address >= 0x4000 && address < 0x4018) { // APU/IO registers, not mirrored
-//        if (address == 0x4016) {
-//            return joypad1->readController();
-//        }
-//        else if (address == 0x4017) {
-//            return joypad2->readController();
-//        }
-//        else {
+    else if (address >= 0x4000 && address < 0x4018) { // APU/IO registers, not mirrored
+        if (address == 0x4016) {
+            return joypad1->readController();
+        }
+        else if (address == 0x4017) {
+            return joypad2->readController();
+        }
+        else {
             return APU_IO_register_file.data[address % 0x18];
-//        }
+        }
 
 	}
 	else if (address >= 0x4018 && address < 0x4020) { // Disabled APU/IO functionality
@@ -57,8 +57,8 @@ nes_cpu_clock_t NesCPUMemory::write_byte(uint16_t address, uint8_t value) {
     }
     else if (address >= 0x4000 && address < 0x4018) { // APU/IO registers, not mirrored
 		if (address == 0x4016) {
-//            joypad1->writeController(value);
-//            joypad2->writeController(value);
+            joypad1->writeController(value);
+            joypad2->writeController(value);
 		}
 		else {
             APU_IO_register_file.data[address % 0x18] = value;

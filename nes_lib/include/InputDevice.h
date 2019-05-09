@@ -27,9 +27,11 @@ public:
     ~InputDevice();
     uint8_t readController();
     void writeController(uint8_t byte);
+    bool externState[8];
 private:
-    SDL_Joystick * joypad;
-    SDL_JoystickID id;
+//    SDL_Joystick * joypad;
+//    SDL_JoystickID id;
+    bool virtualState[8];
     int buttonNum;
     bool strobe;
 
