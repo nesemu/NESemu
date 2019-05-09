@@ -11,8 +11,9 @@
 
 #import "NESKitCPU.h"
 
-@implementation NESKitPPU
+@implementation NESKitPPU {
 PPU *ppu;
+}
 
 - (id) initWithGamepak:(NESKitGamepak *)gamepak {
     self = [super init];

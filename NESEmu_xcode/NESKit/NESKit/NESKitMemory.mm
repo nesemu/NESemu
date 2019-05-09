@@ -9,8 +9,9 @@
 #import "NESKitMemory.h"
 #import <NESKit/memory.h>
 
-@implementation NESKitMemory
+@implementation NESKitMemory {
 NesCPUMemory *memory;
+}
 
 - (id) initWithPPU:(NESKitPPU *)ppu Gamepak:(NESKitGamepak *)gamepak InputDevice1:(NESKitInputDevice *)input1 InputDevice2:(NESKitInputDevice *)input2 {
     self = [super init];

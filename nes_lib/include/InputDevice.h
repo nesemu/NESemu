@@ -5,7 +5,6 @@
 #ifndef NESEMU_INPUTDEVICE_H
 #define NESEMU_INPUTDEVICE_H
 
-#include "/usr/local/Cellar/sdl2/2.0.9_1/include/SDL2/SDL.h"
 #include <cstdint>
 
 #define NES_A_BUTTON 1
@@ -27,11 +26,11 @@ public:
     ~InputDevice();
     uint8_t readController();
     void writeController(uint8_t byte);
-    bool externState[8];
+    bool externState[8] = {0};
 private:
 //    SDL_Joystick * joypad;
 //    SDL_JoystickID id;
-    bool virtualState[8];
+    bool virtualState[8] = {0};
     int buttonNum;
     bool strobe;
 

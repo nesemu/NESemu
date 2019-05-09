@@ -100,6 +100,7 @@ class NESScene: SKScene {
                 break
             }
             NESSystem.shared.joypad0.updateExternalState(forButton: Int32(buttonNum), withState: downOrUp)
+            NESSystem.shared.joypad1.updateExternalState(forButton: Int32(buttonNum), withState: downOrUp)
         }
     }
 }

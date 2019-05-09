@@ -9,8 +9,9 @@
 #import "NESKitGamepak.h"
 #import <NESKit/Gamepak.h>
 
-@implementation NESKitGamepak
+@implementation NESKitGamepak {
 Gamepak *gamepak;
+}
 
 - (id) initWithFile:(NSString *)filename {
     self = [super init];

@@ -9,8 +9,9 @@
 #import "NESKitInputDevice.h"
 #import <NESKit/InputDevice.h>
 
-@implementation NESKitInputDevice
+@implementation NESKitInputDevice {
 InputDevice *joypad;
+}
 
 - (id) initWithNum:(int)num {
     self = [super init];

@@ -10,8 +10,9 @@
 
 #import <NESKit/cpu.h>
 
-@implementation NESKitCPU
+@implementation NESKitCPU {
 NesCpu *cpu;
+}
 
 - (id) initWithMemory:(NESKitMemory *)memory {
     self = [super init];
